@@ -93,7 +93,7 @@ public class Machinery {
         m_extender = new IntakeExtend(driveLog, new CanId(19));
         m_serializer = new Serializer(driveLog);
         m_ClimberExtension = new ClimberExtension(driveLog);
-        m_Climber = new Climber(driveLog);
+        m_Climber = new Climber(driveLog, new CanId(32));
 
         ////////////////////////////////////////////////////////////
         //

@@ -101,4 +101,9 @@ public class ClimberExtension extends SubsystemBase {
     public void setInPosition() {
         m_servo.setPositionProfiled(0, 0);
     }
+
+        @Override
+    public void periodic() {
+        m_servo.periodic();
+    }
 }
