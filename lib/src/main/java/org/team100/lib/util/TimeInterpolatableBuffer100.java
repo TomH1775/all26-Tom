@@ -65,6 +65,8 @@ public class TimeInterpolatableBuffer100<T> {
                 if (oldestAgeS < m_historyS)
                     break;
                 m_pastSnapshots.remove(oldestTimeS);
+                if (DEBUG)
+                    System.out.printf("removed %f\n", oldestTimeS);
             }
             m_pastSnapshots.put(timeS, value);
         } finally {
@@ -131,6 +133,9 @@ public class TimeInterpolatableBuffer100<T> {
         double timeSpan = topBound.getKey() - bottomBound.getKey();
         double timeFraction = timeSinceBottom / timeSpan;
         if (DEBUG) {
+            System.out.printf("timeSeconds %f bottom %f top %f\n",
+                    timeSeconds, bottomBound.getKey(), topBound.getKey());
+
             System.out.printf("interpolate %f\n", timeFraction);
         }
         return m_interpolator.interpolate(
@@ -163,5 +168,12 @@ public class TimeInterpolatableBuffer100<T> {
     /** Timestamp of the most-recent snapshot. */
     public double lastKey() {
         return m_pastSnapshots.lastKey();
+    }
+
+    /** Print the entire buffer */
+    public void dump() {
+        for (var x : m_pastSnapshots.entrySet()) {
+            System.out.printf("%s: %s\n", x.getKey(), x.getValue());
+        }
     }
 }

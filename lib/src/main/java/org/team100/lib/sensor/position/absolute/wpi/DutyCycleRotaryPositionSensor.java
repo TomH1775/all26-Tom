@@ -23,7 +23,8 @@ import edu.wpi.first.wpilibj.DutyCycle;
  * counter.
  * 
  * Note that for the first few seconds after the sensor is constructed on the
- * RoboRIO, the duty cycle input produces garbage.  So the Robot class should sleep awhile.
+ * RoboRIO, the duty cycle input produces garbage. So the Robot class should
+ * sleep awhile.
  * 
  * Relies on Memo and Takt, so you must put Memo.resetAll() and Takt.update() in
  * Robot.robotPeriodic().
