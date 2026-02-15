@@ -14,4 +14,6 @@ public class AutonPositions {
     public static final Pose2d CLIMB_LEFT = new Pose2d(1.175, 4.25, new Rotation2d(-135 * (Math.PI / 180)));
     public static final Pose2d CLIMB_RIGHT = new Pose2d(1.175, 3.1, new Rotation2d(135 * (Math.PI / 180)));
 
+    public static final Pose2d SHOOT_LEFT = new Pose2d(2.3, 5.1, new Rotation2d(-35 * (Math.PI / 180)));
+    public static final Pose2d SHOOT_RIGHT = new Pose2d(2.3, 2.7, new Rotation2d(35 * (Math.PI / 180)));
 }

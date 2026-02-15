@@ -6,6 +6,7 @@ import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 import java.util.List;
 import java.util.ArrayList;
 
+import org.team100.frc2026.Intake;
 import org.team100.frc2026.auton.BumpZones;
 import org.team100.frc2026.robot.Machinery;
 import org.team100.lib.config.AnnotatedCommand;
@@ -53,7 +54,6 @@ public class Auton1 implements AnnotatedCommand {
         // create a new VelocityRegionContstraint `slow_bu  mp_zone`
         VelocityLimitRegionConstraint slow_bump_zone = new VelocityLimitRegionConstraint(log, BumpZones.BLUE_BUMP_LEFT, maxBumpVelocity);
         new_constraints.add(slow_bump_zone);
-        // TODO: can't modify `constraints` by adding `slow_bump_zone`, but it doesn' crash
         // constraints.add(slow_bump_zone);
         trajectoryFactory = new TrajectorySE2Factory(new_constraints);
         pathFactory = new PathSE2Factory();
@@ -89,6 +89,15 @@ public class Auton1 implements AnnotatedCommand {
                         new DirectionSE2(-1, 1, 0), 1),
                 new WaypointSE2(StartingPositions.LEFT_BUMP,
                         new DirectionSE2(-1, 0, 0), 1),
+                new WaypointSE2(AutonPositions.SHOOT_LEFT,
+                        new DirectionSE2(-1, -1, 0), 1));
+        return planner.restToRest(waypoints);
+    }
+
+    TrajectorySE2 t4(Pose2d startingPose) {
+        List<WaypointSE2> waypoints = List.of(
+                new WaypointSE2(startingPose,
+                        new DirectionSE2(-1, -1, 0), 1),
                 new WaypointSE2(AutonPositions.CLIMB_LEFT,
                         new DirectionSE2(-1, -1, 0), 1));
         return planner.restToRest(waypoints);
@@ -105,12 +114,17 @@ public class Auton1 implements AnnotatedCommand {
         DriveWithTrajectoryFunction n3 = new DriveWithTrajectoryFunction(
                 log, machinery.m_drive, controller,
                 machinery.m_trajectoryViz, this::t3);
+        DriveWithTrajectoryFunction n4 = new DriveWithTrajectoryFunction(
+                log, machinery.m_drive, controller,
+                machinery.m_trajectoryViz, this::t4);
         return sequence(
                 n1.until(n1::isDone),
                 waitSeconds(1),
                 n2.until(n2::isDone),
                 waitSeconds(1),
-                n3.until(n3::isDone));
+                n3.until(n3::isDone),
+                waitSeconds(1),
+                n4.until(n4::isDone));
     }
 
     @Override
