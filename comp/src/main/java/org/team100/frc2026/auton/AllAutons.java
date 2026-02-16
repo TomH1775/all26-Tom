@@ -35,6 +35,11 @@ public class AllAutons {
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
+          m_autonChooser.add(new ClimberAuton(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery));
     }
 
     public Command get() {
