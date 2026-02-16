@@ -57,5 +57,9 @@
     "edu.wpi.first.math.**.proto.*",
     "edu.wpi.first.math.**.struct.*",
   ],
-  "java.dependency.enableDependencyCheckup": false
+  "java.dependency.enableDependencyCheckup": false,
+  "files.autoSave": "afterDelay",
+  "editor.minimap.enabled": false,
+  "editor.inlayHints.enabled": "off",
+  "workbench.editor.revealIfOpen": true
 }

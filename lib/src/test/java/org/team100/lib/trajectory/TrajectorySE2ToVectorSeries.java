@@ -42,7 +42,7 @@ public class TrajectorySE2ToVectorSeries {
             double dy = m_scale * heading.getSin();
             s.add(x, y, dx, dy);
             if (DEBUG)
-                System.out.printf("%f\n", time);
+                System.out.printf("t %f pp %s\n", time, pp);
         }
         return List.of(s);
     }
@@ -86,17 +86,46 @@ public class TrajectorySE2ToVectorSeries {
      * 
      * @return (t, \dot{x})
      */
-    XYSeries xdot(String name, TrajectorySE2 trajectory) {
+    public XYSeries xdot(String name, TrajectorySE2 trajectory) {
         XYSeries series = new XYSeries(name);
         double duration = trajectory.duration();
         double dt = duration / POINTS;
         for (double t = 0; t <= duration + 0.0001; t += dt) {
             TrajectorySE2Entry p = trajectory.sample(t);
-            Rotation2d course = p.point().point().waypoint().course().toRotation();
-            double velocityM_s = p.point().velocity();
+            TrajectorySE2Point pp = p.point();
+            WaypointSE2 waypoint = pp.point().waypoint();
+            Rotation2d course = waypoint.course().toRotation();
+            double velocityM_s = pp.velocity();
             double xv = course.getCos() * velocityM_s;
+            if (DEBUG)
+                System.out.printf("x %f pp %s\n", t, pp);
             series.add(t, xv);
         }
         return series;
     }
+
+    /**
+     * X dot: dx/dt, as a function of x.
+     * 
+     * @return (x, \dot{x})
+     */
+    public XYSeries xdotVx(String name, TrajectorySE2 trajectory) {
+        XYSeries series = new XYSeries(name);
+        double duration = trajectory.duration();
+        double dt = duration / POINTS;
+        for (double t = 0; t <= duration + 0.0001; t += dt) {
+            TrajectorySE2Entry p = trajectory.sample(t);
+            TrajectorySE2Point pp = p.point();
+            Rotation2d course = pp.point().waypoint().course().toRotation();
+            double velocityM_s = pp.velocity();
+            WaypointSE2 waypoint = pp.point().waypoint();
+            double x = waypoint.pose().getTranslation().getX();
+            double xv = course.getCos() * velocityM_s;
+            if (DEBUG)
+                System.out.printf("x %f pp %s\n", x, pp);
+            series.add(x, xv);
+        }
+        return series;
+    }
+
 }
