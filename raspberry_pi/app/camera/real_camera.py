@@ -256,6 +256,8 @@ class RealCamera(Camera):
         camera_config: dict[str, Any] = cam.create_still_configuration(  # type:ignore
             # more buffers seem to make the pipeline a little smoother
             buffer_count=5,
+            # chasing the lag issue...
+            # buffer_count=1,
             queue=True,
             sensor={
                 "output_size": (size.sensor_width, size.sensor_height),

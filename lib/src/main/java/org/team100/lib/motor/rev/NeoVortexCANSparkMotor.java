@@ -63,7 +63,10 @@ public class NeoVortexCANSparkMotor extends CANSparkMotor {
 
     @Override
     public double kFreeSpeedRPM() {
+        // this sets the back EMF voltage to zero
+        // return Double.MAX_VALUE;
         return 6784;
+
     }
 
     public static SimpleDynamics ff(LoggerFactory log) {

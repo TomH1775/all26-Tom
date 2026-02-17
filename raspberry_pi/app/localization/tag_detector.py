@@ -115,6 +115,7 @@ class TagDetector(Interpreter):
         # network output for camera FPS
         self._fps = network.get_double_sender(path + "/fps")
         self._temp = network.get_double_sender(path + "/temp")
+        self._offset = network.get_double_sender(path + "/offset")
         # to keep track of images to write
         self.img_ts_sec = 0
         if self.debug:
@@ -218,6 +219,10 @@ class TagDetector(Interpreter):
                 raw_temp = int(f.read().strip())
                 temp_c = raw_temp / 1000
                 self._temp.send(temp_c, delay_us)
+
+            offset = ntcore.NetworkTableInstance.getDefault().getServerTimeOffset()
+            if offset is not None:
+                self._offset.send((float)(offset/1000000), delay_us)
 
             # do the drawing (after the NT payload is written)
             # to minimize latency
