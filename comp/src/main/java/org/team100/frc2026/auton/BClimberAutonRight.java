@@ -27,7 +27,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class ClimberAuton implements AnnotatedCommand {
+public class BClimberAutonRight implements AnnotatedCommand {
     private final LoggerFactory log;
     private final ControllerSE2 controller;
     private final Machinery machinery;
@@ -36,7 +36,7 @@ public class ClimberAuton implements AnnotatedCommand {
     private final PathSE2Factory pathFactory;
     private final TrajectorySE2Planner planner;
 
-    public  ClimberAuton(
+    public  BClimberAutonRight(
         LoggerFactory parent,
         SwerveKinodynamics kinodynamics,
         ControllerSE2 controller,
@@ -52,24 +52,16 @@ public class ClimberAuton implements AnnotatedCommand {
 
     @Override
     public String name() {
-        return "Climber Auton";
+        return "BClimber Auton Right";
     }
+
 
     TrajectorySE2 t1(Pose2d startingPose) {
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(startingPose,
-                        new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(AutonPositions.CLIMB_LEFT,
-                        new DirectionSE2(1, 1, 0), 1));
-        return planner.restToRest(waypoints);
-    }
-
-    TrajectorySE2 t2(Pose2d startingPose) {
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(startingPose,
                         new DirectionSE2(0, -1, 0), 1),
                 new WaypointSE2(AutonPositions.CLIMB_RIGHT,
-                        new DirectionSE2(0, -1, 0), 1));
+                        new DirectionSE2(0, 1, 0), 1));
         return planner.restToRest(waypoints);
     }
 
@@ -78,15 +70,10 @@ public class ClimberAuton implements AnnotatedCommand {
         DriveWithTrajectoryFunction n1 = new DriveWithTrajectoryFunction(
                 log, machinery.m_drive, controller,
                 machinery.m_trajectoryViz, this::t1);
-        DriveWithTrajectoryFunction n2 = new DriveWithTrajectoryFunction(
-                log, machinery.m_drive, controller,
-                machinery.m_trajectoryViz, this::t2);
         return sequence(
                 n1.until(n1::isDone),
                 waitSeconds(1),
-                parallel(
-                    n2.until(n2::isDone),
-                    machinery.m_ClimberExtension.setPosition()),
+                    machinery.m_ClimberExtension.setPosition(),
                 waitSeconds(1));
     }
 
