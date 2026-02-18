@@ -103,7 +103,7 @@ import org.team100.lib.tuning.Mutable;
 
     //////////////////////////////////////////////////////
 
-    PIDConstants(LoggerFactory log,
+    public PIDConstants(LoggerFactory log,
             double positionP, double positionI, double positionD,
             double velocityP, double velocityI, double velocityD) {
         // m_positionP = positionP;

@@ -5,10 +5,13 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.ControlR1Logger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.mechanism.LinearMechanism;
+import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
 import org.team100.lib.reference.r1.SetpointsR1;
 import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ModelR1;
+
+import com.ctre.phoenix6.swerve.utility.LinearPath;
 
 /**
  * Profiled or direct position control using the feedback controller in the
@@ -47,6 +50,7 @@ public class OutboardLinearPositionServo implements LinearPositionServo {
         m_log_position = log.doubleLogger(Level.COMP, "position (m)");
         m_log_velocity = log.doubleLogger(Level.COMP, "velocity (m_s)");
     }
+
 
     @Override
     public void reset() {

@@ -74,8 +74,8 @@ public class Machinery {
     public final Intake m_intake;
     public final IntakeExtend m_extender;
     final Serializer m_serializer;
-    final ClimberExtension m_ClimberExtension;
-    final Climber m_Climber;
+   public final ClimberExtension m_ClimberExtension;
+    public final Climber m_Climber;
 
     public Machinery() {
 
@@ -93,7 +93,7 @@ public class Machinery {
         m_extender = new IntakeExtend(driveLog, new CanId(19));
         m_serializer = new Serializer(driveLog);
         m_ClimberExtension = new ClimberExtension(driveLog);
-        m_Climber = new Climber(driveLog);
+        m_Climber = new Climber(driveLog, new CanId(32));
 
         ////////////////////////////////////////////////////////////
         //
