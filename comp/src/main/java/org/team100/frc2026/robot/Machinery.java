@@ -71,8 +71,8 @@ public class Machinery {
     public final SwerveDriveSubsystem m_drive;
     final Beeper m_beeper;
     final Shooter m_shooter;
-    final Intake m_intake;
-    final IntakeExtend m_extender;
+    public final Intake m_intake;
+    public final IntakeExtend m_extender;
     final Serializer m_serializer;
     final ClimberExtension m_ClimberExtension;
     final Climber m_Climber;
