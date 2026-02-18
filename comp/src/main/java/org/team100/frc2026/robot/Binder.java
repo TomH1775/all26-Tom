@@ -120,6 +120,8 @@ public class Binder {
                 m_machinery.m_intake.stop());
         m_machinery.m_extender.setDefaultCommand(
                 m_machinery.m_extender.stop());
+        m_machinery.m_shooterHood.setDefaultCommand(
+                m_machinery.m_shooterHood.stop());
 
         ///////////////////////////
         //
@@ -138,6 +140,7 @@ public class Binder {
         ///
         /// SUBSYSTEMS
         ///
+         
         whileTrue(driver::b, m_machinery.m_shooter.shoot());
 
        // whileTrue(driver::x, m_machinery.m_intake.intake());
