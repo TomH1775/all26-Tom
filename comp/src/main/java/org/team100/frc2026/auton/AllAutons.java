@@ -35,20 +35,14 @@ public class AllAutons {
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
-<<<<<<< main
-          m_autonChooser.add(new BClimberAutonLeft(
-=======
-        m_autonChooser.add(new AutonTest(
->>>>>>> main
+        m_autonChooser.add(new BClimberAutonLeft(
+                // m_autonChooser.add(new AutonTest(
                 log,
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
-<<<<<<< main
-         m_autonChooser.add(new BClimberAutonRight(
-=======
-        m_autonChooser.add(new Auton1(
->>>>>>> main
+        m_autonChooser.add(new BClimberAutonRight(
+                // m_autonChooser.add(new Auton1(
                 log,
                 machinery.m_swerveKinodynamics,
                 controller,

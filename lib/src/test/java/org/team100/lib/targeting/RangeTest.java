@@ -1,7 +1,5 @@
 package org.team100.lib.targeting;
 
-import org.junit.jupiter.api.Test;
-
 public class RangeTest {
     private static final boolean DEBUG = false;
 
