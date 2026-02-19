@@ -45,7 +45,7 @@ public class AutonTest implements AnnotatedCommand {
         this.controller = controller;
         this.machinery = machinery;
         constraints = new TimingConstraintFactory(kinodynamics).auto(log.type(this));
-        double maxBumpVelocity = 0.2;
+        double maxBumpVelocity = 1.6;
         List<TimingConstraint> new_constraints = new ArrayList<>(constraints);
         VelocityLimitRegionConstraint slow_bump_zone = new VelocityLimitRegionConstraint(log, BumpZones.BLUE_BUMP_LEFT, maxBumpVelocity);
         VelocityLimitRegionConstraint slow_bump_zone2 = new VelocityLimitRegionConstraint(log, BumpZones.BLUE_BUMP_RIGHT, maxBumpVelocity);
@@ -69,7 +69,7 @@ public class AutonTest implements AnnotatedCommand {
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(startingPose,
                         new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(new Pose2d(6, 5.5, Rotation2d.k180deg),
+                new WaypointSE2(new Pose2d(6, 5.5, new Rotation2d(225 * (Math.PI / 180))),
                         new DirectionSE2(1, 0, 0), 1));
         return planner.restToRest(waypoints);
     }
@@ -81,7 +81,7 @@ public class AutonTest implements AnnotatedCommand {
                 new WaypointSE2(StartingPositions.LEFT_BUMP,
                         new DirectionSE2(-1, 0, 0), 1));
                  new WaypointSE2(AutonPositions.LEFT_BUMP_PAST,
-                  new DirectionSE2(1, 0, 0), 1);
+                  new DirectionSE2(1, 0, 1), 1);
         return planner.restToRest(waypoints);
     }
 
