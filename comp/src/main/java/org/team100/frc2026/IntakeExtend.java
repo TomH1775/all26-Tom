@@ -1,7 +1,9 @@
 package org.team100.frc2026;
 
+import org.team100.lib.config.Friction;
 import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
+import org.team100.lib.config.SimpleDynamics;
 import org.team100.lib.controller.r1.PIDFeedback;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.mechanism.RotaryMechanism;
@@ -35,10 +37,10 @@ public class IntakeExtend extends SubsystemBase {
         switch (Identity.instance) {
 
             case TEST_BOARD_B0 -> {
-                float gearRatio = 10;
-                PIDConstants PID = PIDConstants.makePositionPID(log, 1);
-                double supplyLimit = 50;
-                double statorLimit = 20;
+                double gearRatio = 15.3725490196;
+                PIDConstants PID = PIDConstants.makePositionPID(log, 0);
+                double supplyLimit = 4;
+                double statorLimit = 80;
                 KrakenX44Motor m_motor = new KrakenX44Motor(
                         log, // LoggerFactor y parent,
                         canID, // CanId canId,
@@ -46,8 +48,8 @@ public class IntakeExtend extends SubsystemBase {
                         MotorPhase.REVERSE, // MotorPhase motorPhase,
                         supplyLimit, // og 50 //double supplyLimit,
                         statorLimit, // og 2 //double statorLimit,
-                        KrakenX60Motor.highFrictionFF(log), // Feedforward100 ff
-                        KrakenX60Motor.highFriction(log),
+                        new SimpleDynamics(log, 0.0, 0.0), // Feedforward100 ff
+                        new Friction(log, 0.26, 0.26, 0.006, 0.5),
                         PID // PIDConstants pid,
                 );
                 Talon6Encoder encoder = m_motor.encoder();
@@ -89,7 +91,7 @@ public class IntakeExtend extends SubsystemBase {
     public Command goToExtendedPosition() {
         return new FunctionalCommand(
                 () -> reset(), // onInit
-                () -> setAngle(Math.PI / 2), // onExecute
+                () -> setAngle(3.126124), // onExecute
                 interrupted -> { // onEnd
                 },
                 () -> m_servo.atGoal(), // isFinished

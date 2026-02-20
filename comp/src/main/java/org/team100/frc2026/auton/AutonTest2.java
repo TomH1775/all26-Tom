@@ -78,10 +78,12 @@ public class AutonTest2 implements AnnotatedCommand {
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(startingPose,
                         new DirectionSE2(-0.2, 1, 0), 1),
-                new WaypointSE2(new Pose2d(3, 5.5, new Rotation2d(225 * (Math.PI / 180))),
+                new WaypointSE2(new Pose2d(3, 5.5, new Rotation2d(270 * (Math.PI / 180))),
                         new DirectionSE2(-1, 1, 0), 1));
                  new WaypointSE2(AutonPositions.LEFT_BUMP_PAST,
-                  new DirectionSE2(1, 0, 1), 1);
+                        new DirectionSE2(1, 0, 1), 1);
+                new WaypointSE2(new Pose2d(3, 2.1, new Rotation2d(270 * (Math.PI / 180))),
+                    new DirectionSE2(1, 0, 1), 1);
         return planner.restToRest(waypoints);
     }
 
@@ -101,7 +103,7 @@ public class AutonTest2 implements AnnotatedCommand {
 
     @Override
     public Pose2d start() {
-        return new Pose2d(3, 5.5, new Rotation2d(225 * (Math.PI / 180)));
+        return new Pose2d(3, 5.5, new Rotation2d(90 * (Math.PI / 180)));
         // Slightly in front of StartingPositions.LEFT_BUMP
         // to make sure the robot starts and ends off of the bump
     }
