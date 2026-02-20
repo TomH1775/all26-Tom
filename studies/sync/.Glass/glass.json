@@ -12,41 +12,19 @@
       "/FMSInfo": "FMSInfo"
     }
   },
-  "NetworkTables Info": {
-    "visible": true
-  },
   "NetworkTables Settings": {
     "mode": "Client (NT4)",
     "serverTeam": "100"
   },
   "Plots": {
-    "Plot <0>": {
-      "plots": [
-        {
-          "backgroundColor": [
-            0.9399999976158142,
-            0.9399999976158142,
-            0.9399999976158142,
-            1.0
-          ],
-          "height": 338,
-          "series": [
-            {
-              "color": [
-                0.2980392277240753,
-                0.44705885648727417,
-                0.6901960968971252,
-                1.0
-              ],
-              "id": "NT:estimate"
-            }
-          ]
-        }
-      ]
-    },
     "Plot <1>": {
       "plots": [
         {
+          "axis": [
+            {
+              "autoFit": true
+            }
+          ],
           "backgroundColor": [
             0.9399999976158142,
             0.9399999976158142,

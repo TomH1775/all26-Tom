@@ -9,10 +9,9 @@ use the script called "runapp.py" in the raspberry_pi directory
 
 # pylint: disable=R0914
 
-import ntcore
-from queue import Queue, Empty
-
+from queue import Queue
 from threading import Event, Thread
+import ntcore
 from app.sync.sync_loop import SyncLoop
 from app.test.drift_loop import DriftLoop
 

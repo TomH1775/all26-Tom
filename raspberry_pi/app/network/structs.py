@@ -1,11 +1,10 @@
-""" Interface for Network Tables-like things. """
+"""Interface for Network Tables-like things."""
 
 # pylint: disable=C0301,R0902,R0903,W0212,W2301
 
 import dataclasses
 
-import numpy as np
-from wpimath.geometry import Pose3d, Transform3d
+from wpimath.geometry import Transform3d
 from wpiutil import wpistruct
 
 
@@ -19,8 +18,6 @@ class Blip24:
 
     id: int
     pose: Transform3d
-
-
 
 
 @wpistruct.make_wpistruct
@@ -55,7 +52,15 @@ class PoseEstimate25:
         )
 
 
+@wpistruct.make_wpistruct  # type:ignore
+@dataclasses.dataclass
+class SyncRequest:
+    org: wpistruct.int64
 
 
-
-
+@wpistruct.make_wpistruct  # type:ignore
+@dataclasses.dataclass
+class SyncReply:
+    org: wpistruct.int64
+    rec: wpistruct.int64
+    xmt: wpistruct.int64

@@ -17,6 +17,7 @@ import org.team100.lib.motor.rev.NeoVortexCANSparkMotor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
 import org.team100.lib.network.NetworkUtil;
 import org.team100.lib.network.RawTags;
+import org.team100.lib.network.Sync;
 import org.team100.lib.sensor.position.absolute.EncoderDrive;
 import org.team100.lib.sensor.position.absolute.wpi.AS5048RotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.wpi.SimulatedAS5048;
@@ -29,9 +30,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.ConnectionInfo;
 import edu.wpi.first.networktables.IntegerPublisher;
-import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.TimestampedInteger;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
@@ -67,6 +66,8 @@ public class Robot extends TimedRobot100 {
     private final TimeInterpolatableBuffer100<Rotation2d> m_sensorBuffer;
     private final TimeInterpolatableBuffer100<Rotation2d> m_cameraBuffer;
 
+    private final Sync sync;
+
     private final Rotation2dLogger m_logMotor;
     private final Rotation2dLogger m_logSensor;
     private final Rotation2dLogger m_logCamera;
@@ -100,6 +101,8 @@ public class Robot extends TimedRobot100 {
     public Robot() {
         Logging logging = Logging.instance();
         LoggerFactory log = logging.rootLogger;
+        NetworkTableInstance inst = NetworkTableInstance.getDefault();
+        sync = new Sync(inst);
 
         m_controller = new XboxController(0);
 
@@ -158,7 +161,7 @@ public class Robot extends TimedRobot100 {
         m_logActualSpeed = log.doubleLogger(Level.TRACE, "actual speed (rad_s)");
         m_logTimeOffset = log.longLogger(Level.TRACE, "server time offset (us)");
 
-        NetworkTableInstance inst = NetworkTableInstance.getDefault();
+
         servernowpub = inst.getIntegerTopic("servernow").publish();
 
         // nowpi = inst.getIntegerTopic("nowpi").subscribe(0);
@@ -198,6 +201,10 @@ public class Robot extends TimedRobot100 {
         // Refreshing the cache twice here. :-(
 
         Takt.update();
+        // reply to sync requests.
+        // TODO: reply to each raspberry pi separately
+        sync.run();
+
         if (DEBUG)
             System.out.printf("takt %f\n", Takt.actual());
 

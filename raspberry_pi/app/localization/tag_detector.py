@@ -1,4 +1,4 @@
-""" A wrapper for the AprilTag detector. """
+"""A wrapper for the AprilTag detector."""
 
 # pylint: disable=E0611,R0902,R0903,R0913,R0914,W0212
 
@@ -9,8 +9,7 @@ import ntcore
 import numpy as np
 from cv2 import imwrite, undistort, undistortImagePoints
 from numpy.typing import NDArray
-from robotpy_apriltag import (AprilTagDetection, AprilTagDetector,
-                              AprilTagPoseEstimator)
+from robotpy_apriltag import AprilTagDetection, AprilTagDetector, AprilTagPoseEstimator
 from typing_extensions import override
 
 from app.camera.camera_protocol import Camera, Request, Size
@@ -119,7 +118,11 @@ class TagDetector(Interpreter):
         self._offset = network.get_int_sender("/offset")
         self._nowpi = network.get_int_sender("/nowpi")
         # listen here
-        self._servernowsub = ntcore.NetworkTableInstance.getDefault().getIntegerTopic("servernow").subscribe(0)
+        self._servernowsub = (
+            ntcore.NetworkTableInstance.getDefault()
+            .getIntegerTopic("servernow")
+            .subscribe(0)
+        )
         # publish here
         # self._servernowpub = network.get_int_sender("/servernowpi")
         self._nowdiff = network.get_int_sender("/nowdiff")
@@ -213,25 +216,26 @@ class TagDetector(Interpreter):
 
             # send sightings to network
             self._blips.send(blips, delay_us)
-           
+
             # send camera FPS to network
             fps = req.fps()
             self._fps.send(fps, delay_us)
-            
 
             # must flush!  otherwise 100ms update rate.
             self.network.flush()
 
             # log the CPU temperature in C
             # raspberry pi throttles at 80
-            with open("/sys/class/thermal/thermal_zone0/temp", "r", encoding="ascii") as f:
+            with open(
+                "/sys/class/thermal/thermal_zone0/temp", "r", encoding="ascii"
+            ) as f:
                 raw_temp = int(f.read().strip())
                 temp_c = raw_temp / 1000
                 self._temp.send(temp_c, 0)
 
             # microseconds
             now = ntcore._now()
-            self._nowpi.send(now, 0)  
+            self._nowpi.send(now, 0)
             servernow = self._servernowsub.getAtomic()
 
             # microseconds
@@ -241,9 +245,8 @@ class TagDetector(Interpreter):
                 self._servernowtime.send(servernow.time, 0)
                 self._nowdiff.send(servernow.time - now, 0)
 
-            
             # self._servernowpub.send(servernow.value, 0)
-          
+
             # self._nowdiff.send(servernow.time - now, 0)
             # self._nowdiff.send(servernow.time - now, 0)
             # self._nowdiff.send(servernow.serverTime - now, 0)
