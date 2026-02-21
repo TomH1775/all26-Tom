@@ -26,16 +26,16 @@ class InterpreterFactory:
         object_higher = np.array((255, 150, 255))
         size = cam.get_size()
         if identity == Identity.DIST_TEST:
-            scale = 1.0
-        elif identity == Identity.DEV:
-            scale = 1.0
+            scale = 1.0 # full size for debugging; slow.
+        elif identity == Identity.DEV:  # on the camera bot at the moment
+            scale = 0.25 # ok for dashboard
+            # scale = 1.0 # full size for debugging; slow.
         elif identity == Identity.FUNNEL:
-            # TODO: remove this!  it's for debugging only!
             scale = 0.5
-        elif identity != Identity.UNKNOWN:
-            scale = 0.25
+        elif identity == Identity.UNKNOWN:
+            scale = 1.0 # full size for debugging; slow.
         else:
-            scale = 1.0
+            scale = 0.25 # ok for dashboard            
         match identity:
             case Identity.FUNNEL:
                 display = RealDisplay(
