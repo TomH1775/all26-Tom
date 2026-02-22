@@ -59,9 +59,11 @@ class RealRequest(Request):
         exposure_term_ns = exposure_term_us * 1000
 
         # Extra constant delay.
-        # 2/20/26 this is just a random guess.  see the "camera_delay" project
-        # "diff (ms)" measurement, it makes it kinda zero.
-        frame_term_ms = 2
+        # 2/21/26 using a real robot.  I think this is correcting for
+        # roborio loop delay, not just camera delay.
+        frame_term_ms = 30
+        # 2/20/26 this from the "camera_delay" project
+        # frame_term_ms = 2
         frame_term_ns = cast(int, frame_term_ms * 1000000)
 
         exposure_timestamp_ns = sensor_timestamp_ns - frame_term_ns - exposure_term_ns
