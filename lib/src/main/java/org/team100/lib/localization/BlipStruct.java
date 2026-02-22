@@ -24,7 +24,7 @@ public class BlipStruct implements Struct<Blip> {
 
     @Override
     public String getSchema() {
-        return "int64 timestamp; int32 id;Transform3d pose";
+        return "int64 timestamp; int32 id; Transform3d pose";
     }
 
     @Override

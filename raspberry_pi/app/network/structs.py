@@ -14,7 +14,7 @@ class Blip:
     """AprilTag pose"""
 
     timestamp: wpistruct.int64  # server time
-    id: int  # tag id
+    id: wpistruct.int32  # tag id
     pose: Transform3d  # camera-relative
 
 
