@@ -68,12 +68,6 @@ public enum Experiment {
      */
     ReduceCrossTrackError,
     /**
-     * Use pure outboard PID for steering control, rather than the usual profiled
-     * motion -- it's faster and less work for the RoboRIO.
-     * TODO: make this the default?
-     */
-    UnprofiledSteering,
-    /**
      * Compensate for moving shooter and moving target when computing turret
      * solution.
      */

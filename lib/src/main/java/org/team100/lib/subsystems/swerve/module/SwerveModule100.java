@@ -217,14 +217,10 @@ public abstract class SwerveModule100 implements Player {
 
         m_driveServo.setVelocity(nextSpeed);
 
-        if (Experiments.instance.enabled(Experiment.UnprofiledSteering)) {
-            // no profile, just low-level position. Note the omega here may show up as
-            // noise.
-            m_turningServo.setPositionDirect(nextWrappedAngle.getRadians(), nextOmega, 0);
-        } else {
-            // use the profile
-            m_turningServo.setPositionProfiled(nextWrappedAngle.getRadians(), 0);
-        }
+        // Don't use a profile.  This uses more current, but only briefly,
+        // and it's crisper.
+        m_turningServo.setPositionDirect(nextWrappedAngle.getRadians(), nextOmega, 0);
+
         m_previousDesiredWrappedAngle = nextWrappedAngle;
     }
 
