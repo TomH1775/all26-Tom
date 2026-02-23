@@ -144,7 +144,7 @@ public class Binder {
                         m_machinery.m_drive,
                         m_machinery.m_drive.getLimiter())
                         .withName("Aim to shoot"));
-        // aim at our zone, button 6 and in the neutral zone
+        //aim at our zone, button 6 and in the neutral zone
         whileTrue(() -> driver.rightBumper()
                 && FieldConstants2026.NEUTRAL_ZONE.contains(m_machinery.m_drive.getPose().getTranslation()),
                 new DriveTargetLock(
