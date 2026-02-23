@@ -1,9 +1,12 @@
 package org.team100.frc2026.robot;
 
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+
 import java.io.IOException;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
+import org.team100.frc2026.Intake;
 import org.team100.frc2026.IntakeExtend;
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.indicator.Beeper;
@@ -68,7 +71,7 @@ public class Machinery {
     public final SwerveDriveSubsystem m_drive;
     final Beeper m_beeper;
     // public final Shooter m_shooter;
-    // public final Intake m_intake;
+    public final Intake m_intake;
     public final IntakeExtend m_extender;
     // final Serializer m_serializer;
 
@@ -77,7 +80,7 @@ public class Machinery {
     // final ShooterHood m_shooterHood;
 
     public Machinery() {
-
+    LoggerFactory driveLog = logger.name("Drive");
         ////////////////////////////////////////////////////////////
         //
         // SUBSYSTEMS
@@ -85,7 +88,7 @@ public class Machinery {
 
         // Subsystem initializers go here.
         // m_shooter = new Shooter(driveLog);
-        // m_intake = new Intake(driveLog, new CanId(14));
+        m_intake = new Intake(driveLog, new CanId(2000000));
         m_extender = new IntakeExtend(logger, new CanId(20));
         // m_serializer = new Serializer(driveLog);
         // m_ClimberExtension = new ClimberExtension(driveLog);
@@ -103,7 +106,7 @@ public class Machinery {
         //
         // POSE ESTIMATION
         //
-        LoggerFactory driveLog = logger.name("Drive");
+        
         m_swerveKinodynamics = SwerveKinodynamicsFactory.get(driveLog);
 
         m_modules = SwerveModuleCollection.get(
@@ -274,7 +277,7 @@ public class Machinery {
         if (m_groundTruthViz != null)
             m_groundTruthViz.run();
     }
-
+    
     public void close() {
         // this keeps the tests from conflicting via the use of simulated HAL ports.
         m_modules.close();
