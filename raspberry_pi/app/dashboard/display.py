@@ -1,4 +1,4 @@
-""" Interface spec for dashboard video."""
+"""Interface spec for dashboard video."""
 
 from typing import Protocol
 

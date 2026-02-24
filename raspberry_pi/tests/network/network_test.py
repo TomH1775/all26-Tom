@@ -1,11 +1,11 @@
 import unittest
 
 
-
 import ntcore
 
 from app.config.identity import Identity
 from app.network.network import Network
+
 
 class NetworkTest(unittest.TestCase):
     def test_send(self) -> None:

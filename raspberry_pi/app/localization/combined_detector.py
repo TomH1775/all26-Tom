@@ -22,12 +22,10 @@ Mat = NDArray[np.uint8]
 
 
 class CombinedDetector(Interpreter):
-    """TODO: remove this, use the multiple interpreter capability instead."""
     def __init__(
         self,
         identity: Identity,
         cam: Camera,
-        camera_num: int,
         display: Display,
         network: Network,
         object_lower: np.ndarray,
@@ -40,7 +38,6 @@ class CombinedDetector(Interpreter):
         """
         self.identity = identity
         self.cam = cam
-        self.camera_num = camera_num
         self.display = display
         self.network = network
 
@@ -80,9 +77,13 @@ class CombinedDetector(Interpreter):
         self.object_higher = object_higher
 
         # Network tables setup
-        tag_path = "vision/" + identity.value + "/" + str(camera_num)
-        note_path = "objectVision/" + identity.value + "/" + str(camera_num)
+        tag_path = "vision/" + identity.value
+        note_path = "objectVision/" + identity.value
+
+        # network output for tag sightings
         self._blips = network.get_blip_sender(tag_path + "/blips")
+
+        # network output for target sightings
         self._targets = network.get_target_sender(note_path + "/targets")
 
     def undistort_points(self, points):

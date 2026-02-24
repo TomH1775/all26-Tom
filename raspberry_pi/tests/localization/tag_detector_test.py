@@ -17,7 +17,7 @@ class TagDetectorTest(unittest.TestCase):
         network = Network(identity)
         camera = FakeCamera("big_sharp.png")
         display = FakeDisplay()
-        tag_detector = TagDetector(identity, camera, 0, display, network, False)
+        tag_detector = TagDetector(identity, camera, display, network, False)
         request = camera.capture_request()
         tag_detector.analyze(request)
 
@@ -38,7 +38,7 @@ class TagDetectorTest(unittest.TestCase):
         network = Network(identity)
         camera = FakeCamera("scale1.png")
         display = FakeDisplay()
-        tag_detector = TagDetector(identity, camera, 0, display, network, False)
+        tag_detector = TagDetector(identity, camera, display, network, False)
         request = camera.capture_request()
         tag_detector.analyze(request)
 
@@ -59,7 +59,7 @@ class TagDetectorTest(unittest.TestCase):
         network = Network(identity)
         camera = FakeCamera("scale2.png")
         display = FakeDisplay()
-        tag_detector = TagDetector(identity, camera, 0, display, network, False)
+        tag_detector = TagDetector(identity, camera, display, network, False)
         request = camera.capture_request()
         tag_detector.analyze(request)
 
@@ -80,7 +80,7 @@ class TagDetectorTest(unittest.TestCase):
         network = Network(identity)
         camera = FakeCamera("scale3.pnm")
         display = FakeDisplay()
-        tag_detector = TagDetector(identity, camera, 0, display, network, False)
+        tag_detector = TagDetector(identity, camera, display, network, False)
         request = camera.capture_request()
         tag_detector.analyze(request)
 
@@ -102,7 +102,7 @@ class TagDetectorTest(unittest.TestCase):
         network = Network(identity)
         camera = FakeCamera("scale4.pnm")
         display = FakeDisplay()
-        tag_detector = TagDetector(identity, camera, 0, display, network, False)
+        tag_detector = TagDetector(identity, camera, display, network, False)
         request = camera.capture_request()
         tag_detector.analyze(request)
 
@@ -126,7 +126,7 @@ class TagDetectorTest(unittest.TestCase):
         network = Network(identity)
         camera = FakeCamera("scale5.pnm")
         display = FakeDisplay()
-        tag_detector = TagDetector(identity, camera, 0, display, network, False)
+        tag_detector = TagDetector(identity, camera, display, network, False)
         request = camera.capture_request()
         tag_detector.analyze(request)
 
@@ -151,7 +151,7 @@ class TagDetectorTest(unittest.TestCase):
         network = Network(identity)
         camera = FakeCamera("scale6.pnm")
         display = FakeDisplay()
-        tag_detector = TagDetector(identity, camera, 0, display, network, False)
+        tag_detector = TagDetector(identity, camera, display, network, False)
         request = camera.capture_request()
         tag_detector.analyze(request)
 
@@ -172,7 +172,7 @@ class TagDetectorTest(unittest.TestCase):
         # which used to work, but no longer does as of Apriltag v2.
         camera = FakeCamera("tag_and_board.jpg", (1100, 620))
         display = FakeDisplay()
-        tag_detector = TagDetector(identity, camera, 0, display, network)
+        tag_detector = TagDetector(identity, camera, display, network)
         request = camera.capture_request()
         tag_detector.analyze(request)
 
@@ -194,7 +194,7 @@ class TagDetectorTest(unittest.TestCase):
         # nothing in this image
         camera = FakeCamera("white_square.jpg")
         display = FakeDisplay()
-        tag_detector = TagDetector(identity, camera, 0, display, network)
+        tag_detector = TagDetector(identity, camera, display, network)
         request = camera.capture_request()
         tag_detector.analyze(request)
 
@@ -212,7 +212,7 @@ class TagDetectorTest(unittest.TestCase):
         # no distortion, like above
         camera = FakeCamera("tag_and_board.jpg", (1100, 620), 0)
         display = FakeDisplay()
-        TagDetector(identity, camera, 0, display, network).analyze(
+        TagDetector(identity, camera, display, network).analyze(
             camera.capture_request()
         )
         self.assertEqual(1, len(display.tags))
@@ -220,7 +220,7 @@ class TagDetectorTest(unittest.TestCase):
         # this is about the most possible
         camera = FakeCamera("tag_and_board.jpg", (1100, 620), -5)
         display = FakeDisplay()
-        TagDetector(identity, camera, 0, display, network).analyze(
+        TagDetector(identity, camera, display, network).analyze(
             camera.capture_request()
         )
         self.assertEqual(1, len(display.tags))
@@ -229,7 +229,7 @@ class TagDetectorTest(unittest.TestCase):
         # Note, this is a truly enormous amount of distortion.
         camera = FakeCamera("tag_and_board.jpg", (1100, 620), -50)
         display = FakeDisplay()
-        TagDetector(identity, camera, 0, display, network).analyze(
+        TagDetector(identity, camera, display, network).analyze(
             camera.capture_request()
         )
         self.assertEqual(0, len(display.tags))

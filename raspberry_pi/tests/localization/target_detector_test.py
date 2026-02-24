@@ -11,7 +11,7 @@ from app.network.network import Network, Target
 
 
 class TargetDetectorTest(unittest.TestCase):
-    KEY = "objectVision/unknown/0/targets"
+    KEY = "objectVision/unknown/targets"
 
     def test_one_note_found(self) -> None:
 
@@ -35,7 +35,7 @@ class TargetDetectorTest(unittest.TestCase):
         object_lower = np.array((40, 50, 100))
         object_higher = np.array((70, 255, 255))
         note_detector = TargetDetector(
-            identity, camera, 0, display, network, object_lower, object_higher
+            identity, camera, display, network, object_lower, object_higher
         )
         request = camera.capture_request()
         note_detector.analyze(request)
@@ -84,7 +84,7 @@ class TargetDetectorTest(unittest.TestCase):
         object_lower = np.array((40, 50, 100))
         object_higher = np.array((70, 255, 255))
         note_detector = TargetDetector(
-            identity, camera, 0, display, network, object_lower, object_higher
+            identity, camera, display, network, object_lower, object_higher
         )
         request = camera.capture_request()
         note_detector.analyze(request)

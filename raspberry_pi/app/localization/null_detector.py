@@ -1,4 +1,6 @@
-""" A detector that does nothing but publish its input. """
+"""A detector that does nothing but publish its input."""
+
+# pylint: disable=R0903
 
 from typing import cast
 

@@ -61,8 +61,8 @@ public class SimulatedTargetWriter {
         m_inst.setServer("localhost");
         m_inst.startClient4("tag_finder24");
         for (Camera camera : m_cameras) {
-            String name = "objectVision/"
-                    + camera.getSerial() + "/0/targets";
+            // name is "objectVision/{IDENTITY/targets"
+            String name = "objectVision/" + camera.getSerial() + "/targets";
             m_publishers.put(
                     camera,
                     m_inst.getStructArrayTopic(

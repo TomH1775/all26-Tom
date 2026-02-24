@@ -28,7 +28,6 @@ class TagDetector(Interpreter):
         self,
         identity: Identity,
         cam: Camera,
-        camera_num: int,
         display: Display,
         network: Network,
         debug: bool = False,
@@ -39,7 +38,6 @@ class TagDetector(Interpreter):
         """
         self.identity = identity
         self.cam = cam
-        self.camera_num = camera_num
         self.display = display
         self.network = network
         self.debug = debug
@@ -110,9 +108,9 @@ class TagDetector(Interpreter):
             )
         )
 
-        path = "vision/" + identity.value + "/" + str(camera_num)
+        path = "vision/" + identity.value
 
-        # network output for the tag sightings
+        # network output for tag sightings
         self._blips = network.get_blip_sender(path + "/blips")
 
         # network output for camera FPS

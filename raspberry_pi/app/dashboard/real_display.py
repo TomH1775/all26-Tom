@@ -1,12 +1,11 @@
-""" Annotate and show the captured image through the CameraServer."""
+"""Annotate and show the captured image through the CameraServer."""
 
 # pylint: disable=C0415,E0611
 
 from platform import system
 
 import numpy as np
-from cv2 import (FONT_HERSHEY_SIMPLEX, circle, drawContours, line, putText,
-                 resize)
+from cv2 import FONT_HERSHEY_SIMPLEX, circle, drawContours, line, putText, resize
 from cv2.typing import MatLike
 from numpy.typing import NDArray
 from robotpy_apriltag import AprilTagDetection
@@ -41,7 +40,6 @@ class RealDisplay(Display):
 
             print("Using CameraServer for Linux.  See localhost:1181,1182,etc")
             self._cvsource = CameraServer.putVideo(name, width, height)
-
 
     @override
     def tag(self, image: MatLike, tag: AprilTagDetection, pose: Transform3d) -> None:
@@ -103,7 +101,7 @@ class RealDisplay(Display):
     @override
     def put(self, img: MatLike) -> None:
         img_out = resize(img, (self.width, self.height))
-        #img_out = img
+        # img_out = img
         if system() == "Windows":
             self._stream.set_frame(img_out)  # type: ignore
         else:

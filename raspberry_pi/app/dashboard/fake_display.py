@@ -1,4 +1,4 @@
-""" A display for unit tests."""
+"""A display for unit tests."""
 
 import numpy as np
 from cv2.typing import MatLike
@@ -22,7 +22,6 @@ class FakeDisplay(Display):
         self.locs: list[tuple[int, int]] = []
         self.frame_count = 0
         print("\n*** Display: FakeDisplay")
-
 
     @override
     def tag(self, image: MatLike, tag: AprilTagDetection, pose: Transform3d) -> None:

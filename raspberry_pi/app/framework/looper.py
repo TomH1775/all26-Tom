@@ -1,4 +1,4 @@
-""" Base class for loops."""
+"""Base class for loops."""
 
 from abc import ABC, abstractmethod
 from threading import Event

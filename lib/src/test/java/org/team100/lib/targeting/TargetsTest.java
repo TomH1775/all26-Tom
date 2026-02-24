@@ -52,7 +52,7 @@ public class TargetsTest implements Timeless {
 
         // test4 camera offset is 0,0,1, without rotation
         StructArrayTopic<Target> topic = inst.getStructArrayTopic(
-                "objectVision/test4/5678/targets", Target.struct);
+                "objectVision/test4/targets", Target.struct);
         StructArrayPublisher<Target> pub = topic.publish();
         stepTime();
         // tilt down 45

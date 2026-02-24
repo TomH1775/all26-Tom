@@ -158,8 +158,8 @@ class Model(Enum):
 
 
 class RealCamera(Camera):
-    def __init__(self, identity: Identity, camera_num: int) -> None:
-        self.cam: Picamera2 = Picamera2(camera_num)
+    def __init__(self, identity: Identity) -> None:
+        self.cam: Picamera2 = Picamera2()
         model: Model = Model.get(self.cam)
         self.rolling = RealCamera.__rolling_from_model(model)
         self.size: Size = RealCamera.__size_from_model(model)

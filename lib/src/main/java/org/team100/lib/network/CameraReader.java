@@ -72,17 +72,17 @@ public abstract class CameraReader<T> {
                 System.out.printf("poll %s\n", name);
             }
             String[] fields = name.split("/");
-            if (fields.length != 4) {
+            if (fields.length != 3) {
                 System.out.printf("WARNING: weird event name: %s\n", name);
                 continue;
             }
-            // key is "rootName/cameraId/cameraNumber/valueName"
+            // key is "rootName/cameraId/valueName"
             String cameraId = fields[1];
-            if (fields[3].equals("fps"))
+            if (fields[2].equals("fps"))
                 continue;
-            if (fields[3].equals("temp"))
+            if (fields[2].equals("temp"))
                 continue;
-            if (!fields[3].equals(m_ntValueName)) {
+            if (!fields[2].equals(m_ntValueName)) {
                 System.out.println("WARNING: weird key: " + name);
                 continue;
             }

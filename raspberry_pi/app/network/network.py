@@ -12,6 +12,7 @@ from app.network.drift import Drift
 from app.config.identity import Identity
 from app.network.structs import Blip, Target
 
+
 class DoubleSender:
     def __init__(self, pub: ntcore.DoublePublisher) -> None:
         self.pub = pub

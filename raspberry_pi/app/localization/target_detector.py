@@ -1,6 +1,6 @@
 """A wrapper for the note detector."""
 
-# pylint: disable=C0103,E1101,R0902,R0903,R0913,R0914,R0917,W0612
+# pylint: disable=C0103,E1101,E1121,R0902,R0903,R0913,R0914,R0917,W0612
 
 from typing import cast
 
@@ -24,7 +24,6 @@ class TargetDetector(Interpreter):
         self,
         identity: Identity,
         cam: Camera,
-        camera_num: int,
         display: Display,
         network: Network,
         object_lower: np.ndarray,
@@ -49,13 +48,16 @@ class TargetDetector(Interpreter):
         self.object_lower = object_lower
         self.object_higher = object_higher
 
-        self._targets = network.get_target_sender(
-            "objectVision/" + identity.value + "/" + str(camera_num) + "/targets"
-        )
+        path = "objectVision/" + identity.value
+
+        # network output for target sightings
+        self._targets = network.get_target_sender(path + "/targets")
 
     def undistort_points(self, points):
         """Undistort image points using camera matrix and distortion coefficients."""
-        points = np.array(points, dtype=np.float32).reshape(-1, 1, 2) # pylint:disable=E1121
+        points = np.array(points, dtype=np.float32).reshape(
+            -1, 1, 2
+        )
         undistorted = cv2.undistortPoints(points, self.mtx, self.dist, P=self.mtx)
         return undistorted.reshape(-1, 2)
 
@@ -65,7 +67,7 @@ class TargetDetector(Interpreter):
             delay_us = req.delay_us()
 
             # localtime in microseconds
-            localtime: int = int(ntcore._now() - delay_us) # pylint:disable=W0212
+            localtime: int = int(ntcore._now() - delay_us)  # pylint:disable=W0212
             servertime: int = self.network.server_time(localtime)
 
             img = cast(Mat, np.frombuffer(buffer, dtype=np.uint8))  # type:ignore

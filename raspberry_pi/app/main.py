@@ -24,9 +24,9 @@ def main() -> None:
 
     done = Event()
     try:
-        camera0 = CameraFactory.get(identity, 0)
-        detector0 = InterpreterFactory.get(identity, camera0, 0, network)
-        camera_loop = CameraLoop(camera0, [detector0], done)
+        camera = CameraFactory.get(identity)
+        detector = InterpreterFactory.get(identity, camera, network)
+        camera_loop = CameraLoop(camera, [detector], done)
         Thread(target=camera_loop.run).start()
         done.wait()
 
