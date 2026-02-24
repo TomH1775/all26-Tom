@@ -152,4 +152,9 @@ public class ModelSE2 {
         return "SwerveModel(" + m_x + ", " + m_y + ", " + m_theta + ")";
     }
 
+    public ModelSE2 get() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'get'");
+    }
+
 }

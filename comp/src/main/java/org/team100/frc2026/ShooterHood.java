@@ -1,6 +1,6 @@
 package org.team100.frc2026;
 
-import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
@@ -22,20 +22,29 @@ import org.team100.lib.sensor.position.incremental.ctre.Talon6Encoder;
 import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.OnboardAngularPositionServo;
 import org.team100.lib.servo.OutboardAngularPositionServo;
+import org.team100.lib.state.ModelSE2;
 import org.team100.lib.util.CanId;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterHood extends SubsystemBase {
+
     private final AngularPositionServo m_servo;
+    private final Supplier<Translation2d> m_target;
+    private final ShooterTable m_table;
 
-    public ShooterHood(LoggerFactory parent, CanId canID) {
+    private ModelSE2 m_state;
+
+    public ShooterHood(
+            LoggerFactory parent,
+            CanId canID,
+            Supplier<Translation2d> target) {
         LoggerFactory log = parent.type(this);
-
+        m_target = target;
+        m_table = new ShooterTable();
         switch (Identity.instance) {
-
             case TEST_BOARD_B0 -> {
                 float gearRatio = 10;
                 PIDConstants PID = PIDConstants.makePositionPID(log, 1);
@@ -83,29 +92,21 @@ public class ShooterHood extends SubsystemBase {
         }
     }
 
-    // from Turret.java
-    // private Optional<Solution> getAbsoluteBearingInstantaneous() {
-    // ModelSE2 state = m_state.get();
-    // Translation2d target = m_target.get();
-    // return Optional.of(
-    // new Solution(
-    // target.minus(state.translation()).getAngle(),
-    // Rotation2d.kZero));
-    // }
-
     @Override
     public void periodic() {
         m_servo.periodic();
     }
+    
+    public Command auto() {
+        return run(this::autoWork);
+    }
 
-    public Command gotoAngle(DoubleSupplier trigger) {
-        return new FunctionalCommand(
-                () -> reset(), // onInit
-                () -> setAngle(trigger.getAsDouble()), // onExecute
-                interrupted -> { // onEnd
-                },
-                () -> m_servo.atGoal(), // isFinished
-                this).withName("Shooter Hood Angler");
+    public void autoWork() {
+        ModelSE2 state = m_state.get();
+        Translation2d target = m_target.get();
+        double rangeM = state.translation().getDistance(target);
+        double angle = m_table.getAngleRad(rangeM);
+        setAngle(angle);
     }
 
     public Command stop() {
@@ -116,8 +117,8 @@ public class ShooterHood extends SubsystemBase {
         m_servo.stop();
     }
 
-    private void reset() {
-        m_servo.reset();
+    public boolean onTarget() {
+        return m_servo.atGoal();
     }
 
     /** Use a profile to set the position. */
