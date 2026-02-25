@@ -1,6 +1,7 @@
 package org.team100.frc2026.robot;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
 import java.util.Optional;
 import java.util.function.BooleanSupplier;

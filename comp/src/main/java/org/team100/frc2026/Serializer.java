@@ -127,7 +127,7 @@ public class Serializer extends SubsystemBase {
     }
     public Boolean atSpeed() {
         return (m_motor.getVelocityRad_S() == m_speed && m_motor2.getVelocityRad_S() == m_speed
-                && m_motor3.getVelocityRad_S() == m_speed && m_motor3.getVelocityRad_S() == m_speed);
+                && m_motor3.getVelocityRad_S() == m_speed && m_motor4.getVelocityRad_S() == m_speed);
     }
 
 
