@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.config.Identity;
+import org.team100.lib.experiments.Experiment;
+import org.team100.lib.experiments.Experiments;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
@@ -199,16 +201,21 @@ public abstract class SwerveModule100 implements Player {
                 dt);
         // is there noise in speed?
         m_log_speed.log(() -> nextSpeed);
-        m_driveServo.setVelocity(nextSpeed);
+        if (Experiments.instance.enabled(Experiment.DriveWithoutAccel)) {
+            m_driveServo.setVelocity(nextSpeed, 0);
+        } else {
+            // The old way.
+            m_driveServo.setVelocity(nextSpeed);
+        }
 
-        // Don't use a profile. This uses more current, but only briefly,
-        // and it's crisper.
-        // turn off the omega part of the position to reduce noise
-        // TODO: turn this back on
-        m_turningServo.setPositionDirect(nextWrappedAngle.getRadians(), 0, 0);
-        // m_turningServo.setPositionDirect(nextWrappedAngle.getRadians(), nextOmega,
-        // 0);
-
+        // Direct actuation uses more current than a profile, but only briefly,
+        // and it's much faster, and avoids the oscillation that the profile can produce
+        // around the goal.
+        if (Experiments.instance.enabled(Experiment.SteerWithoutVelocity)) {
+            m_turningServo.setPositionDirect(nextWrappedAngle.getRadians(), 0, 0);
+        } else {
+            m_turningServo.setPositionDirect(nextWrappedAngle.getRadians(), nextOmega, 0);
+        }
         m_previousDesiredWrappedAngle = nextWrappedAngle;
     }
 

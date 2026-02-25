@@ -14,13 +14,15 @@ from app.network.structs import SyncRequest, SyncReply
 class SyncLoop(Looper):
     """Fills the queue with timing offset estimates.
 
+    Run this in a separate thread to minimize jitter and aliasing.
+
     See lib/network/SYNC.md.
     """
 
     def __init__(
         self,
         inst: ntcore.NetworkTableInstance,
-        queue: Queue,
+        queue: Queue[int],
         identity: Identity,
         done: Event,
     ) -> None:
@@ -42,9 +44,9 @@ class SyncLoop(Looper):
         replies: list[ntcore.TimestampedStruct] = self._reply_sub.readQueue()
         if replies:
             syncreply: SyncReply = replies[-1].value
-            now = ntcore._now()  # pylint: disable=W0212
+            now: int = ntcore._now()  # pylint: disable=W0212
             measurement = self.offset(syncreply.org, syncreply.rec, syncreply.xmt, now)
-            self._offset = self.fuse(self._offset, measurement)
+            self._offset: int = self.fuse(self._offset, measurement)
             try:
                 self._queue.put_nowait(self._offset)
             except Full:

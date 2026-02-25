@@ -8,19 +8,18 @@ from app.config.identity import Identity
 
 class CameraFactory:
     @staticmethod
-    def get(identity: Identity, camera_num: int) -> Camera:
+    def get(identity: Identity) -> Camera:
         try:
             # this will fail if we're not running on a Raspberry Pi.
             from app.camera.real_camera import RealCamera
 
-            return RealCamera(identity, camera_num)
+            return RealCamera(identity)
 
         except ImportError:
             from app.camera.fake_camera import FakeCamera
 
-            if camera_num == 0:
-                # 1/4 scale
-                # return FakeCamera("tag_and_board.jpg", (1100, 620), -5)
-                # full-size (huge)
-                return FakeCamera("tag_and_board.jpg", (5504, 3096), -0.1)
-            return FakeCamera("blob.jpg")
+            # 1/4 scale
+            # return FakeCamera("tag_and_board.jpg", (1100, 620), -5)
+            # full-size (huge)
+            return FakeCamera("tag_and_board.jpg", (5504, 3096), -0.1, 0.1)
+            # return FakeCamera("blob.jpg")

@@ -67,7 +67,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
         assertTrue(inst.isConnected());
 
         StructArrayTopic<Blip> topic = inst.getStructArrayTopic(
-                "vision/1234/5678/blips", Blip.struct);
+                "vision/1234/blips", Blip.struct);
         StructArrayPublisher<Blip> pub = topic.publish();
         // blip id=1
         pub.set(new Blip[] {

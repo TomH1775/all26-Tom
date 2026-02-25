@@ -9,10 +9,10 @@ class Drift:
     """Consume updates from the queue, maintain the offset, and publish the drift."""
 
     def __init__(
-        self, inst: ntcore.NetworkTableInstance, queue: Queue, identity: Identity
+        self, inst: ntcore.NetworkTableInstance, queue: Queue[int], identity: Identity
     ) -> None:
         self._inst: ntcore.NetworkTableInstance = inst
-        self._queue: Queue = queue
+        self._queue: Queue[int] = queue
         self._first_estimate: int = 0
         self._offset: int = 0
         self._offset_pub: ntcore.IntegerPublisher = self._inst.getIntegerTopic(

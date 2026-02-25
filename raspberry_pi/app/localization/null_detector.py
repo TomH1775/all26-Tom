@@ -1,6 +1,6 @@
-""" A detector that does nothing but publish its input. """
+"""A detector that does nothing but publish its input."""
 
-from typing import cast
+# pylint: disable=R0903
 
 import numpy as np
 from numpy.typing import NDArray
@@ -9,8 +9,6 @@ from typing_extensions import override
 from app.camera.camera_protocol import Camera, Request, Size
 from app.camera.interpreter_protocol import Interpreter
 from app.dashboard.display import Display
-
-Mat = NDArray[np.uint8]
 
 
 class NullDetector(Interpreter):
@@ -29,11 +27,10 @@ class NullDetector(Interpreter):
     @override
     def analyze(self, req: Request) -> None:
         with req.yuv() as buffer:
-            img = cast(
-                Mat,
-                np.frombuffer(buffer, dtype=np.uint8, count=self.y_len),  # type:ignore
+            img: NDArray[np.uint8] = np.frombuffer(
+                buffer, dtype=np.uint8, count=self.y_len
             )
-            img: Mat = img.reshape((self.height, self.width))  # type:ignore
+            img = img.reshape((self.height, self.width))  # type:ignore
             fps = req.fps()
             delay_us = req.delay_us()
             self.display.text(img, f"FPS {fps:2.0f}", (10, 80))

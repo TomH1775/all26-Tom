@@ -1,4 +1,4 @@
-""" Represents the Raspberry Pi identity, used to select configuration.
+"""Represents the Raspberry Pi identity, used to select configuration.
 
 Don't put anything in this class about the actual configuration, use a different class for that.
 
@@ -36,16 +36,15 @@ class Identity(Enum):
     DIST_TEST = "cf206cd348d20bdd"
     DEV2 = "4230a96261f3ab90"
 
-
     # camera-bot cameras
     GLOBAL_GAME_PIECE = "d44649628c20d4d4"
 
     # comp bot
-    FUNNEL = "1e5acbaa5a7f9d10" # 30
-    CORAL_LEFT = "8ddb2ed6c49a9bce" #32
-    DEV = "364f07fb090a3bf7" #31
-    SWERVE_LEFT = "8132c256f63bbb4e" #33
-    SWERVE_RIGHT = "47403d5eafe002a9" #34
+    FUNNEL = "1e5acbaa5a7f9d10"  # 30
+    CORAL_LEFT = "8ddb2ed6c49a9bce"  # 32
+    DEV = "364f07fb090a3bf7"  # 31
+    SWERVE_LEFT = "8132c256f63bbb4e"  # 33
+    SWERVE_RIGHT = "47403d5eafe002a9"  # 34
 
     # for testing
     CORAL_RIGHT = "82c4c3fe4f941e96"  # rpi4 used for development

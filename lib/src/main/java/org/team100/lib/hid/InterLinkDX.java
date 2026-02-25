@@ -51,6 +51,8 @@ import edu.wpi.first.wpilibj.GenericHID;
  * button 25: right side trim down
  * button 26: right side trim up
  * button 27: ??
+ * 
+ * @see https://my.spektrumrc.com/ProdInfo/Files/SPMRFTX1-Manual-EN.pdf
  */
 
 public class InterLinkDX  {
