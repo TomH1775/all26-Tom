@@ -96,7 +96,7 @@ public class Machinery {
         m_serializer = new Serializer(driveLog);
       
         // m_ClimberExtension = new ClimberExtension(driveLog);
-        m_shooterHood = new ShooterHood(driveLog, null, null);
+        m_shooterHood = new ShooterHood(driveLog, null);
         // m_Climber = new Climber(driveLog, new CanId(32));
 
         ////////////////////////////////////////////////////////////
