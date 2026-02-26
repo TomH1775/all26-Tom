@@ -24,8 +24,7 @@ class LinearVelocityServoTest {
         LinearMechanism mech = new LinearMechanism(logger,
                 driveMotor, driveEncoder, 1, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
         OutboardLinearVelocityServo servo = new OutboardLinearVelocityServo(
-                logger,
-                mech);
+                logger, mech, 1);
         // 0.5 m/s
         servo.setVelocity(0.5);
         // wheel radius is 0.5 m, so drive speed is 1 m/s

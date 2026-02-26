@@ -10,7 +10,7 @@ import org.team100.lib.motor.BareMotor;
 /** There is no profile here. */
 public class OutboardLinearVelocityServo implements LinearVelocityServo {
     private static final boolean DEBUG = false;
-    private static final double VELOCITY_TOLERANCE = 1;
+    private final double m_tolerance;
 
     private final LoggerFactory m_log;
     private final LinearMechanism m_mechanism;
@@ -24,9 +24,10 @@ public class OutboardLinearVelocityServo implements LinearVelocityServo {
 
     private double m_goal;
 
-    public OutboardLinearVelocityServo(LoggerFactory parent, LinearMechanism mechanism) {
+    public OutboardLinearVelocityServo(LoggerFactory parent, LinearMechanism mechanism, double tolerance) {
         m_log = parent.type(this);
         m_mechanism = mechanism;
+        m_tolerance = tolerance;
         m_log_setpoint_v = m_log.doubleLogger(Level.TRACE, "setpoint v (m_s)");
         m_log_setpoint_a = m_log.doubleLogger(Level.TRACE, "setpoint a (m_s2)");
     }
@@ -43,7 +44,7 @@ public class OutboardLinearVelocityServo implements LinearVelocityServo {
             double wheelDiaM) {
         return new OutboardLinearVelocityServo(log, new LinearMechanism(
                 log, motor, motor.encoder(), gearRatio, wheelDiaM,
-                Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY));
+                Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY), 1);
     }
 
     @Override
@@ -87,7 +88,7 @@ public class OutboardLinearVelocityServo implements LinearVelocityServo {
 
     @Override
     public boolean atGoal() {
-        return Math.abs(m_goal - m_mechanism.getVelocityM_S()) < VELOCITY_TOLERANCE;
+        return Math.abs(m_goal - m_mechanism.getVelocityM_S()) < m_tolerance;
     }
 
     @Override

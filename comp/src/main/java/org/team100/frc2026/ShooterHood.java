@@ -98,7 +98,7 @@ public class ShooterHood extends SubsystemBase {
         m_servo.periodic();
     }
     
-    public Command auto() {
+    public Command position() {
         return run(this::autoWork);
     }
 

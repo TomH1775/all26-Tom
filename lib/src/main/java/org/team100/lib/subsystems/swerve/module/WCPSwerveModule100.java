@@ -167,7 +167,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
                 WHEEL_DIAMETER_M,
                 Double.NEGATIVE_INFINITY,
                 Double.POSITIVE_INFINITY);
-        return new OutboardLinearVelocityServo(parent, mech);
+        return new OutboardLinearVelocityServo(parent, mech, 1);
     }
 
     private static LinearVelocityServo driveFalconServo(
@@ -194,8 +194,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
                 driveMotor, encoder, ratio.m_ratio, WHEEL_DIAMETER_M, Double.NEGATIVE_INFINITY,
                 Double.POSITIVE_INFINITY);
         return new OutboardLinearVelocityServo(
-                parent,
-                mech);
+                parent, mech, 1);
     }
 
     private static AngularPositionServo turningServo(
@@ -250,7 +249,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
         return turningServo;
     }
 
-        private static AngularPositionServo turningKarkenServo(
+    private static AngularPositionServo turningKarkenServo(
             LoggerFactory parent,
             CanId turningMotorCanId,
             RoboRioChannel turningEncoderChannel,
