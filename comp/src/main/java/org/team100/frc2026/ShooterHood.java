@@ -2,15 +2,16 @@ package org.team100.frc2026;
 
 import java.util.function.Supplier;
 
+import org.team100.lib.config.Friction;
 import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
+import org.team100.lib.config.SimpleDynamics;
 import org.team100.lib.controller.r1.PIDFeedback;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX44Motor;
-import org.team100.lib.motor.ctre.KrakenX60Motor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
 import org.team100.lib.profile.r1.IncrementalProfile;
 import org.team100.lib.profile.r1.TrapezoidIncrementalProfile;
@@ -34,15 +35,17 @@ public class ShooterHood extends SubsystemBase {
     private final AngularPositionServo m_servo;
     private final Supplier<Translation2d> m_target;
     private final ShooterTable m_table;
-    //TODO GET THIS CAN ID
+    // TODO GET THIS CAN ID
     private final CanId canID = new CanId(0);
- 
-    private ModelSE2 m_state;
+
+    private Supplier<ModelSE2> m_state;
 
     public ShooterHood(
             LoggerFactory parent,
+            Supplier<ModelSE2> state,
             Supplier<Translation2d> target) {
         LoggerFactory log = parent.type(this);
+        m_state = state;
         m_target = target;
         m_table = new ShooterTable();
         switch (Identity.instance) {
@@ -58,8 +61,8 @@ public class ShooterHood extends SubsystemBase {
                         MotorPhase.REVERSE, // MotorPhase motorPhase,
                         supplyLimit, // og 50 //double supplyLimit,
                         statorLimit, // og 2 //double statorLimit,
-                        KrakenX60Motor.highFrictionFF(log), // Feedforward100 ff
-                        KrakenX60Motor.highFriction(log),
+                        new SimpleDynamics(log, 0.004, 0.002), // Feedforward100 ff
+                        new Friction(log, 0.26, 0.26, 0.006, 0.5),
                         PID // PIDConstants pid,
                 );
                 Talon6Encoder encoder = m_motor.encoder();
@@ -97,7 +100,7 @@ public class ShooterHood extends SubsystemBase {
     public void periodic() {
         m_servo.periodic();
     }
-    
+
     public Command position() {
         return run(this::autoWork);
     }

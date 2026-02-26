@@ -93,8 +93,8 @@ public class RotaryPositionSubsystem1d extends SubsystemBase {
                 double inputOffset = 0.135541;
                 PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.05);
                 // you should make a case in the feedforward class for your constants
-                SimpleDynamics ff = SimpleDynamics.test(log);
-                Friction friction = Friction.test(log);
+                SimpleDynamics ff = new SimpleDynamics(log, 0.100, 0.100);
+                Friction friction = new Friction(log, 0.100, 0.100, 0.0, 0.1);
                 KrakenX60Motor motor = new KrakenX60Motor(
                         log, new CanId(1),
                         NeutralMode100.COAST, MotorPhase.REVERSE,

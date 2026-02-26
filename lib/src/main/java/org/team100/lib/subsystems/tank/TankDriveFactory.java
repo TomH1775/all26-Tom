@@ -1,12 +1,15 @@
 package org.team100.lib.subsystems.tank;
 
-import org.team100.lib.config.SimpleDynamics;
 import org.team100.lib.config.Friction;
+import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
+import org.team100.lib.config.SimpleDynamics;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
+import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.rev.NeoCANSparkMotor;
+import org.team100.lib.motor.sim.SimulatedBareMotor;
 import org.team100.lib.servo.OutboardLinearVelocityServo;
 import org.team100.lib.util.CanId;
 
@@ -25,17 +28,28 @@ public class TankDriveFactory {
         LoggerFactory logL = log.name("left");
         LoggerFactory logR = log.name("right");
 
-        SimpleDynamics ff = NeoCANSparkMotor.ff(log);
-        Friction friction = NeoCANSparkMotor.friction(log);
+        SimpleDynamics ff = new SimpleDynamics(log, 0.01, 0.01);
+        Friction friction = new Friction(log, 0.5, 0.5, 0.0, 0.5);
         PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.005);
 
-        BareMotor motorL = NeoCANSparkMotor.get(
+        BareMotor motorL = getMotor(
                 log, canL, MotorPhase.REVERSE, statorLimit, ff, friction, pid);
-        BareMotor motorR = NeoCANSparkMotor.get(
+        BareMotor motorR = getMotor(
                 log, canR, MotorPhase.FORWARD, statorLimit, ff, friction, pid);
 
         return new TankDrive(fieldLogger, trackWidthM,
                 OutboardLinearVelocityServo.make(logL, motorL, gearRatio, wheelDiaM),
                 OutboardLinearVelocityServo.make(logR, motorR, gearRatio, wheelDiaM));
+    }
+
+    /** Real or simulated depending on identity */
+    public static BareMotor getMotor(
+            LoggerFactory log, CanId can, MotorPhase phase, int statorLimit,
+            SimpleDynamics ff, Friction friction, PIDConstants pid) {
+        return switch (Identity.instance) {
+            case BLANK -> new SimulatedBareMotor(log, 600);
+            default -> new NeoCANSparkMotor(
+                    log, can, NeutralMode100.BRAKE, phase, statorLimit, ff, friction, pid);
+        };
     }
 }

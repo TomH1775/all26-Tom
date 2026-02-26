@@ -67,8 +67,8 @@ class GravityServoTest implements Timeless {
     /** For refactoring the gravity servo */
     @Test
     void testGravity() {
-        SimpleDynamics ff = SimpleDynamics.test(logger);
-        Friction friction = Friction.test(logger);
+        SimpleDynamics ff = new SimpleDynamics(logger, 0.100, 0.100);
+        Friction friction = new Friction(logger, 0.100, 0.100, 0.0, 0.1);
         MockBareMotor motor = new MockBareMotor(ff, friction);
         MockRotaryPositionSensor sensor = new MockRotaryPositionSensor();
         RotaryMechanism mech = new RotaryMechanism(

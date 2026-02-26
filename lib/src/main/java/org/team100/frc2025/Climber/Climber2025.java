@@ -2,8 +2,10 @@ package org.team100.frc2025.Climber;
 
 import java.util.function.DoubleSupplier;
 
+import org.team100.lib.config.Friction;
 import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
+import org.team100.lib.config.SimpleDynamics;
 import org.team100.lib.controller.r1.PIDFeedback;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.mechanism.RotaryMechanism;
@@ -44,8 +46,8 @@ public class Climber2025 extends SubsystemBase {
                 Falcon500Motor motor = new Falcon500Motor(
                         log, canID, NeutralMode100.BRAKE, MotorPhase.REVERSE,
                         20, 20,
-                        Falcon500Motor.ff2(log),
-                        Falcon500Motor.friction2(log),
+                        new SimpleDynamics(log, 0.001, 0.001),
+                        new Friction(log, 0.100, 0.065, 0.0, 0.5),
                         PIDConstants.makePositionPID(log, 0.2));
 
                 double inputOffset = 0.440602;

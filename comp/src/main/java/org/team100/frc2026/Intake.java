@@ -1,13 +1,14 @@
 package org.team100.frc2026;
 
+import org.team100.lib.config.Friction;
 import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
+import org.team100.lib.config.SimpleDynamics;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX44Motor;
-import org.team100.lib.motor.ctre.KrakenX60Motor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
 import org.team100.lib.util.CanId;
 
@@ -35,8 +36,8 @@ public class Intake extends SubsystemBase {
                         MotorPhase.FORWARD, // MotorPhase motorPhase,
                         supplyLimit, // supplyLimit,
                         statorLimit, // statorLimit,
-                        KrakenX60Motor.highFrictionFF(log), // Feedforward100 ff
-                        KrakenX60Motor.highFriction(log),
+                        new SimpleDynamics(log, 0.004, 0.002), // Feedforward100 ff
+                        new Friction(log, 0.26, 0.26, 0.006, 0.5),
                         PID// PIDConstants pid,
                 );
 
@@ -47,8 +48,8 @@ public class Intake extends SubsystemBase {
                         MotorPhase.FORWARD, // MotorPhase motorPhase,
                         supplyLimit, // supplyLimit,
                         statorLimit, // statorLimit,
-                        KrakenX60Motor.highFrictionFF(log), // Feedforward100 ff
-                        KrakenX60Motor.highFriction(log),
+                        new SimpleDynamics(log, 0.004, 0.002), // Feedforward100 ff
+                        new Friction(log, 0.26, 0.26, 0.006, 0.5),
                         PID// PIDConstants pid,
                 );
 
@@ -69,7 +70,7 @@ public class Intake extends SubsystemBase {
 
     public Command intake() {
         return run(this::fullSpeed).withName("Intake Full Speed");
-    }   
+    }
 
     public Command stop() {
         return run(this::stopMotor).withName("Intake Stop");
@@ -87,7 +88,7 @@ public class Intake extends SubsystemBase {
         m_motor.setVelocity(velocityRad_S, 0, 0);
         m_motor2.setVelocity(velocityRad_S, 0, 0);
         // m_motor.setDutyCycle(1);
-       // System.out.println(BumpZones.BLUE_BUMP_LEFT);
+        // System.out.println(BumpZones.BLUE_BUMP_LEFT);
     }
 
 }

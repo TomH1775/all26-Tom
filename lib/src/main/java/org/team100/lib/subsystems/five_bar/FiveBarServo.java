@@ -68,8 +68,8 @@ public class FiveBarServo extends SubsystemBase {
     public FiveBarServo(LoggerFactory logger) {
         // zeros
         PIDConstants pid = PIDConstants.zero(logger);
-        SimpleDynamics ff = SimpleDynamics.zero(logger);
-        Friction friction = Friction.zero(logger);
+        SimpleDynamics ff = new SimpleDynamics(logger, 0, 0);
+        Friction friction = new Friction(logger, 0, 0, 0, 0);
         IncrementalProfile profile = new TrapezoidIncrementalProfile(
                 logger, MAX_VELOCITY, MAX_ACCEL, POSITION_TOLERANCE);
 

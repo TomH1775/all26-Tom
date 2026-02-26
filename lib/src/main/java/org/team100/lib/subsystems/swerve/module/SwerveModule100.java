@@ -30,8 +30,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
  * moves, it affects the relative position of the drive motor and the drive
  * wheel.
  * 
- * TODO: Verify the coupling
- * 
  * There is some discussion of this topic here:
  * https://www.chiefdelphi.com/t/kcoupleratio-in-ctre-swerve/483380
  */

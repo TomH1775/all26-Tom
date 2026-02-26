@@ -39,8 +39,8 @@ public class Shooter extends SubsystemBase {
                 double supplyLimit = 50;
                 double statorLimit = 20;
 
-                SimpleDynamics dynamics = KrakenX60Motor.highFrictionFF(log);
-                Friction friction = KrakenX60Motor.highFriction(log);
+                SimpleDynamics dynamics = new SimpleDynamics(log, 0.004, 0.002);
+                Friction friction = new Friction(log, 0.26, 0.26, 0.006, 0.5);
                 // TODO: set canIDs
                 BareMotor m_motor1 = new KrakenX60Motor(
                         log1, canID, NeutralMode100.COAST, MotorPhase.REVERSE,

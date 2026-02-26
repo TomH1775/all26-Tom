@@ -1,4 +1,4 @@
-package org.team100.frc2025;
+package org.team100.lib.subsystems.swerve.kinodynamics;
 
 /** Computes vertical center of gravity. */
 public class VCG {

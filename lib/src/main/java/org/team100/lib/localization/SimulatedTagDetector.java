@@ -14,7 +14,7 @@ import org.team100.lib.config.Camera;
 import org.team100.lib.geometry.Metrics;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
-import org.team100.lib.uncertainty.Uncertainty;
+import org.team100.lib.uncertainty.VisionNoise;
 
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -206,7 +206,7 @@ public class SimulatedTagDetector {
     static Transform3d tagInCamera(
             DoubleSupplier rand, Pose3d cameraPose3d, Pose3d tagPose) {
         Transform3d tagInCamera = new Transform3d(cameraPose3d, tagPose);
-        IsotropicNoiseSE2 n = Uncertainty.visionMeasurementStdDevs(
+        IsotropicNoiseSE2 n = VisionNoise.get(
                 tagInCamera.getTranslation().getNorm(),
                 Metrics.offAxisAngleRad(tagInCamera));
         Translation3d t = tagInCamera.getTranslation();

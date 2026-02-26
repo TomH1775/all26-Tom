@@ -33,8 +33,8 @@ class AngularPositionProfileTest implements Timeless {
     private OnboardAngularPositionServo servo;
 
     public AngularPositionProfileTest() {
-        SimpleDynamics ff = SimpleDynamics.test(logger);
-        Friction friction = Friction.test(logger);
+        SimpleDynamics ff = new SimpleDynamics(logger, 0.100, 0.100);
+        Friction friction = new Friction(logger, 0.100, 0.100, 0.0, 0.1);
         motor = new MockBareMotor(ff, friction);
         sensor = new MockRotaryPositionSensor();
         mech = new RotaryMechanism(

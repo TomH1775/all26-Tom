@@ -9,63 +9,41 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 
-public class UncertaintyTest {
+public class OdometryNoiseTest {
     private static final double DELTA = 0.001;
 
     @Test
-    void testFigure5() {
-        assertEquals(0.03, Uncertainty.figure5(1), DELTA);
-        assertEquals(0.00, Uncertainty.figure5(0), DELTA);
-    }
-
-    @Test
-    void testFigure6() {
-        assertEquals(Math.toRadians(0.342), Uncertainty.figure6(Math.PI / 4), DELTA);
-        // The figure doesn't actually show a value for zero; it is presumably very
-        // high. We cap it at 3.
-        assertEquals(3, Uncertainty.figure6(0), DELTA);
-    }
-
-    @Test
-    void testVisionStdDevs() {
-        double targetRangeM = 1.0;
-        IsotropicNoiseSE2 visionStdDev = Uncertainty.visionMeasurementStdDevs(targetRangeM, 0.1);
-        assertEquals(0.041, visionStdDev.cartesian(), DELTA);
-        assertEquals(0.041, visionStdDev.rotation(), DELTA);
-    }
-
-    @Test
     void testOdometryCartesian() {
-        double odo = Uncertainty.odometryCartesianStdDev(0);
+        double odo = OdometryNoise.get(0, 0).cartesian();
         assertEquals(0.0, odo, 1e-6);
         // moving pretty slowly, 0.5 m/s over 0.02 sec
-        odo = Uncertainty.odometryCartesianStdDev(0.01);
+        odo = OdometryNoise.get(0.01, 0).cartesian();
         // about 3 cm/s of error, which seems reasonable
         assertEquals(0.00055, odo, 1e-6);
         // moving pretty fast, 5 m/s over 0.02 sec
-        odo = Uncertainty.odometryCartesianStdDev(0.1);
+        odo = OdometryNoise.get(0.1, 0).cartesian();
         // 0.5 m/s of error, a whole lot!
         assertEquals(0.010, odo, 1e-6);
     }
 
     @Test
     void testOdometryRotation() {
-        double odo = Uncertainty.odometryRotationStdDev(0, 0);
+        double odo = OdometryNoise.get(0, 0).rotation();
         assertEquals(0.0, odo, 1e-6);
         // moving pretty slowly, 0.5 m/s over 0.02 sec
-        odo = Uncertainty.odometryRotationStdDev(0.01, 0);
+        odo = OdometryNoise.get(0.01, 0).rotation();
         // about 3 cm/s of error, which seems reasonable
         assertEquals(0.00055, odo, 1e-6);
         // moving pretty fast, 5 m/s over 0.02 sec
-        odo = Uncertainty.odometryRotationStdDev(0.1, 0);
+        odo = OdometryNoise.get(0.1, 0).rotation();
         // 0.5 m/s of error, a whole lot!
         assertEquals(0.010, odo, 1e-6);
         // this is slow rotation, 1 rad/s over 0.02 sec
-        odo = Uncertainty.odometryRotationStdDev(0, 0.02);
+        odo = OdometryNoise.get(0, 0.02).rotation();
         // 0.06 rad/s of error, a few degrees
         assertEquals(0.0012, odo, 1e-3);
         // this is very fast rotation, 10 rad/s over 0.02 sec
-        odo = Uncertainty.odometryRotationStdDev(0, 0.2);
+        odo = OdometryNoise.get(0, 0.2).rotation();
         // 1.5 rad/s of error, that's a whole lot!
         assertEquals(0.0300, odo, 1e-3);
     }

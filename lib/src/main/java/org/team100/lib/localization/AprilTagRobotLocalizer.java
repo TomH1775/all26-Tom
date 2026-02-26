@@ -22,7 +22,7 @@ import org.team100.lib.logging.LoggerFactory.Transform3dLogger;
 import org.team100.lib.network.CameraReader;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.uncertainty.NoisyPose2d;
-import org.team100.lib.uncertainty.Uncertainty;
+import org.team100.lib.uncertainty.VisionNoise;
 import org.team100.lib.util.TrailingHistory;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -323,7 +323,7 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip> {
 
             NoisyPose2d noisyMeasurement = new NoisyPose2d(
                     robotPose2d,
-                    Uncertainty.visionMeasurementStdDevs(
+                    VisionNoise.get(
                             cameraToTag.getTranslation().getNorm(),
                             Metrics.offAxisAngleRad(cameraToTag)));
 

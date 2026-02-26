@@ -6,7 +6,7 @@ package org.team100.lib.uncertainty;
  * https://april.eecs.umich.edu/media/media/pdfs/wang2016iros.pdf
  * https://docs.google.com/spreadsheets/d/1StMbOyksydpzFmpHbZBL7ICMQtHnOBubrOMeYSx0M6E
  */
-public class Uncertainty {
+public class VisionNoise {
     /**
      * Standard deviation of vision updates in SE(2).
      * 
@@ -21,13 +21,13 @@ public class Uncertainty {
      * Note: due to the uncertainty singularity on the tag axis, when we are
      * directly in front of the tag, we can't use it at all.
      */
-    public static IsotropicNoiseSE2 visionMeasurementStdDevs(double distanceM, double offAxisAngleRad) {
+    public static IsotropicNoiseSE2 get(double distanceM, double offAxisAngleRad) {
         if (distanceM < 0)
             throw new IllegalArgumentException();
         if (offAxisAngleRad < 0)
             throw new IllegalArgumentException();
         // these extra 0.01 values are total guesses
-        // TODO: calibrate this, remove it?
+        // TODO: calibrate this
         double cartesianErrorM = figure5(distanceM) + 0.01;
         double rotationErrorRad = figure6(offAxisAngleRad) + 0.01;
         double rotationEffectM = distanceM * rotationErrorRad;
@@ -71,40 +71,4 @@ public class Uncertainty {
         return Math.toRadians(errorDeg);
     }
 
-    /**
-     * The error in odometry is superlinear in speed. Since the odometry samples
-     * happen regularly, we can use the sample distance as a measure of speed.
-     * 
-     * This yields zero when the robot isn't moving, which is what you'd expect.
-     * 
-     * I completely made this up
-     * https://docs.google.com/spreadsheets/d/1DmHL1UDd6vngmr-5_9fNHg2xLC4TEVWTN2nHZBOnje0/edit?gid=995645441#gid=995645441
-     */
-    public static double odometryCartesianStdDev(double distanceM) {
-        double norm = Math.abs(distanceM);
-        // We kinda measured 5% error in the best (slow) case, in 2024.
-        double lowSpeedError = 0.05;
-        // This is just a guess
-        double superError = 0.5;
-        return lowSpeedError * norm + superError * norm * norm;
-    }
-
-    /**
-     * How does rotation error scale with speed? Driving in a straight line
-     * definitely produces rotational drift, so this isn't just proportional to the
-     * odometry rotation term alone.
-     * 
-     * Maybe just add them, 1 meter == 1 radian.
-     * 
-     * TODO: measure this for real.
-     */
-    public static double odometryRotationStdDev(double distanceM, double rotationRad) {
-        double norm = Math.abs(distanceM) + Math.abs(rotationRad);
-        // We kinda measured 5% error in the best (slow) case.
-        double lowSpeedError = 0.05;
-        // This is just a guess
-        double superError = 0.5;
-        // We haven't measured this, so just guess it's the same???
-        return lowSpeedError * norm + superError * norm * norm;
-    }
 }

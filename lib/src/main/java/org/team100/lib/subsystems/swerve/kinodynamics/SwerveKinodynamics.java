@@ -38,7 +38,6 @@ public class SwerveKinodynamics {
     private final double m_backtrack;
     private final double m_wheelbase;
     private final double m_frontoffset;
-    // TODO: make this adjustable (e.g. by elevator height)
     private final double m_vcg;
     /** Diagonal distance from center to wheel. */
     private final double m_radius;
@@ -188,8 +187,6 @@ public class SwerveKinodynamics {
     /**
      * Acceleration which will tip the robot onto two wheels, m/s^2. Computed from
      * vertical center of gravity and frame size.
-     * 
-     * TODO: make this adjustable (e.g. by elevator height)
      */
     public double getMaxCapsizeAccelM_S2() {
         return 9.8 * (m_fulcrum / m_vcg);

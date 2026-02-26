@@ -28,8 +28,8 @@ public class OnboardAngularPositionServoTest implements Timeless {
 
     @Test
     void testOnboard() {
-        SimpleDynamics ff = SimpleDynamics.test(logger);
-        Friction friction = Friction.test(logger);
+        SimpleDynamics ff = new SimpleDynamics(logger, 0.100, 0.100);
+        Friction friction = new Friction(logger, 0.100, 0.100, 0.0, 0.1);
         final MockBareMotor turningMotor = new MockBareMotor(ff, friction);
         final MockRotaryPositionSensor positionSensor = new MockRotaryPositionSensor();
         final RotaryMechanism mech = new RotaryMechanism(

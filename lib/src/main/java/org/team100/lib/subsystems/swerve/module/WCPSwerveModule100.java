@@ -145,9 +145,9 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             double statorLimit,
             CanId driveMotorCanId,
             DriveRatio ratio) {
-        SimpleDynamics ff = KrakenX60Motor.swerveDriveFF(parent);
+        SimpleDynamics ff = new SimpleDynamics(parent, 0.004, 0.002);
         // note (10/2/24) 0.4 produces oscillation, on carpet.
-        Friction friction = KrakenX60Motor.swerveDriveFriction(parent);
+        Friction friction = new Friction(parent, 0.26, 0.26, 0.006, 0.5);
         PIDConstants pid = PIDConstants.makeVelocityPID(parent, 0.05);
         KrakenX60Motor driveMotor = new KrakenX60Motor(
                 parent,
@@ -176,8 +176,8 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             double statorLimit,
             CanId driveMotorCanId,
             DriveRatio ratio) {
-        SimpleDynamics ff = Falcon500Motor.swerveDriveFF(parent);
-        Friction friction = Falcon500Motor.swerveDriveFriction(parent);
+        SimpleDynamics ff = new SimpleDynamics(parent, 0.003, 0.003);
+        Friction friction = new Friction(parent, 0.260, 0.260, 0.002, 0.5);
         PIDConstants pid = PIDConstants.makeVelocityPID(parent, 0.05);
         Falcon500Motor driveMotor = new Falcon500Motor(
                 parent,
@@ -208,8 +208,8 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             NeutralMode100 neutral,
             MotorPhase motorPhase) {
 
-        SimpleDynamics ff = Falcon500Motor.swerveSteerFF(parent);
-        Friction friction = Falcon500Motor.swerveSteerFriction(parent);
+        SimpleDynamics ff = new SimpleDynamics(parent, 0.002, 0.002);
+        Friction friction = new Friction(parent, 0.100, 0.100, 0.005, 0.5);
 
         // Talon outboard POSITION PID
         // 10/2/24 drive torque produces about a 0.5 degree deviation so maybe
@@ -260,8 +260,8 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             NeutralMode100 neutral,
             MotorPhase motorPhase) {
 
-        SimpleDynamics ff = Falcon500Motor.swerveSteerFF(parent);
-        Friction friction = Falcon500Motor.swerveSteerFriction(parent);
+        SimpleDynamics ff = new SimpleDynamics(parent, 0.002, 0.002);
+        Friction friction = new Friction(parent, 0.100, 0.100, 0.005, 0.5);
 
         // Talon outboard POSITION PID
         // 10/2/24 drive torque produces about a 0.5 degree deviation so maybe

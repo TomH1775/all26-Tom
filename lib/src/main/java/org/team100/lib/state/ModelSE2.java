@@ -149,12 +149,6 @@ public class ModelSE2 {
     }
 
     public String toString() {
-        return "SwerveModel(" + m_x + ", " + m_y + ", " + m_theta + ")";
+        return "ModelSE2(" + m_x + ", " + m_y + ", " + m_theta + ")";
     }
-
-    public ModelSE2 get() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'get'");
-    }
-
 }

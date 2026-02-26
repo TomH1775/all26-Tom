@@ -10,7 +10,6 @@ import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX44Motor;
-import org.team100.lib.motor.ctre.KrakenX60Motor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
 import org.team100.lib.servo.OutboardLinearVelocityServo;
 import org.team100.lib.util.CanId;
@@ -30,7 +29,7 @@ public class Serializer extends SubsystemBase {
         LoggerFactory log = parent.type(this);
         LoggerFactory log1 = log.name("Serializer1");
         LoggerFactory log2 = log.name("Serializer2");
-    
+
         switch (Identity.instance) {
             case TEST_BOARD_B0, COMP_BOT -> {
                 //
@@ -39,8 +38,8 @@ public class Serializer extends SubsystemBase {
                 double supplyLimit = 50;
                 double statorLimit = 20;
 
-                SimpleDynamics dynamics = KrakenX60Motor.highFrictionFF(log);
-                Friction friction = KrakenX60Motor.highFriction(log);
+                SimpleDynamics dynamics = new SimpleDynamics(log, 0.004, 0.002);
+                Friction friction = new Friction(log, 0.26, 0.26, 0.006, 0.5);
                 // TODO: set canIDs
                 BareMotor m_motor1 = new KrakenX44Motor(
                         log1, canID, NeutralMode100.COAST, MotorPhase.REVERSE,
@@ -95,14 +94,14 @@ public class Serializer extends SubsystemBase {
     public void stopMotor() {
         m_servo1.stop();
         m_servo2.stop();
-        
+
     }
 
     private void fullSpeed() {
         double Velocity = 450;
         m_servo1.setVelocity(Velocity, 0);
         m_servo2.setVelocity(Velocity, 0);
-       
+
     }
 
     public void setSpeed(double Velocity) {

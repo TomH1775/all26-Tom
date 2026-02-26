@@ -19,7 +19,7 @@ import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleDeltas;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
-import org.team100.lib.uncertainty.Uncertainty;
+import org.team100.lib.uncertainty.OdometryNoise;
 import org.team100.lib.uncertainty.VariableR1;
 import org.team100.lib.util.StrUtil;
 
@@ -227,14 +227,14 @@ public class OdometryUpdater {
         VariableR1 gyroMeasurementRad = VariableR1.fromStdDev(gyroStepRad, gyroStepWhiteNoise);
 
         // Cartesian distance in this step
-        double distanceM = Metrics.translationalNorm(twist);
+        final double distanceM = Metrics.translationalNorm(twist);
         // Rotation in this step
-        double rotationRad = twist.dtheta;
+        final double rotationRad = twist.dtheta;
 
         double odoDThetaRad = twist.dtheta;
+        IsotropicNoiseSE2 odoNoise = OdometryNoise.get(distanceM, rotationRad);
         // This noise goes to zero when we're not moving.
-        double odoDThetaStdDev = Uncertainty.odometryRotationStdDev(
-                distanceM, rotationRad);
+        double odoDThetaStdDev = odoNoise.rotation();
 
         // This noise goes to zero when we're not moving.
         VariableR1 odoRotationMeasurementRad = VariableR1.fromStdDev(
@@ -273,7 +273,7 @@ public class OdometryUpdater {
         ModelSE2 model = new ModelSE2(newPose, velocity);
 
         // Noise here can be zero, if we're not moving.
-        double cartesianNoise = Uncertainty.odometryCartesianStdDev(distanceM);
+        double cartesianNoise = odoNoise.cartesian();
         IsotropicNoiseSE2 n0 = IsotropicNoiseSE2.fromStdDev(
                 cartesianNoise, fusedRotationMeasurement.sigma());
 

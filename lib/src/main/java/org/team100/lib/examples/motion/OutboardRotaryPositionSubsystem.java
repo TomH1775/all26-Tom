@@ -1,7 +1,9 @@
 package org.team100.lib.examples.motion;
 
+import org.team100.lib.config.Friction;
 import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
+import org.team100.lib.config.SimpleDynamics;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.motor.BareMotor;
@@ -69,8 +71,8 @@ public class OutboardRotaryPositionSubsystem extends SubsystemBase {
                         NeutralMode100.BRAKE,
                         MotorPhase.FORWARD,
                         10, // Stator current limit, amps
-                        NeoCANSparkMotor.ff(log),
-                        NeoCANSparkMotor.friction(log),
+                        new SimpleDynamics(log, 0.01, 0.01),
+                        new Friction(log, 0.5, 0.5, 0.0, 0.5),
                         PIDConstants.makePositionPID(log, 0.2));
                 IncrementalBareEncoder encoder = motor.encoder();
                 return getMech(log, motor, encoder);

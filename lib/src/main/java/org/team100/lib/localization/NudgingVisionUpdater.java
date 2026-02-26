@@ -179,9 +179,7 @@ public class NudgingVisionUpdater implements VisionUpdater {
                 stateSigma.rotationVariance());
         VariableR1 measurementRV = VariableR1.fromVariance(
                 deltaRotation.getRadians(), measurementSigma.rotationVariance());
-        // TODO: use covariance inflation
 
-        // VariableR1 rotation = InverseVarianceWeighting.fuse(sampleRV, measurementRV);
         VariableR1 rotation = m_rotationFusor.fuse(sampleRV, measurementRV);
 
         Rotation2d scaledRotation = new Rotation2d(rotation.mean());

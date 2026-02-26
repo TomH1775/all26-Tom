@@ -17,8 +17,8 @@ class LinearVelocityServoTest {
 
     @Test
     void testSimple() {
-        SimpleDynamics ff = SimpleDynamics.test(logger);
-        Friction friction = Friction.test(logger);
+        SimpleDynamics ff = new SimpleDynamics(logger, 0.100, 0.100);
+        Friction friction = new Friction(logger, 0.100, 0.100, 0.0, 0.1);
         MockBareMotor driveMotor = new MockBareMotor(ff, friction);
         MockIncrementalBareEncoder driveEncoder = new MockIncrementalBareEncoder();
         LinearMechanism mech = new LinearMechanism(logger,
