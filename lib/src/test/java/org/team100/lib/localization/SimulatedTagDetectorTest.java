@@ -36,12 +36,7 @@ public class SimulatedTagDetectorTest {
 
     @Test
     void testSimple() throws IOException {
-        List<Camera> cameras = List.of(
-                Camera.SWERVE_LEFT,
-                Camera.SWERVE_RIGHT,
-                Camera.FUNNEL,
-                Camera.CORAL_LEFT,
-                Camera.CORAL_RIGHT);
+        List<Camera> cameras = List.of(Camera.SIM0, Camera.SIM1, Camera.SIM2, Camera.SIM3);
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation(
                 "2025-reefscape.json");
         // right in front of tag 7

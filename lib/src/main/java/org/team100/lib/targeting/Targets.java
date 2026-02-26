@@ -8,6 +8,7 @@ import java.util.stream.DoubleStream;
 import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.SideEffect;
 import org.team100.lib.coherence.Takt;
+import org.team100.lib.config.Camera;
 import org.team100.lib.geometry.CentroidR2;
 import org.team100.lib.geometry.NearR2;
 import org.team100.lib.logging.Level;
@@ -81,7 +82,7 @@ public class Targets extends CameraReader<Target> {
     }
 
     @Override
-    protected void perValue(Transform3d cameraOffset, Target[] sights) {
+    protected void perValue(Camera camera, Target[] sights) {
 
         // Tranform sights to field targets.
         for (Target sight : sights) {
@@ -100,6 +101,7 @@ public class Targets extends CameraReader<Target> {
 
             m_log_poseTimestamp.log(() -> timeSec);
             Pose2d robotPose = m_history.apply(timeSec).pose();
+            Transform3d cameraOffset = camera.getOffset();
             TargetLocalizer.cameraRotToFieldRelative(
                     robotPose,
                     cameraOffset,

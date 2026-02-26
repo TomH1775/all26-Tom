@@ -2,6 +2,7 @@ package org.team100.lib.network;
 
 import java.util.function.ObjDoubleConsumer;
 
+import org.team100.lib.config.Camera;
 import org.team100.lib.localization.Blip;
 import org.team100.lib.logging.LoggerFactory;
 
@@ -18,7 +19,7 @@ public class RawTags extends CameraReader<Blip> {
     }
 
     @Override
-    protected void perValue(Transform3d cameraOffset, Blip[] value) {
+    protected void perValue(Camera camera, Blip[] value) {
         for (Blip b : value) {
             m_sink.accept(b.blipToTransform(), (double) b.getTimestamp() / 1e6);
         }

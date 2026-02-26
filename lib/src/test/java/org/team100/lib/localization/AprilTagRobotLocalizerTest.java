@@ -11,6 +11,7 @@ import java.util.function.DoubleFunction;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.coherence.Takt;
+import org.team100.lib.config.Camera;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
@@ -85,7 +86,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
         localizer.update();
         // skip first update
         assertTrue(poseEstimate.isEmpty());
-        
+
         // blip id=1
         // which is at (16.697, 0.655, 1.486), (0, 0, -0.94) in our coordinates
         // with zero camera offset the tag z is the tag elevation
@@ -100,7 +101,6 @@ class AprilTagRobotLocalizerTest implements Timeless {
         localizer.update();
         assertEquals(1, poseEstimate.size());
         Pose2d pose = poseEstimate.get(0);
-
 
         // 1m away at -0.94 rad means 0.59 in x
         assertEquals(16.107, pose.getX(), DELTA);
@@ -151,11 +151,11 @@ class AprilTagRobotLocalizerTest implements Timeless {
                 blip
         };
 
-        Transform3d cameraOffset = new Transform3d();
+        Camera camera = Camera.UNKNOWN;
         Optional<Alliance> alliance = Optional.of(Alliance.Red);
-        localizer.estimateRobotPose(cameraOffset, blips, alliance);
+        localizer.estimateRobotPose(camera, blips, alliance);
         // do it twice to convince vdp it's a good estimate
-        localizer.estimateRobotPose(cameraOffset, blips, alliance);
+        localizer.estimateRobotPose(camera, blips, alliance);
         assertEquals(1, poseEstimate.size());
         assertEquals(1, timeEstimate.size());
 
@@ -202,11 +202,11 @@ class AprilTagRobotLocalizerTest implements Timeless {
 
         final Blip[] blips = new Blip[] { blip };
 
-        Transform3d cameraOffset = new Transform3d();
+        Camera camera = Camera.UNKNOWN;
         Optional<Alliance> alliance = Optional.of(Alliance.Red);
-        localizer.estimateRobotPose(cameraOffset, blips, alliance);
+        localizer.estimateRobotPose(camera, blips, alliance);
         // two good estimates are required, so do another one.
-        localizer.estimateRobotPose(cameraOffset, blips, alliance);
+        localizer.estimateRobotPose(camera, blips, alliance);
 
         assertEquals(1, poseEstimate.size());
         assertEquals(1, timeEstimate.size());
@@ -257,12 +257,10 @@ class AprilTagRobotLocalizerTest implements Timeless {
 
         final Blip[] tags = new Blip[] { tag3, tag4 };
 
-        Transform3d cameraOffset = new Transform3d(
-                new Translation3d(-0.1265, 0.03, 0.61),
-                new Rotation3d(0, Math.toRadians(31.5), Math.PI));
+        Camera camera = Camera.GAME_PIECE;
         Optional<Alliance> alliance = Optional.of(Alliance.Red);
-        localizer.estimateRobotPose(cameraOffset, tags, alliance);
-        localizer.estimateRobotPose(cameraOffset, tags, alliance);
+        localizer.estimateRobotPose(camera, tags, alliance);
+        localizer.estimateRobotPose(camera, tags, alliance);
 
     }
 
@@ -298,10 +296,10 @@ class AprilTagRobotLocalizerTest implements Timeless {
 
         // if the tag is on bore then the camera is pretty high and also tilted up
         // the tag is tilted 30 degrees so the height is 0.5 meters lower than the tag
-        Transform3d cameraOffset = new Transform3d(new Translation3d(0, 0, 1.368), new Rotation3d(0, -0.523, 0));
+        Camera camera = Camera.TEST7A;
         Optional<Alliance> alliance = Optional.of(Alliance.Red);
-        localizer.estimateRobotPose(cameraOffset, tags, alliance);
-        localizer.estimateRobotPose(cameraOffset, tags, alliance);
+        localizer.estimateRobotPose(camera, tags, alliance);
+        localizer.estimateRobotPose(camera, tags, alliance);
     }
 
     @Test
@@ -332,12 +330,10 @@ class AprilTagRobotLocalizerTest implements Timeless {
         final Blip[] tags = new Blip[] { tag4 };
 
         // nonzero camera offset
-        Transform3d cameraOffset = new Transform3d(
-                new Translation3d(1, 0, 1.368),
-                new Rotation3d(0, -0.523, 0));
+        Camera camera = Camera.TEST7;
         Optional<Alliance> alliance = Optional.of(Alliance.Red);
-        localizer.estimateRobotPose(cameraOffset, tags, alliance);
-        localizer.estimateRobotPose(cameraOffset, tags, alliance);
+        localizer.estimateRobotPose(camera, tags, alliance);
+        localizer.estimateRobotPose(camera, tags, alliance);
     }
 
     @Test
@@ -371,10 +367,10 @@ class AprilTagRobotLocalizerTest implements Timeless {
 
         final Blip[] tags = new Blip[] { tag3, tag4 };
 
-        Transform3d cameraOffset = new Transform3d();
+        Camera camera = Camera.UNKNOWN;
         Optional<Alliance> alliance = Optional.of(Alliance.Red);
-        localizer.estimateRobotPose(cameraOffset, tags, alliance);
-        localizer.estimateRobotPose(cameraOffset, tags, alliance);
+        localizer.estimateRobotPose(camera, tags, alliance);
+        localizer.estimateRobotPose(camera, tags, alliance);
     }
 
     @Test
@@ -405,12 +401,10 @@ class AprilTagRobotLocalizerTest implements Timeless {
 
         final Blip[] tags = new Blip[] { tag4 };
 
-        Transform3d cameraOffset = new Transform3d(
-                new Translation3d(),
-                new Rotation3d(0, Math.PI / 4, 0));
+        Camera camera = Camera.TEST8;
         Optional<Alliance> alliance = Optional.of(Alliance.Red);
-        localizer.estimateRobotPose(cameraOffset, tags, alliance);
-        localizer.estimateRobotPose(cameraOffset, tags, alliance);
+        localizer.estimateRobotPose(camera, tags, alliance);
+        localizer.estimateRobotPose(camera, tags, alliance);
     }
 
     @Test
@@ -441,10 +435,10 @@ class AprilTagRobotLocalizerTest implements Timeless {
 
         final Blip[] tags = new Blip[] { tag4 };
 
-        Transform3d cameraOffset = new Transform3d();
+        Camera camera = Camera.UNKNOWN;
         Optional<Alliance> alliance = Optional.of(Alliance.Red);
-        localizer.estimateRobotPose(cameraOffset, tags, alliance);
-        localizer.estimateRobotPose(cameraOffset, tags, alliance);
+        localizer.estimateRobotPose(camera, tags, alliance);
+        localizer.estimateRobotPose(camera, tags, alliance);
     }
 
     @Test
@@ -475,10 +469,10 @@ class AprilTagRobotLocalizerTest implements Timeless {
 
         final Blip[] tags = new Blip[] { tag4 };
 
-        Transform3d cameraOffset = new Transform3d();
+        Camera camera = Camera.UNKNOWN;
         Optional<Alliance> alliance = Optional.of(Alliance.Red);
-        localizer.estimateRobotPose(cameraOffset, tags, alliance);
-        localizer.estimateRobotPose(cameraOffset, tags, alliance);
+        localizer.estimateRobotPose(camera, tags, alliance);
+        localizer.estimateRobotPose(camera, tags, alliance);
     }
 
     @Test
@@ -507,10 +501,10 @@ class AprilTagRobotLocalizerTest implements Timeless {
                 new Rotation3d()));
 
         final Blip[] tags = new Blip[] { tag4 };
-        Transform3d cameraOffset = new Transform3d();
+        Camera camera = Camera.UNKNOWN;
         Optional<Alliance> alliance = Optional.of(Alliance.Red);
-        localizer.estimateRobotPose(cameraOffset, tags, alliance);
-        localizer.estimateRobotPose(cameraOffset, tags, alliance);
+        localizer.estimateRobotPose(camera, tags, alliance);
+        localizer.estimateRobotPose(camera, tags, alliance);
     }
 
     @Test
@@ -540,12 +534,10 @@ class AprilTagRobotLocalizerTest implements Timeless {
 
         final Blip[] tags = new Blip[] { tag4 };
 
-        Transform3d cameraOffset = new Transform3d(
-                new Translation3d(),
-                new Rotation3d(0, Math.PI / 4, 0));
+        Camera camera = Camera.TEST8;
         Optional<Alliance> alliance = Optional.of(Alliance.Red);
-        localizer.estimateRobotPose(cameraOffset, tags, alliance);
-        localizer.estimateRobotPose(cameraOffset, tags, alliance);
+        localizer.estimateRobotPose(camera, tags, alliance);
+        localizer.estimateRobotPose(camera, tags, alliance);
     }
 
     @Test
@@ -576,11 +568,10 @@ class AprilTagRobotLocalizerTest implements Timeless {
 
         final Blip[] tags = new Blip[] { tag4 };
 
-        Transform3d cameraOffset = new Transform3d(
-                new Translation3d(0, 0, 0),
-                new Rotation3d(0, Math.PI / 6, 0));
+
+        Camera camera = Camera.TEST9;
         Optional<Alliance> alliance = Optional.of(Alliance.Red);
-        localizer.estimateRobotPose(cameraOffset, tags, alliance);
-        localizer.estimateRobotPose(cameraOffset, tags, alliance);
+        localizer.estimateRobotPose(camera, tags, alliance);
+        localizer.estimateRobotPose(camera, tags, alliance);
     }
 }

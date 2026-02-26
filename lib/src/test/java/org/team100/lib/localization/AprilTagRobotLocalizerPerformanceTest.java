@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.function.DoubleFunction;
 
 import org.junit.jupiter.api.Test;
+import org.team100.lib.config.Camera;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
@@ -67,10 +68,11 @@ class AprilTagRobotLocalizerPerformanceTest {
 
         final Blip[] blips = new Blip[] { blip };
 
+        Camera camera = Camera.UNKNOWN;
         // run forever so i can use the profiler
         while (true)
             localizer.estimateRobotPose(
-                    new Transform3d(), blips, Optional.of(Alliance.Red));
+                    camera, blips, Optional.of(Alliance.Red));
     }
 
     @Test

@@ -105,12 +105,7 @@ public class SimulatedTagDetector {
         } else {
             // In simulation, we want the real simulated tag detector.
             SimulatedTagDetector sim = new SimulatedTagDetector(
-                    List.of(
-                            Camera.SWERVE_LEFT,
-                            Camera.SWERVE_RIGHT,
-                            Camera.FUNNEL,
-                            Camera.CORAL_LEFT,
-                            Camera.CORAL_RIGHT),
+                    List.of(Camera.SIM0, Camera.SIM1, Camera.SIM2, Camera.SIM3),
                     layout,
                     history);
             return sim::periodic;

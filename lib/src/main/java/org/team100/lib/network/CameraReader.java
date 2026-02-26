@@ -103,14 +103,10 @@ public abstract class CameraReader<T> {
                 continue;
             }
 
-            // Robot-to-camera, offset from Camera.java
-            // in tests this offset is identity.
-            Transform3d cameraOffset = Camera.get(cameraId).getOffset();
-            if (DEBUG) {
-                System.out.printf("camera %s offset %s\n", cameraId, cameraOffset);
-            }
 
-            perValue(cameraOffset, valueArray);
+            Camera camera = Camera.get(cameraId);
+
+            perValue(camera, valueArray);
         }
         finishUpdate();
     }
@@ -125,7 +121,7 @@ public abstract class CameraReader<T> {
      * @param cameraOffset camera pose in robot coordinates
      * @param valueArray   payload array
      */
-    protected abstract void perValue(Transform3d cameraOffset, T[] value);
+    protected abstract void perValue(Camera camera, T[] value);
 
     /** Called when update() ends. */
     protected void finishUpdate() {
