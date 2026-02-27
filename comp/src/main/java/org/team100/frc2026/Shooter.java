@@ -11,6 +11,10 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX60Motor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.profile.r1.ProfileR1;
+import org.team100.lib.profile.r1.TrapezoidProfileR1;
+import org.team100.lib.reference.r1.ProfileReferenceR1;
+import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.servo.OutboardLinearVelocityServo;
 import org.team100.lib.util.CanId;
 
@@ -31,6 +35,14 @@ public class Shooter extends SubsystemBase {
         LoggerFactory log1 = log.name("Shooter1");
         LoggerFactory log2 = log.name("Shooter2");
         LoggerFactory log3 = log.name("Shooter3");
+
+        // first parameter is actually accel
+        // second parameter is actually jerk
+        ProfileR1 profile = new TrapezoidProfileR1(
+                log, 10, 100, 1);
+        ReferenceR1 ref = new ProfileReferenceR1(
+                log, () -> profile, 1, Double.MAX_VALUE);
+
         switch (Identity.instance) {
             case TEST_BOARD_B0, COMP_BOT -> {
                 //
@@ -68,9 +80,12 @@ public class Shooter extends SubsystemBase {
                         Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
                 double tolerance = 1;
-                m_servo1 = new OutboardLinearVelocityServo(log1, mechanism1, tolerance);
-                m_servo2 = new OutboardLinearVelocityServo(log2, mechanism2, tolerance);
-                m_servo3 = new OutboardLinearVelocityServo(log3, mechanism3, tolerance);
+                m_servo1 = new OutboardLinearVelocityServo(
+                    log1, mechanism1, ref, tolerance);
+                m_servo2 = new OutboardLinearVelocityServo(
+                    log2, mechanism2, ref, tolerance);
+                m_servo3 = new OutboardLinearVelocityServo(
+                    log3, mechanism3, ref, tolerance);
 
             }
             default -> {
@@ -79,9 +94,12 @@ public class Shooter extends SubsystemBase {
                         log, m_motor, m_motor.encoder(), 1, 0.1,
                         Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
-                m_servo1 = new OutboardLinearVelocityServo(log1, mechanism, 1);
-                m_servo2 = new OutboardLinearVelocityServo(log1, mechanism, 1);
-                m_servo3 = new OutboardLinearVelocityServo(log1, mechanism, 1);
+                m_servo1 = new OutboardLinearVelocityServo(
+                    log1, mechanism, ref, 1);
+                m_servo2 = new OutboardLinearVelocityServo(
+                    log1, mechanism, ref, 1);
+                m_servo3 = new OutboardLinearVelocityServo(
+                    log1, mechanism, ref, 1);
 
             }
 
@@ -110,15 +128,15 @@ public class Shooter extends SubsystemBase {
 
     private void fullSpeed() {
         double Velocity = 450;
-        m_servo1.setVelocity(Velocity, 0);
-        m_servo2.setVelocity(Velocity, 0);
-        m_servo3.setVelocity(Velocity, 0);
+        m_servo1.setVelocityProfiled(Velocity);
+        m_servo2.setVelocityProfiled(Velocity);
+        m_servo3.setVelocityProfiled(Velocity);
     }
 
     public void setSpeed(double Velocity) {
-        m_servo1.setVelocity(Velocity, 0);
-        m_servo2.setVelocity(Velocity, 0);
-        m_servo3.setVelocity(Velocity, 0);
+        m_servo1.setVelocityProfiled(Velocity);
+        m_servo2.setVelocityProfiled(Velocity);
+        m_servo3.setVelocityProfiled(Velocity);
     }
 
     public void setSerializerSpeed() {

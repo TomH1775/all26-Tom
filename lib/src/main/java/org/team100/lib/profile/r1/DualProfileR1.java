@@ -13,28 +13,28 @@ import org.team100.lib.state.ModelR1;
  * The exponential profile maximum acceleration relates to the *unlimited* stall
  * torque.
  */
-public class CurrentLimitedExponentialProfile implements IncrementalProfile {
+public class DualProfileR1 implements ProfileR1 {
     private static final boolean DEBUG = false;
     private final double m_maxVel;
     /** Unlimited stall torque */
     private final double m_stallAccel;
     /** Current-limited torque */
     private final double m_limitedAccel;
-    private final TrapezoidProfileWPI m_trapezoid;
-    private final ExponentialProfileWPI m_exponential;
+    private final WPITrapezoidProfileR1 m_trapezoid;
+    private final WPIExponentialProfileR1 m_exponential;
     /** Speed where the torque curves cross */
     private final double m_limit;
 
     /** Typically the stall accel is double the limited accel. */
-    public CurrentLimitedExponentialProfile(
+    public DualProfileR1(
             double maxVel,
             double limitedAccel,
             double stallAccel) {
         m_maxVel = maxVel;
         m_stallAccel = stallAccel;
         m_limitedAccel = limitedAccel;
-        m_trapezoid = new TrapezoidProfileWPI(maxVel, limitedAccel);
-        m_exponential = new ExponentialProfileWPI(maxVel, stallAccel);
+        m_trapezoid = new WPITrapezoidProfileR1(maxVel, limitedAccel);
+        m_exponential = new WPIExponentialProfileR1(maxVel, stallAccel);
         m_limit = (1 - m_limitedAccel / m_stallAccel) * maxVel;
     }
 
@@ -66,8 +66,8 @@ public class CurrentLimitedExponentialProfile implements IncrementalProfile {
     }
 
     @Override
-    public IncrementalProfile scale(double s) {
-        return new CurrentLimitedExponentialProfile(
+    public ProfileR1 scale(double s) {
+        return new DualProfileR1(
                 m_maxVel, s * m_limitedAccel, s * m_stallAccel);
     }
 

@@ -62,7 +62,7 @@ import edu.wpi.first.math.MathUtil;
  * 
  * Nov 4 2025: constraints are Mutables.
  */
-public class TrapezoidIncrementalProfile implements IncrementalProfile {
+public class TrapezoidProfileR1 implements ProfileR1 {
     private static final boolean DEBUG = false;
 
     private final LoggerFactory m_log;
@@ -75,7 +75,7 @@ public class TrapezoidIncrementalProfile implements IncrementalProfile {
      * Note the logger name here selects the Mutable values, so be sure it's unique,
      * if you want unique values.
      */
-    public TrapezoidIncrementalProfile(
+    public TrapezoidProfileR1(
             LoggerFactory log, double maxVel, double maxAccel, double tolerance) {
         m_log = log;
         m_scale = 1;
@@ -84,7 +84,7 @@ public class TrapezoidIncrementalProfile implements IncrementalProfile {
         m_tolerance = new Mutable(log, "tolerance", tolerance);
     }
 
-    public TrapezoidIncrementalProfile(
+    public TrapezoidProfileR1(
             LoggerFactory log, Mutable maxVel, Mutable maxAccel, double scale, Mutable tolerance) {
         m_log = log;
         m_maxVelocity = maxVel;
@@ -94,8 +94,8 @@ public class TrapezoidIncrementalProfile implements IncrementalProfile {
     }
 
     @Override
-    public TrapezoidIncrementalProfile scale(double s) {
-        return new TrapezoidIncrementalProfile(
+    public TrapezoidProfileR1 scale(double s) {
+        return new TrapezoidProfileR1(
                 m_log,
                 m_maxVelocity,
                 m_maxAccelerationUnscaled,

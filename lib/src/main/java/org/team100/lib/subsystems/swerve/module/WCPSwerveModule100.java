@@ -12,9 +12,10 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon500Motor;
 import org.team100.lib.motor.ctre.KrakenX60Motor;
-import org.team100.lib.profile.r1.IncrementalProfile;
-import org.team100.lib.reference.r1.IncrementalProfileReferenceR1;
+import org.team100.lib.profile.r1.ProfileR1;
+import org.team100.lib.reference.r1.NoReferenceR1;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
+import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.sensor.position.absolute.CombinedRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.EncoderDrive;
 import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
@@ -167,7 +168,8 @@ public class WCPSwerveModule100 extends SwerveModule100 {
                 WHEEL_DIAMETER_M,
                 Double.NEGATIVE_INFINITY,
                 Double.POSITIVE_INFINITY);
-        return new OutboardLinearVelocityServo(parent, mech, 1);
+        return new OutboardLinearVelocityServo(
+                parent, mech, new NoReferenceR1(), 1);
     }
 
     private static LinearVelocityServo driveFalconServo(
@@ -194,7 +196,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
                 driveMotor, encoder, ratio.m_ratio, WHEEL_DIAMETER_M, Double.NEGATIVE_INFINITY,
                 Double.POSITIVE_INFINITY);
         return new OutboardLinearVelocityServo(
-                parent, mech, 1);
+                parent, mech, new NoReferenceR1(), 1);
     }
 
     private static AngularPositionServo turningServo(
@@ -249,7 +251,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
         return turningServo;
     }
 
-        private static AngularPositionServo turningKrakenServo(
+    private static AngularPositionServo turningKrakenServo(
             LoggerFactory parent,
             CanId turningMotorCanId,
             RoboRioChannel turningEncoderChannel,
@@ -306,8 +308,8 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             SwerveKinodynamics kinodynamics,
             RotaryMechanism mech,
             CombinedRotaryPositionSensor combinedEncoder) {
-        Supplier<IncrementalProfile> profile = kinodynamics.getSteeringProfile();
-        ProfileReferenceR1 ref = new IncrementalProfileReferenceR1(
+        Supplier<ProfileR1> profile = kinodynamics.getSteeringProfile();
+        ReferenceR1 ref = new ProfileReferenceR1(
                 parent, profile, STEERING_POSITION_TOLERANCE_RAD, STEERING_VELOCITY_TOLERANCE_RAD_S);
         return new OutboardAngularPositionServo(parent, mech, ref);
     }

@@ -4,7 +4,7 @@ import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.mechanism.RotaryMechanism;
-import org.team100.lib.reference.r1.ProfileReferenceR1;
+import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.reference.r1.SetpointsR1;
 import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ModelR1;
@@ -23,7 +23,7 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
     private static final double POSITION_TOLERANCE = 0.02;
     private static final double VELOCITY_TOLERANCE = 0.02;
     protected final RotaryMechanism m_mechanism;
-    private final ProfileReferenceR1 m_ref;
+    private final ReferenceR1 m_ref;
     private final DoubleLogger m_log_goal;
     private final DoubleLogger m_log_velocity;
 
@@ -48,7 +48,7 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
     protected AngularPositionServoImpl(
             LoggerFactory parent,
             RotaryMechanism mechanism,
-            ProfileReferenceR1 ref) {
+            ReferenceR1 ref) {
         m_mechanism = mechanism;
         m_ref = ref;
         LoggerFactory log = parent.type(this);

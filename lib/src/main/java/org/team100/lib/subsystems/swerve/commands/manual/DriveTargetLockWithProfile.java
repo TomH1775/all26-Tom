@@ -18,8 +18,8 @@ import org.team100.lib.logging.LoggerFactory.ControlR1Logger;
 import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.logging.LoggerFactory.ModelR1Logger;
-import org.team100.lib.profile.r1.IncrementalProfile;
-import org.team100.lib.profile.r1.TrapezoidIncrementalProfile;
+import org.team100.lib.profile.r1.ProfileR1;
+import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ModelR1;
 import org.team100.lib.state.ModelSE2;
@@ -72,7 +72,7 @@ public class DriveTargetLockWithProfile extends Command {
     private final SwerveKinodynamics m_swerveKinodynamics;
     private final Supplier<Translation2d> m_target;
     private final FeedbackR1 m_thetaController;
-    private final IncrementalProfile m_profile;
+    private final ProfileR1 m_profile;
 
     private final DoubleLogger m_log_apparent_motion;
     private final DoubleArrayLogger m_log_target;
@@ -106,7 +106,7 @@ public class DriveTargetLockWithProfile extends Command {
         m_swerveKinodynamics = swerveKinodynamics;
         m_target = target;
         m_thetaController = thetaController;
-        m_profile = new TrapezoidIncrementalProfile(
+        m_profile = new TrapezoidProfileR1(
                 log,
                 swerveKinodynamics.getMaxAngleSpeedRad_S() * ROTATION_SPEED,
                 swerveKinodynamics.getMaxAngleAccelRad_S2() * ROTATION_SPEED,

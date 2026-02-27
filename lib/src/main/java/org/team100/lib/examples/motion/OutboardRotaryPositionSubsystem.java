@@ -12,10 +12,10 @@ import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.rev.CANSparkMotor;
 import org.team100.lib.motor.rev.NeoCANSparkMotor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
-import org.team100.lib.profile.r1.IncrementalProfile;
-import org.team100.lib.profile.r1.TrapezoidIncrementalProfile;
-import org.team100.lib.reference.r1.IncrementalProfileReferenceR1;
+import org.team100.lib.profile.r1.ProfileR1;
+import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
+import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
 import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.Gravity;
@@ -43,12 +43,12 @@ public class OutboardRotaryPositionSubsystem extends SubsystemBase {
         m_gravity = new Gravity(log,
                 5, // Max gravity torque, Nm
                 0); // Gravity torque position offset, rad
-        IncrementalProfile profile = new TrapezoidIncrementalProfile(
+        ProfileR1 profile = new TrapezoidProfileR1(
                 log,
                 1, // max velocity rad/s
                 1, // max accel rad/s^2
                 0.01); // tolerance
-        ProfileReferenceR1 ref = new IncrementalProfileReferenceR1(log, () -> profile,
+        ReferenceR1 ref = new ProfileReferenceR1(log, () -> profile,
                 0.01, // position tolerance, rad
                 0.01); // velocity tolerance, rad/s
         m_servo = new OutboardAngularPositionServo(log, mech(log), ref);

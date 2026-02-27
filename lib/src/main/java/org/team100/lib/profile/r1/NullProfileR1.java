@@ -4,7 +4,7 @@ import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ModelR1;
 
 /** Always returns the initial state. */
-public class NullProfile implements IncrementalProfile {
+public class NullProfileR1 implements ProfileR1 {
 
     @Override
     public ControlR1 calculate(double dt, ControlR1 initial, ModelR1 goal) {
@@ -12,7 +12,7 @@ public class NullProfile implements IncrementalProfile {
     }
 
     @Override
-    public NullProfile scale(double s) {
+    public NullProfileR1 scale(double s) {
         return this;
     }
 

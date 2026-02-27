@@ -38,6 +38,7 @@ public interface LinearPositionServo {
 
     boolean atSetpoint();
 
+    /** Useful for sequencing, without waiting for the controller. */
     boolean profileDone();
 
     /** Profile is done and we're on the setpoint. */

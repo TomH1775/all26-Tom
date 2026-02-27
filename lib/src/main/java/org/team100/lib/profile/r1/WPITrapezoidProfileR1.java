@@ -14,12 +14,12 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
  * the distance is reachable in one time step, i.e. high accel and velocity
  * limits.
  */
-public class TrapezoidProfileWPI implements IncrementalProfile {
+public class WPITrapezoidProfileR1 implements ProfileR1 {
     private final Constraints m_constraints;
     private final TrapezoidProfile m_profile;
     private final double m_maxVel;
 
-    public TrapezoidProfileWPI(double maxVel, double maxAccel) {
+    public WPITrapezoidProfileR1(double maxVel, double maxAccel) {
         m_constraints = new Constraints(maxVel, maxAccel);
         m_profile = new TrapezoidProfile(m_constraints);
         m_maxVel = maxVel;
@@ -34,8 +34,8 @@ public class TrapezoidProfileWPI implements IncrementalProfile {
     }
 
     @Override
-    public TrapezoidProfileWPI scale(double s) {
-        return new TrapezoidProfileWPI(
+    public WPITrapezoidProfileR1 scale(double s) {
+        return new WPITrapezoidProfileR1(
                 m_constraints.maxVelocity,
                 s * m_constraints.maxAcceleration);
     }

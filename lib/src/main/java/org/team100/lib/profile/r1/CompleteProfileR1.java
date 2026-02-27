@@ -37,7 +37,7 @@ import edu.wpi.first.math.interpolation.InverseInterpolator;
  * https://docs.google.com/spreadsheets/d/1JdKViVSTEMZ0dRS8broub4P-f0eA6STRHHzoV0U4N5M/edit?gid=2097479642#gid=2097479642
  * for output of this model
  */
-public class CompleteProfile implements IncrementalProfile {
+public class CompleteProfileR1 implements ProfileR1 {
     private static final boolean DEBUG = false;
 
     /** Time step for initializing the (fixed) goal path */
@@ -72,7 +72,7 @@ public class CompleteProfile implements IncrementalProfile {
      * @param tolerance this close to the switching curve to be on it.
      *                  also used to sense "at goal"
      */
-    public CompleteProfile(
+    public CompleteProfileR1(
             LoggerFactory log, double maxV, double maxA, double maxD, double stallA,
             double takeoffJ, double landingJ, double tolerance) {
         if (maxV <= 0)
@@ -100,7 +100,7 @@ public class CompleteProfile implements IncrementalProfile {
         init();
     }
 
-    public CompleteProfile(
+    public CompleteProfileR1(
             LoggerFactory log, Mutable maxV, Mutable maxA, Mutable maxD, Mutable stallA,
             Mutable takeoffJ, Mutable landingJ, double scale, Mutable tolerance) {
         m_log = log;
@@ -247,8 +247,8 @@ public class CompleteProfile implements IncrementalProfile {
     }
 
     @Override
-    public IncrementalProfile scale(double s) {
-        return new CompleteProfile(m_log,
+    public ProfileR1 scale(double s) {
+        return new CompleteProfileR1(m_log,
                 m_maxV, m_maxAUnscaled, m_maxDUnscaled, m_stallAUnscaled,
                 m_takeoffJ, m_landingJ, s, m_tolerance);
     }

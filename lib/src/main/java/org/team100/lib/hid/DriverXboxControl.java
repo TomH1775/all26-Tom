@@ -62,12 +62,12 @@ public class DriverXboxControl {
         return m_controller.getStartButton();
     }
 
-    /** Left trigger is all the way in */
+    /** Left trigger (axis 2) is all the way in */
     public boolean leftTrigger() {
         return m_controller.getLeftTriggerAxis() > 0.9;
     }
 
-    /** Right trigger is all the way in */
+    /** Right trigger (axis 3) is all the way in */
     public boolean rightTrigger() {
         return m_controller.getRightTriggerAxis() > 0.9;
     }

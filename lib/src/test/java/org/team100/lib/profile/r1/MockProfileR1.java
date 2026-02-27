@@ -3,7 +3,7 @@ package org.team100.lib.profile.r1;
 import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ModelR1;
 
-public class MockIncrementalProfile implements IncrementalProfile {
+public class MockProfileR1 implements ProfileR1 {
     ControlR1 result;
     double eta;
     int count = 0;
@@ -15,7 +15,7 @@ public class MockIncrementalProfile implements IncrementalProfile {
     }
 
     @Override
-    public MockIncrementalProfile scale(double s) {
+    public MockProfileR1 scale(double s) {
         return this;
     }
 
