@@ -24,8 +24,6 @@ public class Shooter extends SubsystemBase {
     private final OutboardLinearVelocityServo m_servo2;
     private final OutboardLinearVelocityServo m_servo3;
 
-    private final double m_speed = 30;
-
     public Shooter(LoggerFactory parent) {
         LoggerFactory log = parent.type(this);
         LoggerFactory log1 = log.name("Shooter1");
@@ -74,14 +72,24 @@ public class Shooter extends SubsystemBase {
 
             }
             default -> {
-                SimulatedBareMotor m_motor = new SimulatedBareMotor(log.name("Shootmotor1"), 600);
-                LinearMechanism mechanism = new LinearMechanism(
-                        log, m_motor, m_motor.encoder(), 1, 0.1,
+                SimulatedBareMotor m_motor1 = new SimulatedBareMotor(log1, 600);
+                LinearMechanism mechanism1 = new LinearMechanism(
+                        log1, m_motor1, m_motor1.encoder(), 1, 0.1,
                         Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
-                m_servo1 = new OutboardLinearVelocityServo(log1, mechanism, 1);
-                m_servo2 = new OutboardLinearVelocityServo(log1, mechanism, 1);
-                m_servo3 = new OutboardLinearVelocityServo(log1, mechanism, 1);
+                SimulatedBareMotor m_motor2 = new SimulatedBareMotor(log2, 600);
+                LinearMechanism mechanism2 = new LinearMechanism(
+                        log2, m_motor2, m_motor2.encoder(), 1, 0.1,
+                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+
+                SimulatedBareMotor m_motor3 = new SimulatedBareMotor(log3, 600);
+                LinearMechanism mechanism3 = new LinearMechanism(
+                        log3, m_motor3, m_motor3.encoder(), 1, 0.1,
+                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+
+                m_servo1 = new OutboardLinearVelocityServo(log1, mechanism1, 1);
+                m_servo2 = new OutboardLinearVelocityServo(log2, mechanism2, 1);
+                m_servo3 = new OutboardLinearVelocityServo(log3, mechanism3, 1);
 
             }
 
@@ -92,6 +100,8 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
         m_servo1.periodic();
+        m_servo2.periodic();
+        m_servo3.periodic();
     }
 
     public Command shooterFullspeed() {
@@ -109,7 +119,7 @@ public class Shooter extends SubsystemBase {
     }
 
     private void fullSpeed() {
-        double Velocity = 450;
+        double Velocity = 10;
         m_servo1.setVelocity(Velocity, 0);
         m_servo2.setVelocity(Velocity, 0);
         m_servo3.setVelocity(Velocity, 0);
@@ -121,12 +131,9 @@ public class Shooter extends SubsystemBase {
         m_servo3.setVelocity(Velocity, 0);
     }
 
-    public void setSerializerSpeed() {
-        setSpeed(m_speed);
-    }
-
     public Boolean atSpeed() {
         return (m_servo1.atGoal() && m_servo2.atGoal()
                 && m_servo3.atGoal());
     }
+
 }

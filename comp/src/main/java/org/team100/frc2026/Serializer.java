@@ -70,7 +70,7 @@ public class Serializer extends SubsystemBase {
                         Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
                 m_servo1 = new OutboardLinearVelocityServo(log1, mechanism, 1);
-                m_servo2 = new OutboardLinearVelocityServo(log1, mechanism, 1);
+                m_servo2 = new OutboardLinearVelocityServo(log2, mechanism, 1);
 
             }
 
@@ -81,6 +81,7 @@ public class Serializer extends SubsystemBase {
     @Override
     public void periodic() {
         m_servo1.periodic();
+        m_servo2.periodic();
     }
 
     public Command serialize() {
@@ -98,7 +99,7 @@ public class Serializer extends SubsystemBase {
     }
 
     private void fullSpeed() {
-        double Velocity = 450;
+        double Velocity = 0.5;
         m_servo1.setVelocity(Velocity, 0);
         m_servo2.setVelocity(Velocity, 0);
 
@@ -113,7 +114,4 @@ public class Serializer extends SubsystemBase {
         setSpeed(m_speed);
     }
 
-    public Boolean atSpeed() {
-        return (m_servo1.atGoal() && m_servo2.atGoal());
-    }
 }

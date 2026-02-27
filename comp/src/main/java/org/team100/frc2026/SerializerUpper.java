@@ -81,6 +81,7 @@ public class SerializerUpper extends SubsystemBase {
     @Override
     public void periodic() {
         m_servo1.periodic();
+        m_servo2.periodic();
     }
 
     public Command shooterFullspeed() {
@@ -98,7 +99,7 @@ public class SerializerUpper extends SubsystemBase {
     }
 
     private void fullSpeed() {
-        double Velocity = 450;
+        double Velocity = 0.5;
         m_servo1.setVelocity(Velocity, 0);
         m_servo2.setVelocity(Velocity, 0);
 
@@ -113,7 +114,4 @@ public class SerializerUpper extends SubsystemBase {
         setSpeed(m_speed);
     }
 
-    public Boolean atSpeed() {
-        return (m_servo1.atGoal() && m_servo2.atGoal());
-    }
 }
