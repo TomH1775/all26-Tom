@@ -19,7 +19,7 @@ import edu.wpi.first.math.interpolation.InverseInterpolator;
  * see
  * https://docs.google.com/spreadsheets/d/1JdKViVSTEMZ0dRS8broub4P-f0eA6STRHHzoV0U4N5M/edit?gid=2097479642#gid=2097479642
  */
-public class CompleteProfileTest implements Timeless{
+public class CompleteProfileR1Test implements Timeless{
     private static final boolean DEBUG = false;
     private static final double DT = 0.02;
     private static final double DELTA = 0.001;
@@ -28,7 +28,7 @@ public class CompleteProfileTest implements Timeless{
     /** Dump the sliding mode curve */
     @Test
     void testMode() {
-        CompleteProfile p = new CompleteProfile(logger, 2, 6, 10, 40, 50, 50, 0.001);
+        CompleteProfileR1 p = new CompleteProfileR1(logger, 2, 6, 10, 40, 50, 50, 0.001);
         if (DEBUG) {
             for (double x = -10; x < 10; x += 0.01) {
                 ControlR1 sample = p.m_byDistance.get(x);
@@ -39,7 +39,7 @@ public class CompleteProfileTest implements Timeless{
 
     @Test
     void testInterpolation() {
-        CompleteProfile p = new CompleteProfile(logger, 2, 6, 10, 40, 50, 50, 0.001);
+        CompleteProfileR1 p = new CompleteProfileR1(logger, 2, 6, 10, 40, 50, 50, 0.001);
         ControlR1 c = p.m_byDistance.get(-500.0);
         // we get back the x coord we provided
         assertEquals(-500, c.x(), DELTA);
@@ -51,7 +51,7 @@ public class CompleteProfileTest implements Timeless{
 
     @Test
     void testFastAccelSlowDecel() {
-        CompleteProfile p = new CompleteProfile(logger, 5, 12, 5, 50, 50, 50, 0.001);
+        CompleteProfileR1 p = new CompleteProfileR1(logger, 5, 12, 5, 50, 50, 50, 0.001);
         final ModelR1 goal = new ModelR1(2, 0);
         ControlR1 c = new ControlR1();
         double t = 0;
@@ -68,7 +68,7 @@ public class CompleteProfileTest implements Timeless{
 
     @Test
     void testSlowAccelFastDecel() {
-        CompleteProfile p = new CompleteProfile(logger, 5, 5, 12, 50, 50, 50, 0.001);
+        CompleteProfileR1 p = new CompleteProfileR1(logger, 5, 5, 12, 50, 50, 50, 0.001);
         final ModelR1 goal = new ModelR1(2, 0);
         ControlR1 c = new ControlR1();
         double t = 0;
@@ -85,7 +85,7 @@ public class CompleteProfileTest implements Timeless{
 
     @Test
     void testSimpleBackward() {
-        CompleteProfile p = new CompleteProfile(logger, 3, 8, 12, 15, 50, 50, 0.001);
+        CompleteProfileR1 p = new CompleteProfileR1(logger, 3, 8, 12, 15, 50, 50, 0.001);
         final ModelR1 goal = new ModelR1(-2, 0);
         ControlR1 c = new ControlR1();
         double t = 0;
@@ -99,7 +99,7 @@ public class CompleteProfileTest implements Timeless{
 
     @Test
     void testMovingEntry() {
-        CompleteProfile p = new CompleteProfile(logger, 2, 6, 10, 30, 50, 50, 0.001);
+        CompleteProfileR1 p = new CompleteProfileR1(logger, 2, 6, 10, 30, 50, 50, 0.001);
         final ModelR1 goal = new ModelR1(1, 0);
         ControlR1 c = new ControlR1(0, -1);
         double t = 0;
@@ -113,7 +113,7 @@ public class CompleteProfileTest implements Timeless{
 
     @Test
     void testUTurn() {
-        CompleteProfile p = new CompleteProfile(logger, 3, 8, 12, 15, 50, 50, 0.001);
+        CompleteProfileR1 p = new CompleteProfileR1(logger, 3, 8, 12, 15, 50, 50, 0.001);
         final ModelR1 goal = new ModelR1(0, 0);
         // to the left and moving to the left
         ControlR1 c = new ControlR1(-2, -2);
@@ -129,7 +129,7 @@ public class CompleteProfileTest implements Timeless{
     /** Moving goals are not allowed. */
     @Test
     void testMovingGoal() {
-        CompleteProfile p = new CompleteProfile(logger, 2, 6, 10, 30, 50, 50, 0.01);
+        CompleteProfileR1 p = new CompleteProfileR1(logger, 2, 6, 10, 30, 50, 50, 0.01);
         assertThrows(IllegalArgumentException.class,
                 () -> p.calculate(0.02, new ControlR1(), new ModelR1(1, 1)));
     }

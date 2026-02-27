@@ -12,12 +12,12 @@ public class MockLinearVelocityServo implements LinearVelocityServo {
     }
 
     @Override
-    public void setVelocity(double setpoint) {
+    public void setVelocityDirect(double setpoint) {
         m_setpoint = setpoint;
     }
 
     @Override
-    public void setVelocity(double setpoint, double setpoint_2) {
+    public void setVelocityDirect(double setpoint, double setpoint_2) {
         m_setpoint = setpoint;
     }
 
@@ -46,5 +46,24 @@ public class MockLinearVelocityServo implements LinearVelocityServo {
 
     @Override
     public void play(double freq) {
+    }
+
+    @Override
+    public void setVelocityProfiled(double setpointM_S) {
+        m_setpoint = setpointM_S;
+    }
+
+    @Override
+    public boolean atSetpoint() {
+        return false;
+    }
+
+    @Override
+    public boolean profileDone() {
+        return false;
+    }
+
+    @Override
+    public void close() {
     }
 }

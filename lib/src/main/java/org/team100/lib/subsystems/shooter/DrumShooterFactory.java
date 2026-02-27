@@ -11,6 +11,10 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.rev.Neo550CANSparkMotor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.profile.r1.ProfileR1;
+import org.team100.lib.profile.r1.TrapezoidProfileR1;
+import org.team100.lib.reference.r1.ProfileReferenceR1;
+import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.servo.OutboardLinearVelocityServo;
 import org.team100.lib.util.CanId;
 
@@ -42,9 +46,14 @@ public class DrumShooterFactory {
                 logR, motorR, motorR.encoder(), GEAR_RATIO, WHEEL_DIA_M,
                 Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
+        ProfileR1 profile = new TrapezoidProfileR1(
+                log, 10, 100, 1);
+        ReferenceR1 ref = new ProfileReferenceR1(
+                log, () -> profile, 1, Double.MAX_VALUE);
+
         return new DualDrumShooter(parent,
-                new OutboardLinearVelocityServo(logL, mechL, 1),
-                new OutboardLinearVelocityServo(logR, mechR, 1));
+                new OutboardLinearVelocityServo(logL, mechL, ref, 1),
+                new OutboardLinearVelocityServo(logR, mechR, ref, 1));
     }
 
     private static BareMotor getMotor(int currentLimit, LoggerFactory log, CanId canId, SimpleDynamics ff,

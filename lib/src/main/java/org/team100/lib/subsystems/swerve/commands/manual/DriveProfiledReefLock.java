@@ -17,7 +17,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
 import org.team100.lib.logging.LoggerFactory.ControlR1Logger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
-import org.team100.lib.profile.r1.TrapezoidIncrementalProfile;
+import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ModelR1;
 import org.team100.lib.state.ModelSE2;
@@ -181,7 +181,7 @@ public class DriveProfiledReefLock extends Command {
                 Math100.getMinDistance(yawMeasurement, m_thetaSetpoint.x()),
                 m_thetaSetpoint.v());
 
-        final TrapezoidIncrementalProfile profile = makeProfile(state.velocity().norm());
+        final TrapezoidProfileR1 profile = makeProfile(state.velocity().norm());
         m_thetaSetpoint = profile.calculate(
                 TimedRobot100.LOOP_PERIOD_S, m_thetaSetpoint, new ModelR1(m_goal.getRadians(), 0));
 
@@ -219,7 +219,7 @@ public class DriveProfiledReefLock extends Command {
      * Note that the max speed and accel are inversely proportional to the current
      * velocity.
      */
-    public TrapezoidIncrementalProfile makeProfile(double currentVelocity) {
+    public TrapezoidProfileR1 makeProfile(double currentVelocity) {
         // fraction of the maximum speed
         final double xyRatio = Math.min(1, currentVelocity / m_swerveKinodynamics.getMaxDriveVelocityM_S());
         // fraction left for rotation
@@ -234,7 +234,7 @@ public class DriveProfiledReefLock extends Command {
         m_log_max_speed.log(() -> maxSpeedRad_S);
         m_log_max_accel.log(() -> maxAccelRad_S2);
 
-        return new TrapezoidIncrementalProfile(
+        return new TrapezoidProfileR1(
                 m_log,
                 maxSpeedRad_S,
                 maxAccelRad_S2,

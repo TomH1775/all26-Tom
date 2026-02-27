@@ -7,11 +7,11 @@ import edu.wpi.first.math.trajectory.ExponentialProfile;
 import edu.wpi.first.math.trajectory.ExponentialProfile.Constraints;
 import edu.wpi.first.math.trajectory.ExponentialProfile.State;
 
-public class ExponentialProfileWPI implements IncrementalProfile {
+public class WPIExponentialProfileR1 implements ProfileR1 {
     private final Constraints m_constraints;
     private final ExponentialProfile m_profile;
 
-    public ExponentialProfileWPI(double maxVel, double maxAccel) {
+    public WPIExponentialProfileR1(double maxVel, double maxAccel) {
         // The WPI class uses unfamiliar notation:
         // a = Av + Bu
         // A is a negative number representing back EMF (a opposes v)
@@ -34,8 +34,8 @@ public class ExponentialProfileWPI implements IncrementalProfile {
     }
 
     @Override
-    public IncrementalProfile scale(double s) {
-        return new ExponentialProfileWPI(
+    public ProfileR1 scale(double s) {
+        return new WPIExponentialProfileR1(
                 m_constraints.maxVelocity(), s * m_constraints.B);
     }
 

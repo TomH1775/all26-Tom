@@ -12,10 +12,10 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
 import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
-import org.team100.lib.profile.r1.IncrementalProfile;
-import org.team100.lib.profile.r1.TrapezoidIncrementalProfile;
-import org.team100.lib.reference.r1.IncrementalProfileReferenceR1;
+import org.team100.lib.profile.r1.ProfileR1;
+import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
+import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.sensor.position.absolute.sim.SimulatedRotaryPositionSensor;
 import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
 import org.team100.lib.servo.AngularPositionServo;
@@ -92,8 +92,8 @@ public class Turret extends SubsystemBase {
     }
 
     private static AngularPositionServo pivot(LoggerFactory log) {
-        IncrementalProfile profile = new TrapezoidIncrementalProfile(log, 5, 10, 0.05);
-        ProfileReferenceR1 ref = new IncrementalProfileReferenceR1(log, () -> profile, 0.05, 0.05);
+        ProfileR1 profile = new TrapezoidProfileR1(log, 5, 10, 0.05);
+        ReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.05, 0.05);
         PIDFeedback feedback = new PIDFeedback(log, 5, 0, 0, false, 0.05, 0.1);
         SimulatedBareMotor motor = new SimulatedBareMotor(log, 600);
         IncrementalBareEncoder encoder = motor.encoder();
@@ -108,8 +108,8 @@ public class Turret extends SubsystemBase {
     }
 
     private static AngularPositionServo elevation(LoggerFactory log) {
-        IncrementalProfile profile = new TrapezoidIncrementalProfile(log, 5, 10, 0.05);
-        ProfileReferenceR1 ref = new IncrementalProfileReferenceR1(log, () -> profile, 0.05, 0.05);
+        ProfileR1 profile = new TrapezoidProfileR1(log, 5, 10, 0.05);
+        ReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.05, 0.05);
         PIDFeedback feedback = new PIDFeedback(log, 5, 0, 0, false, 0.05, 0.1);
         SimulatedBareMotor motor = new SimulatedBareMotor(log, 600);
         IncrementalBareEncoder encoder = motor.encoder();

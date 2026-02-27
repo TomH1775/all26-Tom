@@ -24,7 +24,7 @@ import org.team100.lib.testing.Timeless;
  * The WPI profile keeps the timing data around after the "calculate" method, so
  * we can look there; our own profile does not, so we need to modify it.
  */
-class CoordinatedProfileTest implements Timeless {
+class ProfileCoordinationTest implements Timeless {
     private static final boolean PRINT = false;
 
     private static final double PROFILE_TOLERANCE = 0.01;
@@ -44,8 +44,8 @@ class CoordinatedProfileTest implements Timeless {
         final int maxAccel = 1;
         final double tolerance = 0.01;
         // two profiles with the same parameters
-        TrapezoidIncrementalProfile p1 = new TrapezoidIncrementalProfile(logger, maxVel, maxAccel, tolerance);
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, maxVel, maxAccel, tolerance);
+        TrapezoidProfileR1 p1 = new TrapezoidProfileR1(logger, maxVel, maxAccel, tolerance);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, maxVel, maxAccel, tolerance);
         // initial state at the origin at rest
         ModelR1 i1 = new ModelR1(0, 0);
         ModelR1 i2 = new ModelR1(0, 0);
@@ -106,8 +106,8 @@ class CoordinatedProfileTest implements Timeless {
         final int maxVel = 1;
         final int maxAccel = 1;
         // two profiles with the same parameters
-        TrapezoidProfileWPI p1 = new TrapezoidProfileWPI(maxVel, maxAccel);
-        TrapezoidProfileWPI p2 = new TrapezoidProfileWPI(maxVel, maxAccel);
+        WPITrapezoidProfileR1 p1 = new WPITrapezoidProfileR1(maxVel, maxAccel);
+        WPITrapezoidProfileR1 p2 = new WPITrapezoidProfileR1(maxVel, maxAccel);
         // initial state at the origin at rest
         ModelR1 i1 = new ModelR1(0, 0);
         ModelR1 i2 = new ModelR1(0, 0);
@@ -168,8 +168,8 @@ class CoordinatedProfileTest implements Timeless {
         final int maxAccel = 1;
         final double tolerance = 0.01;
         // two profiles with the same parameters
-        TrapezoidIncrementalProfile p1 = new TrapezoidIncrementalProfile(logger, maxVel, maxAccel, tolerance);
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, maxVel, maxAccel, tolerance);
+        TrapezoidProfileR1 p1 = new TrapezoidProfileR1(logger, maxVel, maxAccel, tolerance);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, maxVel, maxAccel, tolerance);
         // initial state at the origin at rest
         ModelR1 i1 = new ModelR1(0, 0);
         ModelR1 i2 = new ModelR1(0, 0);
@@ -190,8 +190,8 @@ class CoordinatedProfileTest implements Timeless {
         final int maxVel = 1;
         final int maxAccel = 1;
         // two profiles with the same parameters
-        TrapezoidProfileWPI p1 = new TrapezoidProfileWPI(maxVel, maxAccel);
-        TrapezoidProfileWPI p2 = new TrapezoidProfileWPI(maxVel, maxAccel);
+        WPITrapezoidProfileR1 p1 = new WPITrapezoidProfileR1(maxVel, maxAccel);
+        WPITrapezoidProfileR1 p2 = new WPITrapezoidProfileR1(maxVel, maxAccel);
         // initial state at the origin at rest
         ModelR1 i1 = new ModelR1(0, 0);
         ModelR1 i2 = new ModelR1(0, 0);
@@ -212,8 +212,8 @@ class CoordinatedProfileTest implements Timeless {
         final int maxAccel = 1;
         final double tolerance = 0.01;
         // default x and y profiles
-        TrapezoidIncrementalProfile px = new TrapezoidIncrementalProfile(logger, maxVel, maxAccel, tolerance);
-        TrapezoidIncrementalProfile py = new TrapezoidIncrementalProfile(logger, maxVel, maxAccel, tolerance);
+        TrapezoidProfileR1 px = new TrapezoidProfileR1(logger, maxVel, maxAccel, tolerance);
+        TrapezoidProfileR1 py = new TrapezoidProfileR1(logger, maxVel, maxAccel, tolerance);
         // initial x state is moving fast
         ControlR1 ix = new ControlR1(0, 1);
         // initial y state is stationary

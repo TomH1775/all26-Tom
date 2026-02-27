@@ -13,10 +13,10 @@ import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.motor.MockBareMotor;
-import org.team100.lib.profile.r1.IncrementalProfile;
-import org.team100.lib.profile.r1.TrapezoidIncrementalProfile;
-import org.team100.lib.profile.r1.TrapezoidProfileWPI;
-import org.team100.lib.reference.r1.IncrementalProfileReferenceR1;
+import org.team100.lib.profile.r1.ProfileR1;
+import org.team100.lib.profile.r1.TrapezoidProfileR1;
+import org.team100.lib.profile.r1.WPITrapezoidProfileR1;
+import org.team100.lib.reference.r1.ProfileReferenceR1;
 import org.team100.lib.sensor.position.absolute.MockRotaryPositionSensor;
 import org.team100.lib.testing.Timeless;
 
@@ -29,7 +29,7 @@ class AngularPositionProfileTest implements Timeless {
     private final RotaryMechanism mech;
     private final MockRotaryPositionSensor sensor;
     private final FeedbackR1 feedback2;
-    IncrementalProfileReferenceR1 ref;
+    ProfileReferenceR1 ref;
     private OnboardAngularPositionServo servo;
 
     public AngularPositionProfileTest() {
@@ -48,8 +48,8 @@ class AngularPositionProfileTest implements Timeless {
      */
     @Test
     void testTrapezoid() {
-        final IncrementalProfile profile = new TrapezoidProfileWPI(1, 1);
-        ref = new IncrementalProfileReferenceR1(logger, () -> profile, 0.05, 0.05);
+        final ProfileR1 profile = new WPITrapezoidProfileR1(1, 1);
+        ref = new ProfileReferenceR1(logger, () -> profile, 0.05, 0.05);
         servo = new OnboardAngularPositionServo(
                 logger,
                 mech,
@@ -62,8 +62,8 @@ class AngularPositionProfileTest implements Timeless {
 
     @Test
     void testProfile() {
-        final IncrementalProfile profile = new TrapezoidIncrementalProfile(logger, 1, 1, 0.05);
-        ref = new IncrementalProfileReferenceR1(logger, () -> profile, 0.05, 0.05);
+        final ProfileR1 profile = new TrapezoidProfileR1(logger, 1, 1, 0.05);
+        ref = new ProfileReferenceR1(logger, () -> profile, 0.05, 0.05);
         servo = new OnboardAngularPositionServo(
                 logger,
                 mech,

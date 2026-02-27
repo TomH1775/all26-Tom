@@ -1,9 +1,9 @@
 package org.team100.lib.subsystems.mecanum;
 
-import org.team100.lib.config.SimpleDynamics;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
+import org.team100.lib.config.SimpleDynamics;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.mechanism.LinearMechanism;
 import org.team100.lib.motor.BareMotor;
@@ -11,6 +11,8 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.rev.NeoCANSparkMotor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.reference.r1.NoReferenceR1;
+import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.sensor.gyro.Gyro;
 import org.team100.lib.sensor.gyro.ReduxGyro;
 import org.team100.lib.servo.OutboardLinearVelocityServo;
@@ -68,12 +70,14 @@ public class MecanumDriveFactory {
                 logRR, motorRR, motorRR.encoder(), gearRatio, wheelDiaM,
                 Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
+        ReferenceR1 ref = new NoReferenceR1();
+
         return new MecanumDrive100(
                 log, fieldLogger, gyro, trackWidthM, wheelbaseM, slip,
-                new OutboardLinearVelocityServo(logFL, mechFL, 1),
-                new OutboardLinearVelocityServo(logFR, mechFR, 1),
-                new OutboardLinearVelocityServo(logRL, mechRL, 1),
-                new OutboardLinearVelocityServo(logRR, mechRR, 1));
+                new OutboardLinearVelocityServo(logFL, mechFL, ref, 1),
+                new OutboardLinearVelocityServo(logFR, mechFR, ref, 1),
+                new OutboardLinearVelocityServo(logRL, mechRL, ref, 1),
+                new OutboardLinearVelocityServo(logRR, mechRR, ref, 1));
     }
 
     /** Real or simulated depending on identity */

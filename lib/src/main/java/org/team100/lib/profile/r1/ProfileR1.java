@@ -11,7 +11,7 @@ import org.team100.lib.state.ModelR1;
  * 
  * NOTE: these profiles don't know anything about angle wrapping.
  */
-public interface IncrementalProfile {
+public interface ProfileR1 {
     public static final int MAX_ETA = 10;
     static final boolean DEBUG = false;
 
@@ -48,7 +48,7 @@ public interface IncrementalProfile {
      * does is up to the implementation. A good choice would be to scale
      * acceleration, since that's what goes against the power budget.
      */
-    IncrementalProfile scale(double s);
+    ProfileR1 scale(double s);
 
     /**
      * Find the scale factor that makes the profile complete in the specified time

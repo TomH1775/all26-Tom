@@ -200,10 +200,10 @@ public abstract class SwerveModule100 implements Player {
         // is there noise in speed?
         m_log_speed.log(() -> nextSpeed);
         if (Experiments.instance.enabled(Experiment.DriveWithoutAccel)) {
-            m_driveServo.setVelocity(nextSpeed, 0);
+            m_driveServo.setVelocityDirect(nextSpeed, 0);
         } else {
             // The old way.
-            m_driveServo.setVelocity(nextSpeed);
+            m_driveServo.setVelocityDirect(nextSpeed);
         }
 
         // Direct actuation uses more current than a profile, but only briefly,

@@ -19,7 +19,7 @@ import org.team100.lib.testing.Timeless;
  * Note many of these cases were adjusted slightly to accommodate the treatment
  * of max velocity.
  */
-class TrapezoidIncrementalProfileTest implements Timeless {
+class TrapezoidProfileR1Test implements Timeless {
     private static final boolean DEBUG = false;
     private static final double TEN_MS = 0.01;
     private static final double DELTA = 0.001;
@@ -55,7 +55,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     void testSolve() {
         double maxVel = 2;
         double maxAccel = 10;
-        TrapezoidIncrementalProfile profile = new TrapezoidIncrementalProfile(logger, maxVel, maxAccel, 0.01);
+        TrapezoidProfileR1 profile = new TrapezoidProfileR1(logger, maxVel, maxAccel, 0.01);
         ControlR1 sample = new ControlR1(0, 0);
         final ModelR1 end = new ModelR1(3, 0);
         final double ETA_TOLERANCE = 0.02;
@@ -69,7 +69,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     void testSolvePerformance() {
         double maxVel = 2;
         double maxAccel = 10;
-        TrapezoidIncrementalProfile profile = new TrapezoidIncrementalProfile(logger, maxVel, maxAccel, 0.01);
+        TrapezoidProfileR1 profile = new TrapezoidProfileR1(logger, maxVel, maxAccel, 0.01);
         ControlR1 sample = new ControlR1(0, 0);
         final ModelR1 end = new ModelR1(3, 0);
         final double ETA_TOLERANCE = 0.02;
@@ -94,7 +94,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     @Test
     void testSample() {
         // see Spline1dTest.testSample()
-        final IncrementalProfile p = new TrapezoidIncrementalProfile(logger, 2, 6, 0.01);
+        final ProfileR1 p = new TrapezoidProfileR1(logger, 2, 6, 0.01);
         ControlR1 setpoint = new ControlR1(0, 0);
         final ModelR1 goal = new ModelR1(1, 0);
         for (double t = 0; t < 1; t += 0.01) {
@@ -113,7 +113,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     /** I think we're writing followers incorrectly, here's how to do it. */
     @Test
     void discreteTime1() {
-        final IncrementalProfile profile = new TrapezoidIncrementalProfile(logger, 2, 1, 0.01);
+        final ProfileR1 profile = new TrapezoidProfileR1(logger, 2, 1, 0.01);
         final ModelR1 initial = new ModelR1(0, 0);
         final ModelR1 goal = new ModelR1(1, 0);
         final double k1 = 5.0;
@@ -175,7 +175,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     /** What if the entry velocity is above the cruise velocity? */
     @Test
     void testTooHighEntryVelocity() {
-        TrapezoidIncrementalProfile p = new TrapezoidIncrementalProfile(logger, 1, 1, 0.01);
+        TrapezoidProfileR1 p = new TrapezoidProfileR1(logger, 1, 1, 0.01);
         // initial state velocity is higher than profile cruise
         ControlR1 initial = new ControlR1(0, 2);
         // goal is achievable with constant max decel
@@ -201,7 +201,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
 
     @Test
     void testTooHighEntryVelocityInReverse() {
-        TrapezoidIncrementalProfile p = new TrapezoidIncrementalProfile(logger, 1, 1, 0.01);
+        TrapezoidProfileR1 p = new TrapezoidProfileR1(logger, 1, 1, 0.01);
         // initial state velocity is higher than profile cruise
         ControlR1 initial = new ControlR1(0, -2);
         // goal is achievable with constant max decel
@@ -227,7 +227,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
 
     @Test
     void testTooHighEntryVelocityCruising() {
-        TrapezoidIncrementalProfile p = new TrapezoidIncrementalProfile(logger, 1, 1, 0.01);
+        TrapezoidProfileR1 p = new TrapezoidProfileR1(logger, 1, 1, 0.01);
         // initial state velocity is higher than profile cruise
         ControlR1 initial = new ControlR1(0, 2);
         // goal is achievable with max decel 1s, cruise 1s, max decel 1s
@@ -260,7 +260,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     /** If you're at the goal, the ETA is zero. */
     @Test
     void testETAAtGoal() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 1, 1, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 1, 1, 0.01);
         ControlR1 initial = new ControlR1(0, 0);
         ModelR1 goal = new ModelR1(0, 0); // same
         ControlR1 r = p2.calculate(0.02, initial, goal);
@@ -274,7 +274,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     /** Simple rest-to-rest case */
     @Test
     void testETARestToRest() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 1, 1, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 1, 1, 0.01);
         ControlR1 initial = new ControlR1(0, 0);
         ModelR1 goal = new ModelR1(1, 0);
         ControlR1 s = p2.calculate(0.02, initial, goal);
@@ -296,7 +296,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     void testETASolve() {
         ControlR1 initial = new ControlR1(0, 0);
         ModelR1 goal = new ModelR1(1, 0);
-        TrapezoidIncrementalProfile p = new TrapezoidIncrementalProfile(logger, 1, 1, 0.01);
+        TrapezoidProfileR1 p = new TrapezoidProfileR1(logger, 1, 1, 0.01);
         // this this is the default eta above, so s = 1.0.
         double s = p.solve(0.1, initial, goal, 2, DELTA);
         assertEquals(1.0, s, DELTA);
@@ -327,7 +327,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
         // high max accel
         double maxA = 10;
         double tol = 0.01;
-        TrapezoidIncrementalProfile px = new TrapezoidIncrementalProfile(logger, maxV, maxA, tol);
+        TrapezoidProfileR1 px = new TrapezoidProfileR1(logger, maxV, maxA, tol);
         ControlR1 initial = new ControlR1(2.2, -4.5);
         ModelR1 goal = new ModelR1(0, 0);
         double eta = px.simulateForETA(0.2, initial, goal);
@@ -362,7 +362,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
         // high max accel
         double maxA = 10;
         double tol = 0.01;
-        TrapezoidIncrementalProfile px = new TrapezoidIncrementalProfile(logger, maxV, maxA, tol);
+        TrapezoidProfileR1 px = new TrapezoidProfileR1(logger, maxV, maxA, tol);
         // heading away from the goal, this is a very slow u-turn
         ControlR1 initial = new ControlR1(5.0, 4.6);
         ModelR1 goal = new ModelR1(0, 0);
@@ -379,7 +379,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     void testETASolveStationary() {
         ControlR1 initial = new ControlR1(0, 0);
         ModelR1 goal = new ModelR1(0, 0);
-        TrapezoidIncrementalProfile p = new TrapezoidIncrementalProfile(logger, 1, 1, 0.01);
+        TrapezoidProfileR1 p = new TrapezoidProfileR1(logger, 1, 1, 0.01);
         // this this is the default eta above, so s = 1.0.
         double s = p.solve(0.1, initial, goal, 2, DELTA);
         assertEquals(1.0, s, DELTA);
@@ -388,7 +388,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     /** ETA is not a trivial function of V and A */
     @Test
     void testETARestToRestScaled1() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 0.5, 1, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 0.5, 1, 0.01);
         ControlR1 initial = new ControlR1(0, 0);
         ModelR1 goal = new ModelR1(1, 0);
         ControlR1 s = p2.calculate(0.02, initial, goal);
@@ -403,7 +403,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     /** ETA is not a trivial function of V and A */
     @Test
     void testETARestToRestScaled2() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 0.5, 0.5, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 0.5, 0.5, 0.01);
         ControlR1 initial = new ControlR1(0, 0);
         ModelR1 goal = new ModelR1(1, 0);
         ControlR1 s = p2.calculate(0.02, initial, goal);
@@ -418,7 +418,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     /** ETA is not a trivial function of V and A */
     @Test
     void testETARestToRestScaled3() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 0.25, 0.25, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 0.25, 0.25, 0.01);
         ControlR1 initial = new ControlR1(0, 0);
         ModelR1 goal = new ModelR1(1, 0);
         ControlR1 s = p2.calculate(0.02, initial, goal);
@@ -433,7 +433,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     /** Initially at max V, cruise and then slow to a stop */
     @Test
     void testETACruise() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 1, 1, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 1, 1, 0.01);
         ControlR1 initial = new ControlR1(0, 1); // cruising at maxV
         ModelR1 goal = new ModelR1(1, 0); // want to go 1m, so cruise for 0.5m, 0.5s, then slow for 1s
         ControlR1 s = p2.calculate(0.02, initial, goal);
@@ -452,7 +452,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     /** Initially at max V, slow immediately */
     @Test
     void testETACruiseGMinus() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 1, 1, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 1, 1, 0.01);
         ControlR1 initial = new ControlR1(0, 1); // cruising at maxV
         ModelR1 goal = new ModelR1(0.5, 0); // want to go 0.5m, so we're on G-
         ControlR1 s = p2.calculate(0.02, initial, goal);
@@ -470,7 +470,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     /** Initially at cruise, goal is the same position */
     @Test
     void testETAReverse() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 1, 1, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 1, 1, 0.01);
         ControlR1 initial = new ControlR1(0, 1);
         ModelR1 goal = new ModelR1(0, 0);
         ControlR1 s = p2.calculate(0.02, initial, goal);
@@ -490,7 +490,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     /** Same as above in the other direction */
     @Test
     void testETACruiseMinus() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 1, 1, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 1, 1, 0.01);
         ControlR1 initial = new ControlR1(0, -1);
         ModelR1 goal = new ModelR1(-1, 0);
         ControlR1 s = p2.calculate(0.02, initial, goal);
@@ -505,7 +505,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     /** Same as above in the other direction */
     @Test
     void testETACruiseMinusGPlus() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 1, 1, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 1, 1, 0.01);
         ControlR1 initial = new ControlR1(0, -1);
         ModelR1 goal = new ModelR1(-0.5, 0);
         ControlR1 s = p2.calculate(0.02, initial, goal);
@@ -524,7 +524,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     /** Now we expose acceleration in the profile state, so make sure it's right. */
     @Test
     void testAccel1() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 3, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 3, 2, 0.01);
         ModelR1 initial = new ModelR1(0, 0);
         ModelR1 goal = new ModelR1(1, 0);
         ControlR1 s = p2.calculate(0.02, initial.control(), goal);
@@ -538,7 +538,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
 
     @Test
     void testAccel2() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 3, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 3, 2, 0.01);
         // inverted
         ModelR1 initial = new ModelR1(0, 0);
         ModelR1 goal = new ModelR1(-1, 0);
@@ -553,7 +553,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
 
     @Test
     void testAccel3() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 3, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 3, 2, 0.01);
         // cruising
         ModelR1 initial = new ModelR1(0, 3);
         ModelR1 goal = new ModelR1(10, 0);
@@ -568,20 +568,20 @@ class TrapezoidIncrementalProfileTest implements Timeless {
 
     @Test
     void testIntercepts() {
-        TrapezoidIncrementalProfile p = new TrapezoidIncrementalProfile(logger.name("one"), 5, 0.5, 0.01);
+        TrapezoidProfileR1 p = new TrapezoidProfileR1(logger.name("one"), 5, 0.5, 0.01);
         ControlR1 s = new ControlR1(1, 1);
         assertEquals(0, p.c_plus(s), DELTA);
         assertEquals(2, p.c_minus(s), DELTA);
 
         // more accel
-        p = new TrapezoidIncrementalProfile(logger.name("two"), 5, 1, 0.01);
+        p = new TrapezoidProfileR1(logger.name("two"), 5, 1, 0.01);
         s = new ControlR1(1, 1);
         // means less offset
         assertEquals(0.5, p.c_plus(s), DELTA);
         assertEquals(1.5, p.c_minus(s), DELTA);
 
         // negative velocity, result should be the same.
-        p = new TrapezoidIncrementalProfile(logger.name("three"), 5, 1, 0.01);
+        p = new TrapezoidProfileR1(logger.name("three"), 5, 1, 0.01);
         s = new ControlR1(1, -1);
         // means less offset
         assertEquals(0.5, p.c_plus(s), DELTA);
@@ -591,9 +591,9 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     // see studies/rrts TestRRTStar7
     @Test
     void testInterceptsFromRRT() {
-        TrapezoidIncrementalProfile p = new TrapezoidIncrementalProfile(logger.name("one"), 5, 1, 0.01);
+        TrapezoidProfileR1 p = new TrapezoidProfileR1(logger.name("one"), 5, 1, 0.01);
 
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger.name("two"), 5, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger.name("two"), 5, 2, 0.01);
 
         assertEquals(0, p.c_minus(new ControlR1(0, 0)), 0.001);
         assertEquals(0, p.c_plus(new ControlR1(0, 0)), 0.001);
@@ -632,9 +632,9 @@ class TrapezoidIncrementalProfileTest implements Timeless {
 
     @Test
     void testQSwitch() {
-        TrapezoidIncrementalProfile p = new TrapezoidIncrementalProfile(logger.name("one"), 5, 1, 0.01);
+        TrapezoidProfileR1 p = new TrapezoidProfileR1(logger.name("one"), 5, 1, 0.01);
 
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger.name("two"), 5, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger.name("two"), 5, 2, 0.01);
 
         assertEquals(0.375, p2.qSwitchIplusGminus(new ControlR1(0, 0), new ModelR1(0.5, 1.0)), 0.001);
         assertEquals(0.125, p2.qSwitchIminusGplus(new ControlR1(0, 0), new ModelR1(0.5, 1.0)), 0.001);
@@ -657,7 +657,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     /** Verify some switching velocity cases */
     @Test
     void testQDotSwitch2() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 5, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 5, 2, 0.01);
         // good path, c(I)=-3, x=v^2/4, x=3, v=sqrt(12)
         assertEquals(3.464, p2.qDotSwitchIplusGminus(new ControlR1(-2, 2), new ModelR1(2, 2)), 0.001);
         // c(I)=-2, x=v^2/4, x=2, v=sqrt(8)
@@ -692,7 +692,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
 
     @Test
     void testQDotSwitch2a() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 5, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 5, 2, 0.01);
         // good path, c(I)=-3, x=v^2/4, x=3, v=sqrt(12)
         assertEquals(3.464, p2.qDotSwitchIplusGminus(new ControlR1(-2, 2), new ModelR1(2, -2)), 0.001);
         // c(I)=-2, x=v^2/4, x=2, v=sqrt(8)
@@ -726,7 +726,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
 
     @Test
     void testQDotSwitch2b() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 5, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 5, 2, 0.01);
         // good path, c(I)=-3, x=v^2/4, x=3, v=sqrt(12)
         assertEquals(3.464, p2.qDotSwitchIplusGminus(new ControlR1(-2, -2), new ModelR1(2, 2)), 0.001);
         // c(I)=-2, x=v^2/4, x=2, v=sqrt(8)
@@ -761,7 +761,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     @Test
     void testOneLongT() {
         // if we supply a very long dt, we should end up at the goal
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 3, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 3, 2, 0.01);
         ModelR1 initial = new ModelR1(0, 0);
         // goal is far, requires (brief) cruising
         ModelR1 goal = new ModelR1(5, 0);
@@ -774,7 +774,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     @Test
     void testOneLongTReverse() {
         // if we supply a very long dt, we should end up at the goal
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 3, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 3, 2, 0.01);
         ModelR1 initial = new ModelR1(0, 0);
         // goal is far, requires (brief) cruising
         ModelR1 goal = new ModelR1(-5, 0);
@@ -787,7 +787,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     @Test
     void testManyLongT() {
         // if we supply a very long dt, we should end up at the goal
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 3, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 3, 2, 0.01);
         Random random = new Random();
         for (int i = 0; i < 10000; ++i) {
             // random states in the square between (-2,-2) and (2,2)
@@ -802,7 +802,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
 
     @Test
     void reciprocal() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 3, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 3, 2, 0.01);
         ModelR1 initial = new ModelR1(-1, 1);
         ModelR1 goal = new ModelR1(-1, -1);
         ControlR1 s = p2.calculate(10, initial.control(), goal);
@@ -812,7 +812,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
 
     @Test
     void endEarly() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 3, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 3, 2, 0.01);
         // in this case, t1 for I+G- is 0, and i think I-G+ is doing the wrong thing.
         // the delta v is 1, accel is 2, so this is a 0.5s solution.
         ControlR1 initial = new ControlR1(-1, 2);
@@ -841,7 +841,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     // like above but with reciprocal starting point
     @Test
     void endEarly2() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 3, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 3, 2, 0.01);
 
         ControlR1 initial = new ControlR1(-1, -2);
         ModelR1 goal = new ModelR1(-0.25, 1);
@@ -865,7 +865,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
 
     @Test
     void anotherCase() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 3, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 3, 2, 0.01);
         ControlR1 initial = new ControlR1(1.127310, -0.624930);
         ModelR1 goal = new ModelR1(1.937043, 0.502350);
         ControlR1 s = p2.calculate(10, initial, goal);
@@ -876,7 +876,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
 
     @Test
     void yetAnother() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 3, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 3, 2, 0.01);
         ControlR1 initial = new ControlR1(-1.178601, -1.534504);
         ModelR1 goal = new ModelR1(-0.848954, -1.916583);
         ControlR1 s = p2.calculate(10, initial, goal);
@@ -887,7 +887,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     @Test
     void someTcase() {
         // this is an I-G+ path
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 3, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 3, 2, 0.01);
         ModelR1 initial = new ModelR1(1.655231, 1.967906);
         ModelR1 goal = new ModelR1(0.080954, -1.693829);
         ControlR1 s = p2.calculate(10, initial.control(), goal);
@@ -898,7 +898,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
 
     @Test
     void someTcase2() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 3, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 3, 2, 0.01);
 
         ControlR1 initial = new ControlR1(1.747608, -0.147275);
         ModelR1 goal = new ModelR1(1.775148, 0.497717);
@@ -939,7 +939,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
 
     @Test
     void someTcase3() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 3, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 3, 2, 0.01);
         ModelR1 initial = new ModelR1(0.985792, 1.340926);
         ModelR1 goal = new ModelR1(-0.350934, -1.949649);
         ControlR1 s = p2.calculate(10, initial.control(), goal);
@@ -950,7 +950,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
 
     @Test
     void someTcase4() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 3, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 3, 2, 0.01);
         ModelR1 initial = new ModelR1(0, 1);
         ModelR1 goal = new ModelR1(0, -1);
         ControlR1 s = p2.calculate(10, initial.control(), goal);
@@ -961,7 +961,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
 
     @Test
     void someTcase2a() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 3, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 3, 2, 0.01);
         ModelR1 initial = new ModelR1(1.747608, -0.147275);
         ModelR1 goal = new ModelR1(1.775148, 0.497717);
         ControlR1 s = p2.calculate(10, initial.control(), goal);
@@ -974,7 +974,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     @Test
     void testVT() {
         // lower max V than the other cases here
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 3, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 3, 2, 0.01);
         // initial is (-2,2), vmax is 3, u is 2, so time to limit is 0.5.
         // at 0.5, v=2+2*0.5=3. x=-2+2*0.5+0.5*2*(0.5)^2 = -2+1+0.25=-0.75
         // so this is right at the limit, we should just proceed.
@@ -992,7 +992,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
 
     @Test
     void testVT2() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 3, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 3, 2, 0.01);
 
         // if we're *near* the limit then there should be two segments.
         ControlR1 s = p2.calculate(0.02, new ControlR1(-0.78, 2.98), new ModelR1(2, 2));
@@ -1010,7 +1010,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
 
     @Test
     void testVT3() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 3, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 3, 2, 0.01);
 
         // if we're at the limit but right at the end, we should join G-.
         ControlR1 s = p2.calculate(0.02, new ControlR1(0.75, 3.00), new ModelR1(2, 2));
@@ -1027,7 +1027,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
 
     @Test
     void testVT4() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 3, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 3, 2, 0.01);
         // if we're *near* the end, there should be two segments.
         // 0.75-0.01*3
         ControlR1 s = p2.calculate(0.02, new ControlR1(0.72, 3.00), new ModelR1(2, 2));
@@ -1051,7 +1051,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     /** Verify the time to the switching point via each path */
     @Test
     void testT() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 5, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 5, 2, 0.01);
         // dv=1.464, a=2
         assertEquals(0.732, p2.t1IplusGminus(new ControlR1(-2, 2), new ModelR1(2, 2)), 0.001);
         // dv=0.828, a=2
@@ -1085,7 +1085,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
 
     @Test
     void testTa() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 5, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 5, 2, 0.01);
 
         // dv=1.464
         assertEquals(0.732, p2.t1IplusGminus(new ControlR1(-2, 2), new ModelR1(2, -2)), 0.001);
@@ -1119,7 +1119,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
 
     @Test
     void testTb() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 5, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 5, 2, 0.01);
         // dv=5.464
         assertEquals(2.732, p2.t1IplusGminus(new ControlR1(-2, -2), new ModelR1(2, 2)), 0.001);
         // dv=4.828
@@ -1154,7 +1154,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     /** Verify the time to the switching point */
     @Test
     void testT1() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 5, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 5, 2, 0.01);
         assertEquals(0.732, p2.t1(new ControlR1(-2, 2), new ModelR1(2, 2)), 0.001);
         assertEquals(0.414, p2.t1(new ControlR1(-1, 2), new ModelR1(1, 2)), 0.001);
         assertEquals(0.225, p2.t1(new ControlR1(-0.5, 2), new ModelR1(0.5, 2)), 0.001);
@@ -1183,7 +1183,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     /** Verify paths taken */
     @Test
     void testCalculate() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 5, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 5, 2, 0.01);
         assertEquals(-1.959, p2.calculate(0.02, new ControlR1(-2, 2), new ModelR1(2, 2)).x(), 0.001);
         assertEquals(-0.959, p2.calculate(0.02, new ControlR1(-1, 2), new ModelR1(1, 2)).x(), 0.001);
         assertEquals(-0.459, p2.calculate(0.02, new ControlR1(-0.5, 2), new ModelR1(0.5, 2)).x(), 0.001);
@@ -1204,7 +1204,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
 
     @Test
     void testCalculateA() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 5, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 5, 2, 0.01);
         assertEquals(-1.959, p2.calculate(0.02, new ControlR1(-2, 2), new ModelR1(2, -2)).x(), 0.001);
         assertEquals(-0.959, p2.calculate(0.02, new ControlR1(-1, 2), new ModelR1(1, -2)).x(), 0.001);
         assertEquals(-0.459, p2.calculate(0.02, new ControlR1(-0.5, 2), new ModelR1(0.5, -2)).x(), 0.001);
@@ -1224,7 +1224,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
 
     @Test
     void testCalculateB() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 5, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 5, 2, 0.01);
         assertEquals(-2.039, p2.calculate(0.02, new ControlR1(-2, -2), new ModelR1(2, 2)).x(), 0.001);
         assertEquals(-1.039, p2.calculate(0.02, new ControlR1(-1, -2), new ModelR1(1, 2)).x(), 0.001);
         assertEquals(-0.539, p2.calculate(0.02, new ControlR1(-0.5, -2), new ModelR1(0.5, 2)).x(), 0.001);
@@ -1244,7 +1244,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
 
     @Test
     void testSwitchingTime() {
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, 5, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger, 5, 2, 0.01);
         // between (-2,2) and (2,2) the switching point is at (0, 3.464)
         // at the switching point,
         // u=-2, v=3.464, dt=0.02, dx = 0.0693 + 0.0004, dv=0.04
@@ -1269,9 +1269,9 @@ class TrapezoidIncrementalProfileTest implements Timeless {
 
     @Test
     void testQDotSwitch() {
-        TrapezoidIncrementalProfile p = new TrapezoidIncrementalProfile(logger.name("one"), 5, 1, 0.01);
+        TrapezoidProfileR1 p = new TrapezoidProfileR1(logger.name("one"), 5, 1, 0.01);
 
-        TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger.name("two"), 5, 2, 0.01);
+        TrapezoidProfileR1 p2 = new TrapezoidProfileR1(logger.name("two"), 5, 2, 0.01);
 
         assertEquals(1.224, p2.qDotSwitchIplusGminus(new ControlR1(0, 0), new ModelR1(0.5, 1.0)), 0.001);
         assertEquals(Double.NaN, p2.qDotSwitchIminusGplus(new ControlR1(0, 0), new ModelR1(0.5, 1.0)), 0.001);
@@ -1300,7 +1300,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
      */
     @Test
     void testTriangle() {
-        TrapezoidIncrementalProfile profileX = new TrapezoidIncrementalProfile(logger, 5, 2, 0.1);
+        TrapezoidProfileR1 profileX = new TrapezoidProfileR1(logger, 5, 2, 0.1);
         ControlR1 sample = new ControlR1(0, 0);
         final ModelR1 end = new ModelR1(1, 0);
 
@@ -1340,7 +1340,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
      */
     @Test
     void testInvertedTriangle() {
-        TrapezoidIncrementalProfile profileX = new TrapezoidIncrementalProfile(logger, 5, 2, 0.01);
+        TrapezoidProfileR1 profileX = new TrapezoidProfileR1(logger, 5, 2, 0.01);
         ControlR1 sample = new ControlR1(0, 0);
         final ModelR1 end = new ModelR1(-1, 0);
 
@@ -1371,7 +1371,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     /** with a lower top speed, this profile includes a cruise phase. */
     @Test
     void testCruise() {
-        TrapezoidIncrementalProfile profileX = new TrapezoidIncrementalProfile(logger, 1, 2, 0.01);
+        TrapezoidProfileR1 profileX = new TrapezoidProfileR1(logger, 1, 2, 0.01);
         ControlR1 sample = new ControlR1(0, 0);
         final ModelR1 end = new ModelR1(1, 0);
 
@@ -1421,7 +1421,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
      */
     @Test
     void testUTurn() {
-        TrapezoidIncrementalProfile profileX = new TrapezoidIncrementalProfile(logger, 5, 2, 0.01);
+        TrapezoidProfileR1 profileX = new TrapezoidProfileR1(logger, 5, 2, 0.01);
 
         // initially heading away from the goal
         ControlR1 sample = new ControlR1(0.1, 1);
@@ -1468,7 +1468,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     /** Same as above but not inverted. */
     @Test
     void testUTurnNotInverted() {
-        TrapezoidIncrementalProfile profileX = new TrapezoidIncrementalProfile(logger, 5, 2, 0.01);
+        TrapezoidProfileR1 profileX = new TrapezoidProfileR1(logger, 5, 2, 0.01);
 
         // initially heading away from the goal
         ControlR1 sample = new ControlR1(-0.1, -1, 0);
@@ -1519,7 +1519,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
      */
     @Test
     void testUTurn2() {
-        TrapezoidIncrementalProfile profileX = new TrapezoidIncrementalProfile(logger, 5, 2, 0.01);
+        TrapezoidProfileR1 profileX = new TrapezoidProfileR1(logger, 5, 2, 0.01);
 
         // initially at the goal with nonzero velocity
         ControlR1 sample = new ControlR1(0, 1);
@@ -1574,7 +1574,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
      */
     @Test
     void testUTurn2NotInverted() {
-        TrapezoidIncrementalProfile profileX = new TrapezoidIncrementalProfile(logger, 5, 2, 0.01);
+        TrapezoidProfileR1 profileX = new TrapezoidProfileR1(logger, 5, 2, 0.01);
 
         // initially at the goal with nonzero velocity
         ControlR1 sample = new ControlR1(0, -1);
@@ -1629,7 +1629,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
      */
     @Test
     void testUTurn3() {
-        TrapezoidIncrementalProfile profileX = new TrapezoidIncrementalProfile(logger, 5, 2, 0.01);
+        TrapezoidProfileR1 profileX = new TrapezoidProfileR1(logger, 5, 2, 0.01);
 
         // behind the goal, too fast to stop.
         ControlR1 sample = new ControlR1(-0.1, 1);
@@ -1676,7 +1676,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
 
     @Test
     void testWindupCase() {
-        TrapezoidIncrementalProfile profileX = new TrapezoidIncrementalProfile(logger, 5, 2, 0.05);
+        TrapezoidProfileR1 profileX = new TrapezoidProfileR1(logger, 5, 2, 0.05);
         ControlR1 sample = new ControlR1(0, 0);
         final ModelR1 end = new ModelR1(0, 1);
         sample = profileX.calculate(0.02, sample, end);
@@ -1697,7 +1697,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
      */
     @Test
     void testUTurnWindup() {
-        TrapezoidIncrementalProfile profileX = new TrapezoidIncrementalProfile(logger, 5, 2, 0.05);
+        TrapezoidProfileR1 profileX = new TrapezoidProfileR1(logger, 5, 2, 0.05);
 
         // initially at rest
         ControlR1 sample = new ControlR1(0, 0);
@@ -1781,7 +1781,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
         final ModelR1 goal = new ModelR1(3, 0);
         ControlR1 state = new ControlR1(0, 0);
 
-        TrapezoidIncrementalProfile profile = new TrapezoidIncrementalProfile(logger, 1.75, 0.75, 0.01);
+        TrapezoidProfileR1 profile = new TrapezoidProfileR1(logger, 1.75, 0.75, 0.01);
         for (int i = 0; i < 450; ++i) {
             state = profile.calculate(TEN_MS, state, goal);
         }
@@ -1799,14 +1799,14 @@ class TrapezoidIncrementalProfileTest implements Timeless {
     void posContinuousUnderVelChange() {
         ModelR1 goal = new ModelR1(12, 0);
 
-        TrapezoidIncrementalProfile profile = new TrapezoidIncrementalProfile(logger.name("one"), 1.75, 0.75, 0.01);
+        TrapezoidProfileR1 profile = new TrapezoidProfileR1(logger.name("one"), 1.75, 0.75, 0.01);
         ControlR1 state = profile.calculate(TEN_MS, new ControlR1(0, 0), goal);
 
         double lastPos = state.x();
         for (int i = 0; i < 1600; ++i) {
             if (i == 400) {
                 // impose new slower limit
-                profile = new TrapezoidIncrementalProfile(logger.name("two"), 0.75, 0.75, 0.01);
+                profile = new TrapezoidProfileR1(logger.name("two"), 0.75, 0.75, 0.01);
             }
 
             state = profile.calculate(TEN_MS, state, goal);
@@ -1834,7 +1834,7 @@ class TrapezoidIncrementalProfileTest implements Timeless {
         final ModelR1 goal = new ModelR1(-2, 0);
         ControlR1 state = new ControlR1(0, 0);
 
-        TrapezoidIncrementalProfile profile = new TrapezoidIncrementalProfile(logger, 0.75, 0.75, 0.01);
+        TrapezoidProfileR1 profile = new TrapezoidProfileR1(logger, 0.75, 0.75, 0.01);
         for (int i = 0; i < 400; ++i) {
             state = profile.calculate(TEN_MS, state, goal);
         }
@@ -1847,14 +1847,14 @@ class TrapezoidIncrementalProfileTest implements Timeless {
         ModelR1 goal = new ModelR1(-2, 0);
         ControlR1 state = new ControlR1(0, 0);
 
-        TrapezoidIncrementalProfile profile = new TrapezoidIncrementalProfile(logger, 0.75, 0.75, 0.01);
+        TrapezoidProfileR1 profile = new TrapezoidProfileR1(logger, 0.75, 0.75, 0.01);
         for (int i = 0; i < 200; ++i) {
             state = profile.calculate(TEN_MS, state, goal);
         }
         assertNotEquals(state, goal);
 
         goal = new ModelR1(0.0, 0.0);
-        profile = new TrapezoidIncrementalProfile(logger, 0.75, 0.75, 0.01);
+        profile = new TrapezoidProfileR1(logger, 0.75, 0.75, 0.01);
         for (int i = 0; i < 600; ++i) {
             state = profile.calculate(TEN_MS, state, goal);
         }
@@ -1868,13 +1868,13 @@ class TrapezoidIncrementalProfileTest implements Timeless {
         final ModelR1 goal = new ModelR1(4, 0);
         ControlR1 state = new ControlR1(0, 0);
 
-        TrapezoidIncrementalProfile profile = new TrapezoidIncrementalProfile(logger, 0.75, 0.75, 0.01);
+        TrapezoidProfileR1 profile = new TrapezoidProfileR1(logger, 0.75, 0.75, 0.01);
         for (int i = 0; i < 200; ++i) {
             state = profile.calculate(TEN_MS, state, goal);
         }
         assertNear(0.75, state.v(), 10e-5);
 
-        profile = new TrapezoidIncrementalProfile(logger, 0.75, 0.75, 0.01);
+        profile = new TrapezoidProfileR1(logger, 0.75, 0.75, 0.01);
         for (int i = 0; i < 2000; ++i) {
             state = profile.calculate(TEN_MS, state, goal);
         }

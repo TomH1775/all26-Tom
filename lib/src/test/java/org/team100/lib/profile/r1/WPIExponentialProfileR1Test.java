@@ -7,7 +7,7 @@ import org.team100.lib.coherence.Takt;
 import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ModelR1;
 
-public class ExponentialProfileWPITest {
+public class WPIExponentialProfileR1Test {
     private static final boolean DEBUG = false;
     private static final double DELTA = 0.001;
 
@@ -18,7 +18,7 @@ public class ExponentialProfileWPITest {
     void testRun() {
         double maxVel = 2;
         double maxAccel = 10;
-        ExponentialProfileWPI profile = new ExponentialProfileWPI(maxVel, maxAccel);
+        WPIExponentialProfileR1 profile = new WPIExponentialProfileR1(maxVel, maxAccel);
         ControlR1 sample = new ControlR1(0, 0);
         final ModelR1 end = new ModelR1(3, 0);
         @SuppressWarnings("unused")
@@ -35,7 +35,7 @@ public class ExponentialProfileWPITest {
     void testSolve() {
         double maxVel = 2;
         double maxAccel = 10;
-        ExponentialProfileWPI profile = new ExponentialProfileWPI(maxVel, maxAccel);
+        WPIExponentialProfileR1 profile = new WPIExponentialProfileR1(maxVel, maxAccel);
         ControlR1 sample = new ControlR1(0, 0);
         final ModelR1 end = new ModelR1(3, 0);
         final double ETA_TOLERANCE = 0.02;
@@ -48,7 +48,7 @@ public class ExponentialProfileWPITest {
     void testSolvePerformance() {
         double maxVel = 2;
         double maxAccel = 10;
-        ExponentialProfileWPI profile = new ExponentialProfileWPI(maxVel, maxAccel);
+        WPIExponentialProfileR1 profile = new WPIExponentialProfileR1(maxVel, maxAccel);
         ControlR1 sample = new ControlR1(0, 0);
         final ModelR1 end = new ModelR1(3, 0);
         final double ETA_TOLERANCE = 0.02;

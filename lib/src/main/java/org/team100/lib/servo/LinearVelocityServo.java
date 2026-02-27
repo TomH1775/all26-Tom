@@ -19,9 +19,9 @@ public interface LinearVelocityServo extends Player {
     void setDutyCycle(double dutyCycle);
 
     /**
-     * There's no profile here, it just sets the mechanism velocity.
-     * 
-     * Set velocity and compute implied acceleration based on the previous call,
+     * Sets velocity without a profile.
+     *
+     * Computes implied acceleration based on the previous call,
      * using TimedRobot100.LOOP_PERIOD_S. If you call this more often, you'll
      * get weird results.
      * <p>
@@ -30,24 +30,40 @@ public interface LinearVelocityServo extends Player {
      * 
      * @param setpointM_S desired speed, m/s
      */
-    void setVelocity(double setpointM_S);
+    void setVelocityDirect(double setpointM_S);
 
     /**
+     * Use a velocity profile.
+     */
+    void setVelocityProfiled(double goalM_S);
+
+    /**
+     * Sets velocity without a profile.
+     * 
      * @param setpointM_S  desired speed, m/s
      * @param setpointM_S2 desired acceleration m/s^2
      */
-    void setVelocity(double setpointM_S, double setpointM_S2);
+    void setVelocityDirect(double setpointM_S, double setpointM_S2);
 
     /** meters/sec. Note this can be noisy, maybe filter it. */
     double getVelocity();
 
-    /** we're within some tolerance of the desired */
+    /** Near the profile setpoint */
+    boolean atSetpoint();
+
+    /** Useful for sequencing, without waiting for the controller. */
+    boolean profileDone();
+
+    /** Within some tolerance of the desired */
     boolean atGoal();
 
     void stop();
 
-    /** meters. Implementations should use the Cache mechanism. */
+    /** Meters. Implementations should use the Cache mechanism. */
     double getDistance();
+
+    /** For cleanup. */
+    void close();
 
     /** For logging */
     void periodic();
