@@ -70,7 +70,7 @@ class Distortion:
                         ]
                     ]
                 )
-            case Identity.GLOBAL_GAME_PIECE:
+            case Identity.CAMERA_BACK:
                 return np.array(
                     [
                         [
@@ -78,6 +78,17 @@ class Distortion:
                             0.09223526926,
                             0.0001767030772,
                             -8.758271042e-05,
+                        ]
+                    ]
+                )
+            case Identity.CAMERA_FRONT:
+                return np.array(
+                    [
+                        [
+                            -0.2961790762, 
+                            0.09865662084, 
+                            -0.0001707410996, 
+                            0.0002482554604,
                         ]
                     ]
                 )

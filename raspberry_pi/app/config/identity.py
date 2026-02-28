@@ -37,11 +37,12 @@ class Identity(Enum):
     DEV2 = "4230a96261f3ab90"
 
     # camera-bot cameras
-    GLOBAL_GAME_PIECE = "d44649628c20d4d4"
+    CAMERA_BACK = "d44649628c20d4d4" #24
+    CAMERA_FRONT = "8ddb2ed6c49a9bce"  # 32
 
     # comp bot
     FUNNEL = "1e5acbaa5a7f9d10"  # 30
-    CORAL_LEFT = "8ddb2ed6c49a9bce"  # 32
+    
     DEV = "364f07fb090a3bf7"  # 31
     SWERVE_LEFT = "8132c256f63bbb4e"  # 33
     SWERVE_RIGHT = "47403d5eafe002a9"  # 34
