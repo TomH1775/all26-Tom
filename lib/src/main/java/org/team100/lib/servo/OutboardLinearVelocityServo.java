@@ -101,7 +101,6 @@ public class OutboardLinearVelocityServo implements LinearVelocityServo {
      * Invalidates the current profile.
      * Uses the same setpoint for "current" and "next".
      * TODO: expose both setpoints here.
-     * TODO: change name of this method to "direct"
      */
     @Override
     public void setVelocityDirect(double setpointM_S, double setpointM_S2) {

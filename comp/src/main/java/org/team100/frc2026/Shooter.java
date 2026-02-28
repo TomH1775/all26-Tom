@@ -11,6 +11,8 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX60Motor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.profile.r1.AccelLimitedVelocityProfileR1;
+import org.team100.lib.profile.r1.CurrentLimitedExponentialVelocityProfileR1;
 import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
@@ -36,8 +38,14 @@ public class Shooter extends SubsystemBase {
 
         // first parameter is actually accel
         // second parameter is actually jerk
-        ProfileR1 profile = new TrapezoidProfileR1(
-                log, 10, 100, 1);
+        // ProfileR1 profile = new TrapezoidProfileR1(
+        //         log, 10, 100, 1);
+        // simple accel limit
+        // ProfileR1 profile = new AccelLimitProfileR1(10, 10);
+        // current-limited exponential
+        ProfileR1 profile = new CurrentLimitedExponentialVelocityProfileR1(
+            10, 10, 20, 30);
+
         ReferenceR1 ref = new ProfileReferenceR1(
                 log, () -> profile, 1, Double.MAX_VALUE);
 
@@ -79,11 +87,11 @@ public class Shooter extends SubsystemBase {
 
                 double tolerance = 1;
                 m_servo1 = new OutboardLinearVelocityServo(
-                    log1, mechanism1, ref, tolerance);
+                        log1, mechanism1, ref, tolerance);
                 m_servo2 = new OutboardLinearVelocityServo(
-                    log2, mechanism2, ref, tolerance);
+                        log2, mechanism2, ref, tolerance);
                 m_servo3 = new OutboardLinearVelocityServo(
-                    log3, mechanism3, ref, tolerance);
+                        log3, mechanism3, ref, tolerance);
             }
             default -> {
                 SimulatedBareMotor m_motor1 = new SimulatedBareMotor(log1, 600);
@@ -95,17 +103,17 @@ public class Shooter extends SubsystemBase {
                 LinearMechanism mechanism2 = new LinearMechanism(
                         log2, m_motor2, m_motor2.encoder(), 1, 0.1,
                         Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-              
+
                 SimulatedBareMotor m_motor3 = new SimulatedBareMotor(log3, 600);
                 LinearMechanism mechanism3 = new LinearMechanism(
                         log3, m_motor3, m_motor3.encoder(), 1, 0.1,
-                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);              
+                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
                 m_servo1 = new OutboardLinearVelocityServo(
-                    log1, mechanism1, ref, 1);
+                        log1, mechanism1, ref, 1);
                 m_servo2 = new OutboardLinearVelocityServo(
-                    log2, mechanism2, ref, 1);
+                        log2, mechanism2, ref, 1);
                 m_servo3 = new OutboardLinearVelocityServo(
-                    log3, mechanism3, ref, 1);
+                        log3, mechanism3, ref, 1);
             }
         }
     }
