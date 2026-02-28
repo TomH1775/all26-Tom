@@ -3,13 +3,13 @@ package org.team100.lib.servo;
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.LoggerFactory.ControlR1Logger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
+import org.team100.lib.logging.LoggerFactory.VelocityControlR1Logger;
 import org.team100.lib.mechanism.LinearMechanism;
-import org.team100.lib.reference.r1.ReferenceR1;
-import org.team100.lib.reference.r1.SetpointsR1;
-import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.reference.r1.VelocityReferenceR1;
+import org.team100.lib.state.VelocityControlR1;
+
+import edu.wpi.first.math.MathUtil;
 
 /**
  * Profiled or direct velocity control using the feedback controller in the
@@ -22,11 +22,11 @@ public class OutboardLinearVelocityServo implements LinearVelocityServo {
     private static final boolean DEBUG = false;
 
     private final LinearMechanism m_mechanism;
-    private final ReferenceR1 m_ref;
+    private final VelocityReferenceR1 m_ref;
     private final double m_tolerance;
 
     private final DoubleLogger m_log_goal;
-    private final ControlR1Logger m_log_control;
+    private final VelocityControlR1Logger m_log_control;
     private final DoubleLogger m_log_velocity;
 
     // For calculating acceleration
@@ -34,21 +34,20 @@ public class OutboardLinearVelocityServo implements LinearVelocityServo {
     // For calculating acceleration
     private double m_prevT = 0;
 
-    private ModelR1 m_goal;
-    /** We use the "x" field for *VELOCITY* */
-    private ControlR1 m_nextSetpoint;
+    private Double m_goal;
+    private VelocityControlR1 m_nextSetpoint;
 
     public OutboardLinearVelocityServo(
             LoggerFactory parent,
             LinearMechanism mechanism,
-            ReferenceR1 ref,
+            VelocityReferenceR1 ref,
             double tolerance) {
         LoggerFactory log = parent.type(this);
         m_mechanism = mechanism;
         m_ref = ref;
         m_tolerance = tolerance;
         m_log_goal = log.doubleLogger(Level.COMP, "goal (m_s)");
-        m_log_control = log.ControlR1Logger(Level.COMP, "control (m_s)");
+        m_log_control = log.VelocityControlR1Logger(Level.COMP, "control (m_s)");
         m_log_velocity = log.doubleLogger(Level.COMP, "velocity (m_s)");
     }
 
@@ -57,24 +56,23 @@ public class OutboardLinearVelocityServo implements LinearVelocityServo {
         if (DEBUG)
             System.out.println("WARNING: make sure resetting encoder position doesn't break anything");
         // m_mechanism.resetEncoderPosition();
-        ControlR1 measurement = new ControlR1(getVelocity(), 0);
+        VelocityControlR1 measurement = new VelocityControlR1(getVelocity(), 0);
         m_nextSetpoint = measurement;
-        m_ref.setGoal(measurement.model());
-        m_ref.init(measurement.model());
+        m_ref.setGoal(measurement.v());
+        m_ref.init(measurement.v());
     }
 
     /** Resets the profile if necessary */
     @Override
     public void setVelocityProfiled(double goalM_S) {
         m_log_goal.log(() -> goalM_S);
-        ModelR1 goal = new ModelR1(goalM_S, 0);
-        if (!goal.near(m_goal, m_tolerance, Double.MAX_VALUE)) {
-            m_goal = goal;
-            m_ref.setGoal(goal);
+        if (m_goal == null || !MathUtil.isNear(goalM_S, m_goal, m_tolerance)) {
+            m_goal = goalM_S;
+            m_ref.setGoal(goalM_S);
             if (m_nextSetpoint == null) {
-                m_nextSetpoint = new ControlR1(getVelocity(), 0);
+                m_nextSetpoint = new VelocityControlR1(getVelocity(), 0);
             }
-            m_ref.init(m_nextSetpoint.model());
+            m_ref.init(m_nextSetpoint.v());
         }
         actuate(m_ref.get());
     }
@@ -105,14 +103,14 @@ public class OutboardLinearVelocityServo implements LinearVelocityServo {
     @Override
     public void setVelocityDirect(double setpointM_S, double setpointM_S2) {
         m_goal = null;
-        ControlR1 setpoint = new ControlR1(setpointM_S, setpointM_S2);
-        actuate(new SetpointsR1(setpoint, setpoint));
+        VelocityControlR1 setpoint = new VelocityControlR1(setpointM_S, setpointM_S2);
+        actuate(setpoint);
     }
 
-    private void actuate(SetpointsR1 setpoints) {
-        m_nextSetpoint = setpoints.next();
-        double velocityM_S = m_nextSetpoint.x();
-        double accelM_S2 = m_nextSetpoint.v();
+    private void actuate(VelocityControlR1 setpoints) {
+        m_nextSetpoint = setpoints;
+        double velocityM_S = m_nextSetpoint.v();
+        double accelM_S2 = m_nextSetpoint.a();
         m_mechanism.setVelocity(velocityM_S, accelM_S2, 0);
         m_log_control.log(() -> m_nextSetpoint);
     }
@@ -151,7 +149,7 @@ public class OutboardLinearVelocityServo implements LinearVelocityServo {
     @Override
     public boolean atSetpoint() {
         // Note x field for velocity.
-        double vErr = m_nextSetpoint.x() - m_mechanism.getVelocityM_S();
+        double vErr = m_nextSetpoint.v() - m_mechanism.getVelocityM_S();
         return Math.abs(vErr) < m_tolerance;
     }
 

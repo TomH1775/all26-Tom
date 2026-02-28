@@ -9,7 +9,7 @@ import org.team100.lib.mechanism.LinearMechanism;
 import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
 import org.team100.lib.profile.r1.ProfileR1;
-import org.team100.lib.reference.r1.NoReferenceR1;
+import org.team100.lib.reference.r1.NoVelocityReferenceR1;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
 import org.team100.lib.sensor.position.absolute.CombinedRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
@@ -62,7 +62,7 @@ public class SimulatedSwerveModule100 extends SwerveModule100 {
                 parent, motor, motor.encoder(), DRIVE_GEAR_RATIO, WHEEL_DIAMETER_M,
                 Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
         return new OutboardLinearVelocityServo(
-                parent, mech, new NoReferenceR1(), 1);
+                parent, mech, new NoVelocityReferenceR1(), 1);
     }
 
     /**

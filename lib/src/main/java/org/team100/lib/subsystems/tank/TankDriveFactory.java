@@ -11,7 +11,7 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.rev.NeoCANSparkMotor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
-import org.team100.lib.reference.r1.NoReferenceR1;
+import org.team100.lib.reference.r1.NoVelocityReferenceR1;
 import org.team100.lib.servo.OutboardLinearVelocityServo;
 import org.team100.lib.util.CanId;
 
@@ -47,8 +47,8 @@ public class TankDriveFactory {
                 Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
         return new TankDrive(fieldLogger, trackWidthM,
-                new OutboardLinearVelocityServo(logL, mechL, new NoReferenceR1(), 1),
-                new OutboardLinearVelocityServo(logR, mechR, new NoReferenceR1(), 1));
+                new OutboardLinearVelocityServo(logL, mechL, new NoVelocityReferenceR1(), 1),
+                new OutboardLinearVelocityServo(logR, mechR, new NoVelocityReferenceR1(), 1));
     }
 
     /** Real or simulated depending on identity */

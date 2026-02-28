@@ -1,9 +1,9 @@
 package org.team100.lib.subsystems.shooter;
 
-import org.team100.lib.config.SimpleDynamics;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
+import org.team100.lib.config.SimpleDynamics;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.mechanism.LinearMechanism;
 import org.team100.lib.motor.BareMotor;
@@ -11,10 +11,10 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.rev.Neo550CANSparkMotor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
-import org.team100.lib.profile.r1.ProfileR1;
-import org.team100.lib.profile.r1.TrapezoidProfileR1;
-import org.team100.lib.reference.r1.ProfileReferenceR1;
-import org.team100.lib.reference.r1.ReferenceR1;
+import org.team100.lib.profile.r1.AccelLimitedVelocityProfileR1;
+import org.team100.lib.profile.r1.VelocityProfileR1;
+import org.team100.lib.reference.r1.VelocityProfileReferenceR1;
+import org.team100.lib.reference.r1.VelocityReferenceR1;
 import org.team100.lib.servo.OutboardLinearVelocityServo;
 import org.team100.lib.util.CanId;
 
@@ -46,10 +46,9 @@ public class DrumShooterFactory {
                 logR, motorR, motorR.encoder(), GEAR_RATIO, WHEEL_DIA_M,
                 Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
-        ProfileR1 profile = new TrapezoidProfileR1(
-                log, 10, 100, 1);
-        ReferenceR1 ref = new ProfileReferenceR1(
-                log, () -> profile, 1, Double.MAX_VALUE);
+        VelocityProfileR1 profile = new AccelLimitedVelocityProfileR1(10);
+        VelocityReferenceR1 ref = new VelocityProfileReferenceR1(
+                log, () -> profile, 1);
 
         return new DualDrumShooter(parent,
                 new OutboardLinearVelocityServo(logL, mechL, ref, 1),

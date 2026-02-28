@@ -1,17 +1,14 @@
 package org.team100.lib.profile.r1;
 
-import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.VelocityControlR1;
 import org.team100.lib.util.Math100;
 
 /**
  * Velocity limits like the way a motor works.
  * 
  * Applied in velocity space.
- * 
- * The domain objects are abused here: "x" is velocity, "v" is acceleration.
  */
-public class CurrentLimitedExponentialVelocityProfileR1 implements ProfileR1 {
+public class CurrentLimitedExponentialVelocityProfileR1 implements VelocityProfileR1 {
 
     private final double m_maxV;
     private final double m_maxA;
@@ -26,9 +23,9 @@ public class CurrentLimitedExponentialVelocityProfileR1 implements ProfileR1 {
     }
 
     @Override
-    public ControlR1 calculate(double dt, ControlR1 setpoint, ModelR1 goal) {
-        double goalV = goal.x();
-        double setpointV = setpoint.x();
+    public VelocityControlR1 calculate(double dt, VelocityControlR1 setpoint, double goal) {
+        double goalV = goal;
+        double setpointV = setpoint.v();
         double dv = goalV - setpointV;
 
         if (setpointV >= 0) {
@@ -48,7 +45,7 @@ public class CurrentLimitedExponentialVelocityProfileR1 implements ProfileR1 {
                 dv = Math.min(dv, dt * maxD());
             }
         }
-        return new ControlR1(setpoint.x() + dv, dv / dt);
+        return new VelocityControlR1(setpoint.v() + dv, dv / dt);
     }
 
     private double maxA(double setpointV) {
@@ -62,10 +59,4 @@ public class CurrentLimitedExponentialVelocityProfileR1 implements ProfileR1 {
     private double maxD() {
         return m_maxD;
     }
-
-    @Override
-    public ProfileR1 scale(double s) {
-        throw new UnsupportedOperationException("Unimplemented method 'scale'");
-    }
-
 }

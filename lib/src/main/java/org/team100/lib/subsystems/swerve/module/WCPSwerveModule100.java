@@ -13,7 +13,7 @@ import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon500Motor;
 import org.team100.lib.motor.ctre.KrakenX60Motor;
 import org.team100.lib.profile.r1.ProfileR1;
-import org.team100.lib.reference.r1.NoReferenceR1;
+import org.team100.lib.reference.r1.NoVelocityReferenceR1;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
 import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.sensor.position.absolute.CombinedRotaryPositionSensor;
@@ -169,7 +169,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
                 Double.NEGATIVE_INFINITY,
                 Double.POSITIVE_INFINITY);
         return new OutboardLinearVelocityServo(
-                parent, mech, new NoReferenceR1(), 1);
+                parent, mech, new NoVelocityReferenceR1(), 1);
     }
 
     private static LinearVelocityServo driveFalconServo(
@@ -196,7 +196,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
                 driveMotor, encoder, ratio.m_ratio, WHEEL_DIAMETER_M, Double.NEGATIVE_INFINITY,
                 Double.POSITIVE_INFINITY);
         return new OutboardLinearVelocityServo(
-                parent, mech, new NoReferenceR1(), 1);
+                parent, mech, new NoVelocityReferenceR1(), 1);
     }
 
     private static AngularPositionServo turningServo(

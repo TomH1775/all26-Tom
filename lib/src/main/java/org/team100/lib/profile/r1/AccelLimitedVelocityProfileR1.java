@@ -1,14 +1,11 @@
 package org.team100.lib.profile.r1;
 
-import org.team100.lib.state.ControlR1;
-import org.team100.lib.state.ModelR1;
+import org.team100.lib.state.VelocityControlR1;
 
 /**
  * Acceleration and velocity limits applied in velocity space.
- * 
- * The domain objects are abused here: "x" is velocity, "v" is acceleration.
  */
-public class AccelLimitedVelocityProfileR1 implements ProfileR1 {
+public class AccelLimitedVelocityProfileR1 implements VelocityProfileR1 {
 
     private final double m_maxA;
     private final double m_maxD;
@@ -18,10 +15,14 @@ public class AccelLimitedVelocityProfileR1 implements ProfileR1 {
         m_maxD = maxD;
     }
 
+    public AccelLimitedVelocityProfileR1(double maxA) {
+        this(maxA, maxA);
+    }
+
     @Override
-    public ControlR1 calculate(double dt, ControlR1 setpoint, ModelR1 goal) {
-        double goalV = goal.x();
-        double setpointV = setpoint.x();
+    public VelocityControlR1 calculate(double dt, VelocityControlR1 setpoint, double goal) {
+        double goalV = goal;
+        double setpointV = setpoint.v();
         double dv = goalV - setpointV;
 
         if (setpointV >= 0) {
@@ -41,12 +42,6 @@ public class AccelLimitedVelocityProfileR1 implements ProfileR1 {
                 dv = Math.min(dv, dt * m_maxD);
             }
         }
-        return new ControlR1(setpoint.x() + dv, dv / dt);
+        return new VelocityControlR1(setpoint.v() + dv, dv / dt);
     }
-
-    @Override
-    public ProfileR1 scale(double s) {
-        throw new UnsupportedOperationException("Unimplemented method 'scale'");
-    }
-
 }

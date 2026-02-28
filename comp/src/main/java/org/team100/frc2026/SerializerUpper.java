@@ -11,10 +11,10 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX44Motor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
-import org.team100.lib.profile.r1.ProfileR1;
-import org.team100.lib.profile.r1.TrapezoidProfileR1;
-import org.team100.lib.reference.r1.ProfileReferenceR1;
-import org.team100.lib.reference.r1.ReferenceR1;
+import org.team100.lib.profile.r1.AccelLimitedVelocityProfileR1;
+import org.team100.lib.profile.r1.VelocityProfileR1;
+import org.team100.lib.reference.r1.VelocityProfileReferenceR1;
+import org.team100.lib.reference.r1.VelocityReferenceR1;
 import org.team100.lib.servo.OutboardLinearVelocityServo;
 import org.team100.lib.util.CanId;
 
@@ -40,12 +40,9 @@ public class SerializerUpper extends SubsystemBase {
         LoggerFactory log2 = log.name("SerializerUpper2");
 
         m_Shooter = shooter;
-        // first parameter is actually accel
-        // second parameter is actually jerk
-        ProfileR1 profile = new TrapezoidProfileR1(
-                log, 10, 100, GEAR_RATIO);
-        ReferenceR1 ref = new ProfileReferenceR1(
-                log, () -> profile, GEAR_RATIO, Double.MAX_VALUE);
+        VelocityProfileR1 profile = new AccelLimitedVelocityProfileR1(10);
+        VelocityReferenceR1 ref = new VelocityProfileReferenceR1(
+                log, () -> profile, 1);
 
         switch (Identity.instance) {
             case TEST_BOARD_B0, COMP_BOT -> {

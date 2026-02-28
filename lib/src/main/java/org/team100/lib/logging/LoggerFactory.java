@@ -20,6 +20,7 @@ import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ControlSE2;
 import org.team100.lib.state.ModelR1;
 import org.team100.lib.state.ModelSE2;
+import org.team100.lib.state.VelocityControlR1;
 import org.team100.lib.subsystems.prr.EAWConfig;
 import org.team100.lib.subsystems.prr.JointAccelerations;
 import org.team100.lib.subsystems.prr.JointForce;
@@ -718,6 +719,30 @@ public class LoggerFactory {
 
     public ControlR1Logger ControlR1Logger(Level level, String leaf) {
         return new ControlR1Logger(level, leaf);
+    }
+
+    public class VelocityControlR1Logger {
+        private final Level m_level;
+        private final DoubleLogger m_vLogger;
+        private final DoubleLogger m_aLogger;
+
+        VelocityControlR1Logger(Level level, String leaf) {
+            m_level = level;
+            m_vLogger = doubleLogger(level, join(leaf, "v"));
+            m_aLogger = doubleLogger(level, join(leaf, "a"));
+        }
+
+        public void log(Supplier<VelocityControlR1> vals) {
+            if (!allow(m_level))
+                return;
+            VelocityControlR1 val = vals.get();
+            m_vLogger.log(val::v);
+            m_aLogger.log(val::a);
+        }
+    }
+
+    public VelocityControlR1Logger VelocityControlR1Logger(Level level, String leaf) {
+        return new VelocityControlR1Logger(level, leaf);
     }
 
     public class SetpointsR1Logger {

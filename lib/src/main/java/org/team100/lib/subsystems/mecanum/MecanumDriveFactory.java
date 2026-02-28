@@ -11,8 +11,8 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.rev.NeoCANSparkMotor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
-import org.team100.lib.reference.r1.NoReferenceR1;
-import org.team100.lib.reference.r1.ReferenceR1;
+import org.team100.lib.reference.r1.NoVelocityReferenceR1;
+import org.team100.lib.reference.r1.VelocityReferenceR1;
 import org.team100.lib.sensor.gyro.Gyro;
 import org.team100.lib.sensor.gyro.ReduxGyro;
 import org.team100.lib.servo.OutboardLinearVelocityServo;
@@ -70,7 +70,7 @@ public class MecanumDriveFactory {
                 logRR, motorRR, motorRR.encoder(), gearRatio, wheelDiaM,
                 Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
-        ReferenceR1 ref = new NoReferenceR1();
+        VelocityReferenceR1 ref = new NoVelocityReferenceR1();
 
         return new MecanumDrive100(
                 log, fieldLogger, gyro, trackWidthM, wheelbaseM, slip,
