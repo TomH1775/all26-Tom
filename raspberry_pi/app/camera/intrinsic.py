@@ -71,11 +71,11 @@ class Intrinsic:
                         [0, 0, 1],
                     ]
                 )
-            case Identity.CORAL_LEFT:
+            case Identity.CAMERA_FRONT:
                 return np.array(
                     [
-                        [935.4403554, 0.0, 676.3779953],
-                        [0.0, 934.6111779, 537.0691437],
+                        [938.1915949, 0.0, 688.2664656],
+                        [0.0, 936.4271902, 532.2874067],
                         [0, 0, 1],
                     ]
                 )
@@ -87,6 +87,15 @@ class Intrinsic:
                         [0, 0, 1],
                     ]
                 )
+            case Identity.CAMERA_BACK:
+                return np.array(
+                    [
+                        [943.2920845, 0.0, 681.6154074],
+                        [0.0, 943.3584029,529.4306382],
+                        [0,0,1]             
+                    ]   
+                )
+                
             case _:
                 # Default GS model intrinsic matrix
                 print("##########################################")

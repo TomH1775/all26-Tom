@@ -128,7 +128,7 @@ class RealCamera(Camera):
                 #
                 # EXPOSURE TIME (microseconds)
                 # Minimizes blur.  Requires pretty good light.
-                "ExposureTime": 500,
+                # "ExposureTime": 500,
                 # Works in less light, slightly more blur.
                 # "ExposureTime": 2000,
                 #
@@ -140,7 +140,7 @@ class RealCamera(Camera):
                 # FRAME DURATION LIMITS
                 # limit auto exposure: go as fast as possible but no slower than 30fps
                 # without a duration limit, we slow down in the dark, which is fine
-                # "FrameDurationLimits": (500, 33333),  # 41 fps
+                "FrameDurationLimits": (500, 33333),  # 41 fps
                 #
                 # NOISE REDUCTION MODE
                 # noise reduction takes A LOT of time (100 ms per frame!), don't need it.

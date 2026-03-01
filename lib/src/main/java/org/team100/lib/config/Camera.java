@@ -51,10 +51,10 @@ public enum Camera {
     /**
      * Camera bot rear facing
      */
-    GLOBAL_GAME_PIECE("d44649628c20d4d4",
-            new Transform3d(
-                    new Translation3d(0.183, -0.0889, 0.376),
-                    new Rotation3d(Math.toRadians(-2), Math.toRadians(11), 0))),
+    CAMERA_BACK("d44649628c20d4d4",
+            fromCalibration(
+                    new Transform3d(0.96, 0.031, 0.57, new Rotation3d(0, 0, Math.PI)),
+                    new Transform3d(0.926, -0.293, -0.165, new Rotation3d(1.599, 0.03, 0.09)))),
 
     /**
      * Right swerve
@@ -85,10 +85,10 @@ public enum Camera {
     /**
      * Camera bot front facing
      */
-    CORAL_LEFT("8ddb2ed6c49a9bce",
-            new Transform3d(
-                    new Translation3d(0.3, -0.2, 0.89),
-                    new Rotation3d(0.15, -0.68, -0.22).unaryMinus())),
+    CAMERA_FRONT("8ddb2ed6c49a9bce",
+            fromCalibration(
+                    new Transform3d(0.96, 0.031, 0.57, new Rotation3d(0, 0, 0)),
+                    new Transform3d(1.001, 0.267, -0.044, new Rotation3d(-1.57, -0.02, -0.05)))),
 
     /**
      * Coral reef right
