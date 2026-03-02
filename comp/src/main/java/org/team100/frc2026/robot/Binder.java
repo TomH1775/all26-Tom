@@ -103,16 +103,22 @@ public class Binder {
         // m_machinery.m_ClimberExtension.setPosition());
 
         //CLIMBER
-        whileTrue(driver::x,
-        m_machinery.m_ClimberExtension.setPosition()
-        .andThen(m_machinery.m_Climber.setClimb1()));
+        // whileTrue(driver::x,
+        // m_machinery.m_ClimberExtension.setPosition()
+        // .andThen(m_machinery.m_Climber.setClimb1()));
         whileTrue(driver::a,
         m_machinery.m_ClimberExtension.setPosition()
         .andThen(m_machinery.m_Climber.setClimb3()));
         whileTrue(driver::y,
         m_machinery.m_Climber.setClimb0()
         .andThen(m_machinery.m_ClimberExtension.setHomePosition()));
+        whileTrue(driver::x,
+        m_machinery.m_shooter.shooterFullspeed());
+        
 
+        // whileTrue(driver::y, m_machinery.m_shooter.testMotor1Command());
+        // whileTrue(driver::a, m_machinery.m_shooter.testMotor2Command());
+        // whileTrue(driver::x, m_machinery.m_shooter.testMotor3Command());
         ////////////////////////////////////////////////////
         ///
         /// INTAKE
