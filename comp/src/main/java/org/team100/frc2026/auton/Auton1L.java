@@ -28,7 +28,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 /** An example of a simple sequence */
-public class Auton1 implements AnnotatedCommand {
+public class Auton1L implements AnnotatedCommand {
     private final LoggerFactory log;
     private final ControllerSE2 controller;
     private final Machinery machinery;
@@ -37,7 +37,7 @@ public class Auton1 implements AnnotatedCommand {
     private final PathSE2Factory pathFactory;
     private final TrajectorySE2Planner planner;
 
-    public Auton1(
+    public Auton1L(
             LoggerFactory parent,
             SwerveKinodynamics kinodynamics,
             ControllerSE2 controller,
@@ -71,7 +71,7 @@ public class Auton1 implements AnnotatedCommand {
 
     @Override
     public String name() {
-        return "Auton 1";
+        return "Auton1L";
     }
 
     TrajectorySE2 t1(Pose2d startingPose) {

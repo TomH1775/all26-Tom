@@ -23,7 +23,7 @@ import org.team100.lib.trajectory.path.PathSE2Factory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class BClimberAutonRight implements AnnotatedCommand {
+public class ClimberAutonRight implements AnnotatedCommand {
     private final LoggerFactory log;
     private final ControllerSE2 controller;
     private final Machinery machinery;
@@ -32,7 +32,7 @@ public class BClimberAutonRight implements AnnotatedCommand {
     private final PathSE2Factory pathFactory;
     private final TrajectorySE2Planner planner;
 
-    public BClimberAutonRight(
+    public ClimberAutonRight(
             LoggerFactory parent,
             SwerveKinodynamics kinodynamics,
             ControllerSE2 controller,
@@ -48,7 +48,7 @@ public class BClimberAutonRight implements AnnotatedCommand {
 
     @Override
     public String name() {
-        return "BClimber Auton Right";
+        return "Climber Auton Right";
     }
 
     TrajectorySE2 t1(Pose2d startingPose) {
