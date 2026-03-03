@@ -1,6 +1,8 @@
 package org.team100.frc2026.robot;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static edu.wpi.first.wpilibj2.command.Commands.print;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 import static org.team100.frc2026.util.TriggerUtil.onTrue;
 import static org.team100.frc2026.util.TriggerUtil.whileTrue;
@@ -69,9 +71,9 @@ public class Binder {
         m_machinery.m_shooterHood.setDefaultCommand(
                 m_machinery.m_shooterHood.stop());
         m_machinery.m_serializer.setDefaultCommand(
-            m_machinery.m_serializer.stop());
+                m_machinery.m_serializer.stop());
         m_machinery.m_serializerUpper.setDefaultCommand(
-            m_machinery.m_serializerUpper.stop());
+                m_machinery.m_serializerUpper.stop());
 
         ////////////////////////////////////////////////////
         ///
@@ -93,8 +95,6 @@ public class Binder {
                         m_log, m_machinery.m_drive, m_machinery.m_holonomicController,
                         profile, () -> new Pose2d(15.387, 3.501, new Rotation2d(0))));
 
-
-
         // whileTrue(driver::leftBumper, m_machinery.m_extender.goToExtendedPosition());
         // whileTrue(driver::rightBumper,
         // m_machinery.m_extender.goToRetractedPosition());
@@ -102,19 +102,20 @@ public class Binder {
         // whileTrue(driver::rightTrigger,
         // m_machinery.m_ClimberExtension.setPosition());
 
-        //CLIMBER
-        // whileTrue(driver::x,
-        // m_machinery.m_ClimberExtension.setPosition()
-        // .andThen(m_machinery.m_Climber.setClimb1()));
-        whileTrue(driver::a,
-        m_machinery.m_ClimberExtension.setPosition()
-        .andThen(m_machinery.m_Climber.setClimb3()));
-        whileTrue(driver::y,
-        m_machinery.m_Climber.setClimb0()
-        .andThen(m_machinery.m_ClimberExtension.setHomePosition()));
+        // CLIMBER
         whileTrue(driver::x,
-        m_machinery.m_shooter.shooterFullspeed());
-        
+                m_machinery.m_ClimberExtension.setPosition()
+                        .andThen(m_machinery.m_Climber.setClimb1()));
+        whileTrue(driver::a,
+                sequence(
+                        m_machinery.m_ClimberExtension.setPosition().withTimeout(1),
+                        m_machinery.m_Climber.setClimb3().withTimeout(1)));
+
+        whileTrue(driver::y,
+                m_machinery.m_Climber.setClimb0()
+                        .andThen(m_machinery.m_ClimberExtension.setHomePosition()));
+        // whileTrue(driver::x,
+        // m_machinery.m_shooter.shooterFullspeed());
 
         // whileTrue(driver::y, m_machinery.m_shooter.testMotor1Command());
         // whileTrue(driver::a, m_machinery.m_shooter.testMotor2Command());

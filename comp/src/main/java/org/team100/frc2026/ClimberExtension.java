@@ -70,7 +70,7 @@ public class ClimberExtension extends SubsystemBase {
     }
 
     public Command setPosition() {
-        return run(this::setOutPosition);
+        return run(this::setOutPosition).withName("setposition");
     }
 
     public Command setHomePosition() {
