@@ -38,15 +38,13 @@ public class ClimberExtension extends SubsystemBase {
         switch (Identity.instance) {
             case COMP_BOT -> {
                 int statorLimit = 40;
+                SimpleDynamics ff = new SimpleDynamics(log, 0, 0);
+                Friction friction = new Friction(log, 0, 0, 0, 0);
+                PIDConstants pid = new PIDConstants(log, 1, 0, 0, 0, 0, 0);
                 NeoVortexCANSparkMotor m_motor = new NeoVortexCANSparkMotor(
-                        log,
-                        new CanId(2),
-                        NeutralMode100.BRAKE,
-                        MotorPhase.FORWARD,
-                        statorLimit,
-                        new SimpleDynamics(log, 0, 0),
-                        new Friction(log, 0, 0, 0, 0),
-                        new PIDConstants(log, 1, 0, 0, 0, 0, 0));
+                        log, new CanId(2),
+                        NeutralMode100.BRAKE, MotorPhase.FORWARD,
+                        statorLimit, ff, friction, pid);
                 IncrementalBareEncoder encoder = m_motor.encoder();
                 LinearMechanism climberMech = new LinearMechanism(
                         log, m_motor, encoder, gearRatio, wheelDiameterM,
@@ -68,24 +66,29 @@ public class ClimberExtension extends SubsystemBase {
     }
 
     public Command setPosition() {
-        return run(this::setOutPosition);
+        return startRun(this::reset, this::setOutPosition);
     }
 
     public Command setHomePosition() {
-        return run(this::setInPosition);
-    }
-
-    public void setOutPosition() {
-        m_servo.setPositionProfiled(m_maxExtensionM, 0);
-
-    }
-
-    public void setInPosition() {
-        m_servo.setPositionProfiled(m_minextension, 0);
+        return startRun(this::reset, this::setInPosition);
     }
 
     @Override
     public void periodic() {
         m_servo.periodic();
+    }
+
+    ///////////////////////////////////////////
+
+    private void reset() {
+        m_servo.reset();
+    }
+
+    private void setOutPosition() {
+        m_servo.setPositionProfiled(m_maxExtensionM, 0);
+    }
+
+    private void setInPosition() {
+        m_servo.setPositionProfiled(m_minextension, 0);
     }
 }

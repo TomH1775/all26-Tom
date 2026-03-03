@@ -59,6 +59,8 @@ public class ProfileReferenceR1 implements ReferenceR1 {
 
     @Override
     public SetpointsR1 get() {
+        if (m_currentSetpoint == null)
+            throw new IllegalStateException("Must init!");
         double t = Takt.get();
         if (t == m_currentInstant) {
             // Time hasn't passed since last time, so don't change anything.
@@ -89,5 +91,10 @@ public class ProfileReferenceR1 implements ReferenceR1 {
             throw new IllegalStateException("goal must be set");
         ControlR1 next = m_profile.get().calculate(TimedRobot100.LOOP_PERIOD_S, newCurrent, m_goal);
         return new SetpointsR1(newCurrent, next);
+    }
+
+    @Override
+    public boolean valid() {
+        return m_currentSetpoint != null;
     }
 }

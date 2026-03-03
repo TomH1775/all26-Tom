@@ -28,8 +28,6 @@ public class Serializer extends SubsystemBase {
     private final OutboardLinearVelocityServo m_servo1;
     private final OutboardLinearVelocityServo m_servo2;
 
-    private final double m_speed = 30;
-
     public Serializer(LoggerFactory parent) {
         LoggerFactory log = parent.type(this);
         LoggerFactory log1 = log.name("Serializer1");
@@ -38,6 +36,9 @@ public class Serializer extends SubsystemBase {
         VelocityProfileR1 profile = new AccelLimitedVelocityProfileR1(10);
         VelocityReferenceR1 ref = new VelocityProfileReferenceR1(
                 log, () -> profile, 1);
+        double tolerance = 1;
+        double gearRatio = 1;
+        double wheelDiameterM = 0.1;
 
         switch (Identity.instance) {
             case TEST_BOARD_B0, COMP_BOT -> {
@@ -53,36 +54,37 @@ public class Serializer extends SubsystemBase {
                 BareMotor m_motor1 = new KrakenX44Motor(
                         log1, canID1, NeutralMode100.COAST, MotorPhase.REVERSE,
                         supplyLimit, statorLimit, dynamics, friction, PID);
-
                 BareMotor m_motor2 = new KrakenX44Motor(
                         log2, canID2, NeutralMode100.COAST, MotorPhase.REVERSE,
                         supplyLimit, statorLimit, dynamics, friction, PID);
 
                 // verify these numbers
+
                 LinearMechanism mechanism1 = new LinearMechanism(
-                        log1, m_motor1, m_motor1.encoder(), 1, 0.1,
+                        log1, m_motor1, m_motor1.encoder(), gearRatio, wheelDiameterM,
                         Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-
                 LinearMechanism mechanism2 = new LinearMechanism(
-                        log2, m_motor2, m_motor2.encoder(), 1, 0.1,
+                        log2, m_motor2, m_motor2.encoder(), gearRatio, wheelDiameterM,
                         Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
-                double tolerance = 1;
                 m_servo1 = new OutboardLinearVelocityServo(
                         log1, mechanism1, ref, tolerance);
                 m_servo2 = new OutboardLinearVelocityServo(
                         log2, mechanism2, ref, tolerance);
             }
             default -> {
-                SimulatedBareMotor m_motor = new SimulatedBareMotor(log.name("Serializer"), 600);
-                LinearMechanism mechanism = new LinearMechanism(
-                        log, m_motor, m_motor.encoder(), 1, 0.1,
+                SimulatedBareMotor m_motor1 = new SimulatedBareMotor(log1, 600);
+                SimulatedBareMotor m_motor2 = new SimulatedBareMotor(log2, 600);
+                LinearMechanism mechanism1 = new LinearMechanism(
+                        log, m_motor1, m_motor1.encoder(), gearRatio, wheelDiameterM,
                         Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-
+                LinearMechanism mechanism2 = new LinearMechanism(
+                        log, m_motor2, m_motor2.encoder(), gearRatio, wheelDiameterM,
+                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
                 m_servo1 = new OutboardLinearVelocityServo(
-                        log1, mechanism, ref, 1);
+                        log1, mechanism1, ref, tolerance);
                 m_servo2 = new OutboardLinearVelocityServo(
-                        log2, mechanism, ref, 1);
+                        log2, mechanism2, ref, tolerance);
             }
         }
     }
@@ -94,18 +96,28 @@ public class Serializer extends SubsystemBase {
     }
 
     public Command serialize() {
-        return run(this::fullSpeed).withName("Serialize");
+        return startRun(this::reset, this::fullSpeed)
+                .withName("Serialize");
     }
 
     public Command testSerialize() {
-        return run(this::testSpeed).withName("Test Serialize");
+        return run(this::testSpeed)
+                .withName("Test Serialize");
     }
 
     public Command stop() {
-        return run(this::stopMotor).withName("stop serializing");
+        return run(this::stopMotor)
+                .withName("stop serializing");
     }
 
-    public void stopMotor() {
+    //////////////////////////////////////////
+
+    private void reset() {
+        m_servo1.reset();
+        m_servo2.reset();
+    }
+
+    private void stopMotor() {
         m_servo1.stop();
         m_servo2.stop();
     }
@@ -121,14 +133,4 @@ public class Serializer extends SubsystemBase {
         m_servo1.setDutyCycle(Velocity);
         m_servo2.setDutyCycle(Velocity);
     }
-
-    public void setSpeed(double Velocity) {
-        m_servo1.setVelocityProfiled(Velocity);
-        m_servo2.setVelocityProfiled(Velocity);
-    }
-
-    public void setSerializerSpeed() {
-        setSpeed(m_speed);
-    }
-
 }

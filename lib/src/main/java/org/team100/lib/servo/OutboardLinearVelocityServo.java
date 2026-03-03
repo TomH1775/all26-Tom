@@ -66,7 +66,8 @@ public class OutboardLinearVelocityServo implements LinearVelocityServo {
     @Override
     public void setVelocityProfiled(double goalM_S) {
         m_log_goal.log(() -> goalM_S);
-        if (m_goal == null || !MathUtil.isNear(goalM_S, m_goal, m_tolerance)) {
+        if (m_goal == null || !MathUtil.isNear(goalM_S, m_goal, m_tolerance)
+                || !m_ref.valid()) {
             m_goal = goalM_S;
             m_ref.setGoal(goalM_S);
             if (m_nextSetpoint == null) {
@@ -108,6 +109,8 @@ public class OutboardLinearVelocityServo implements LinearVelocityServo {
     }
 
     private void actuate(VelocityControlR1 setpoints) {
+        if (setpoints == null)
+            throw new IllegalArgumentException();
         m_nextSetpoint = setpoints;
         double velocityM_S = m_nextSetpoint.v();
         double accelM_S2 = m_nextSetpoint.a();

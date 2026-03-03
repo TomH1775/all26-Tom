@@ -16,4 +16,7 @@ public interface VelocityReferenceR1 {
 
     /** The profile has reached the goal. */
     boolean profileDone();
+
+    /** The profile has been initialized. */
+    boolean valid();
 }
