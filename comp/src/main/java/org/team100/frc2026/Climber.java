@@ -21,17 +21,17 @@ import org.team100.lib.servo.OutboardAngularPositionServo;
 import org.team100.lib.util.CanId;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Climber extends SubsystemBase {
-    private final BareMotor m_motor;
+    private static final double L0 = 0;
+    private static final double L1 = -Math.PI / 2;
+    private static final double L3 = -Math.PI;
+
+    private final BareMotor m_motor1;
     private final BareMotor m_motor2;
-    private final AngularPositionServo m_servo;
+    private final AngularPositionServo m_servo1;
     private final AngularPositionServo m_servo2;
-    private static final double m_level0 = 0;
-    private static final double m_level1 = -Math.PI / 2;
-    private static final double m_level3 = -Math.PI;
 
     public Climber(LoggerFactory parent) {
         LoggerFactory log = parent.type(this);
@@ -49,31 +49,21 @@ public class Climber extends SubsystemBase {
                 SimpleDynamics ff = new SimpleDynamics(log, 0, 0);
                 Friction friction = new Friction(log, 0, 0, 0, 0);
                 PIDConstants pid = new PIDConstants(log, 1, 0, 0, 0, 0, 0);
-                m_motor = new KrakenX60Motor(
-                        log1,
-                        new CanId(18),
-                        NeutralMode100.BRAKE,
-                        MotorPhase.FORWARD,
-                        supplyLimit,
-                        statorLimit,
-                        ff,
-                        friction,
-                        pid);
-                IncrementalBareEncoder encoder = m_motor.encoder();
+                m_motor1 = new KrakenX60Motor(
+                        log1, new CanId(18),
+                        NeutralMode100.BRAKE, MotorPhase.FORWARD,
+                        supplyLimit, statorLimit,
+                        ff, friction, pid);
+                IncrementalBareEncoder encoder = m_motor1.encoder();
                 RotaryMechanism climberMech = new RotaryMechanism(
-                        log1, m_motor, encoder, initialPosition, gearRatio,
+                        log1, m_motor1, encoder, initialPosition, gearRatio,
                         Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-                m_servo = new OutboardAngularPositionServo(log1, climberMech, ref);
+                m_servo1 = new OutboardAngularPositionServo(log1, climberMech, ref);
                 m_motor2 = new KrakenX60Motor(
-                        log2,
-                        new CanId(19),
-                        NeutralMode100.BRAKE,
-                        MotorPhase.FORWARD,
-                        supplyLimit,
-                        statorLimit,
-                        ff,
-                        friction,
-                        pid);
+                        log2, new CanId(19),
+                        NeutralMode100.BRAKE, MotorPhase.FORWARD,
+                        supplyLimit, statorLimit,
+                        ff, friction, pid);
                 IncrementalBareEncoder encoder2 = m_motor2.encoder();
                 RotaryMechanism climberMech2 = new RotaryMechanism(
                         log2, m_motor2, encoder2, initialPosition, gearRatio,
@@ -82,75 +72,59 @@ public class Climber extends SubsystemBase {
             }
 
             default -> {
-                m_motor = new SimulatedBareMotor(log1, 600);
-                IncrementalBareEncoder encoder = m_motor.encoder();
+                m_motor1 = new SimulatedBareMotor(log1, 600);
+                IncrementalBareEncoder encoder = m_motor1.encoder();
                 RotaryMechanism climberMech = new RotaryMechanism(
-                        log1, m_motor, encoder, initialPosition, gearRatio,
+                        log1, m_motor1, encoder, initialPosition, gearRatio,
                         Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
                 m_motor2 = new SimulatedBareMotor(log2, 600);
                 IncrementalBareEncoder encoder2 = m_motor2.encoder();
                 RotaryMechanism climberMech2 = new RotaryMechanism(
                         log2, m_motor2, encoder2, initialPosition, gearRatio,
                         Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-                m_servo = new OutboardAngularPositionServo(log1, climberMech, ref);
+                m_servo1 = new OutboardAngularPositionServo(log1, climberMech, ref);
                 m_servo2 = new OutboardAngularPositionServo(log2, climberMech2, ref);
             }
         }
     }
 
     public Command setClimb0() {
-        return new FunctionalCommand(
-                this::reset,
-                this::setL0,
-                x -> {
-                },
-                () -> false,
-                this);
+        return startRun(this::reset, this::setL0);
     }
 
     public Command setClimb1() {
-        return new FunctionalCommand(
-                this::reset,
-                this::setL1,
-                x -> {
-                },
-                () -> false,
-                this);
+        return startRun(this::reset, this::setL1);
     }
 
     public Command setClimb3() {
-        return new FunctionalCommand(
-                this::reset,
-                this::setL3,
-                x -> {
-                },
-                () -> false,
-                this);
-    }
-
-    private void reset() {
-        m_servo.reset();
-        m_servo2.reset();
-    }
-
-    private void setL0() {
-        m_servo.actuateWithProfile(m_level0, 0);
-        m_servo2.actuateWithProfile(m_level0, 0);
-    }
-
-    private void setL1() {
-        m_servo.actuateWithProfile(m_level1, 0);
-        m_servo2.actuateWithProfile(m_level1, 0);
-    }
-
-    private void setL3() {
-        m_servo.actuateWithProfile(m_level3, 0);
-        m_servo2.actuateWithProfile(m_level3, 0);
+        return startRun(this::reset, this::setL3);
     }
 
     @Override
     public void periodic() {
-        m_servo.periodic();
+        m_servo1.periodic();
         m_servo2.periodic();
+    }
+
+    ///////////////////////////////////////
+
+    private void reset() {
+        m_servo1.reset();
+        m_servo2.reset();
+    }
+
+    private void setL0() {
+        m_servo1.actuateWithProfile(L0, 0);
+        m_servo2.actuateWithProfile(L0, 0);
+    }
+
+    private void setL1() {
+        m_servo1.actuateWithProfile(L1, 0);
+        m_servo2.actuateWithProfile(L1, 0);
+    }
+
+    private void setL3() {
+        m_servo1.actuateWithProfile(L3, 0);
+        m_servo2.actuateWithProfile(L3, 0);
     }
 }

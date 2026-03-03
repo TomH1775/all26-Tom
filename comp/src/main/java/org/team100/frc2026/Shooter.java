@@ -40,6 +40,9 @@ public class Shooter extends SubsystemBase {
                 10, 10, 20, 30);
         VelocityReferenceR1 ref = new VelocityProfileReferenceR1(
                 log, () -> profile, 1);
+        double tolerance = 1;
+        double gearRatio = 1;
+        double wheelDiameterM = 0.1;
 
         switch (Identity.instance) {
             case TEST_BOARD_B0, COMP_BOT -> {
@@ -66,18 +69,17 @@ public class Shooter extends SubsystemBase {
 
                 // verify these numbers
                 LinearMechanism mechanism1 = new LinearMechanism(
-                        log1, m_motor1, m_motor1.encoder(), 1, 0.1,
+                        log1, m_motor1, m_motor1.encoder(), gearRatio, wheelDiameterM,
                         Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
                 LinearMechanism mechanism2 = new LinearMechanism(
-                        log2, m_motor2, m_motor2.encoder(), 1, 0.1,
+                        log2, m_motor2, m_motor2.encoder(), gearRatio, wheelDiameterM,
                         Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
                 LinearMechanism mechanism3 = new LinearMechanism(
-                        log3, m_motor3, m_motor3.encoder(), 1, 0.1,
+                        log3, m_motor3, m_motor3.encoder(), gearRatio, wheelDiameterM,
                         Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
-                double tolerance = 1;
                 m_servo1 = new OutboardLinearVelocityServo(
                         log1, mechanism1, ref, tolerance);
                 m_servo2 = new OutboardLinearVelocityServo(
@@ -88,24 +90,25 @@ public class Shooter extends SubsystemBase {
             default -> {
                 SimulatedBareMotor m_motor1 = new SimulatedBareMotor(log1, 600);
                 LinearMechanism mechanism1 = new LinearMechanism(
-                        log1, m_motor1, m_motor1.encoder(), 1, 0.1,
+                        log1, m_motor1, m_motor1.encoder(), gearRatio, wheelDiameterM,
                         Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
                 SimulatedBareMotor m_motor2 = new SimulatedBareMotor(log2, 600);
                 LinearMechanism mechanism2 = new LinearMechanism(
-                        log2, m_motor2, m_motor2.encoder(), 1, 0.1,
+                        log2, m_motor2, m_motor2.encoder(), gearRatio, wheelDiameterM,
                         Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
                 SimulatedBareMotor m_motor3 = new SimulatedBareMotor(log3, 600);
                 LinearMechanism mechanism3 = new LinearMechanism(
-                        log3, m_motor3, m_motor3.encoder(), 1, 0.1,
+                        log3, m_motor3, m_motor3.encoder(), gearRatio, wheelDiameterM,
                         Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+
                 m_servo1 = new OutboardLinearVelocityServo(
-                        log1, mechanism1, ref, 1);
+                        log1, mechanism1, ref, tolerance);
                 m_servo2 = new OutboardLinearVelocityServo(
-                        log2, mechanism2, ref, 1);
+                        log2, mechanism2, ref, tolerance);
                 m_servo3 = new OutboardLinearVelocityServo(
-                        log3, mechanism3, ref, 1);
+                        log3, mechanism3, ref, tolerance);
             }
         }
     }
@@ -118,7 +121,8 @@ public class Shooter extends SubsystemBase {
     }
 
     public Command shooterFullspeed() {
-        return run(this::fullSpeed).withName("Shoot full speed");
+        return startRun(this::reset, this::fullSpeed)
+                .withName("Shoot full speed");
     }
 
     public Command testShooterFullspeed() {
@@ -141,7 +145,20 @@ public class Shooter extends SubsystemBase {
         return run(this::stopMotor).withName("stop Shooter");
     }
 
-    public void stopMotor() {
+    public Boolean atSpeed() {
+        return (m_servo1.atGoal() && m_servo2.atGoal()
+                && m_servo3.atGoal());
+    }
+
+    /////////////////////////////////////////////
+
+    private void reset() {
+        m_servo1.reset();
+        m_servo2.reset();
+        m_servo3.reset();
+    }
+
+    private void stopMotor() {
         m_servo1.stop();
         m_servo2.stop();
         m_servo3.stop();
@@ -160,7 +177,7 @@ public class Shooter extends SubsystemBase {
         m_servo2.setDutyCycle(Velocity);
         m_servo3.setDutyCycle(Velocity);
     }
-    
+
     private void testMotor1() {
         m_servo1.setDutyCycle(1);
     }
@@ -171,17 +188,6 @@ public class Shooter extends SubsystemBase {
 
     private void testMotor3() {
         m_servo3.setDutyCycle(1);
-    }
-
-    public void setSpeed(double Velocity) {
-        m_servo1.setVelocityProfiled(Velocity);
-        m_servo2.setVelocityProfiled(Velocity);
-        m_servo3.setVelocityProfiled(Velocity);
-    }
-
-    public Boolean atSpeed() {
-        return (m_servo1.atGoal() && m_servo2.atGoal()
-                && m_servo3.atGoal());
     }
 
 }

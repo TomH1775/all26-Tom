@@ -54,17 +54,18 @@ public class ShooterHood extends SubsystemBase {
                 PIDConstants PID = PIDConstants.makePositionPID(log, 1);
                 double supplyLimit = 50;
                 double statorLimit = 20;
+                SimpleDynamics ff = new SimpleDynamics(log, 0.004, 0.002);
+                Friction friction = new Friction(log, 0.26, 0.26, 0.006, 0.5);
                 KrakenX44Motor m_motor = new KrakenX44Motor(
-                        log, // LoggerFactor y parent,
-                        canID, // CanId canId,
-                        NeutralMode100.COAST, // NeutralMode neutral,
-                        MotorPhase.REVERSE, // MotorPhase motorPhase,
-                        supplyLimit, // og 50 //double supplyLimit,
-                        statorLimit, // og 2 //double statorLimit,
-                        new SimpleDynamics(log, 0.004, 0.002), // Feedforward100 ff
-                        new Friction(log, 0.26, 0.26, 0.006, 0.5),
-                        PID // PIDConstants pid,
-                );
+                        log,
+                        canID,
+                        NeutralMode100.COAST,
+                        MotorPhase.REVERSE,
+                        supplyLimit,
+                        statorLimit,
+                        ff,
+                        friction,
+                        PID);
                 Talon6Encoder encoder = m_motor.encoder();
 
                 TrapezoidProfileR1 profile = new TrapezoidProfileR1(log, 1, 2, 0.05);
@@ -102,7 +103,7 @@ public class ShooterHood extends SubsystemBase {
     }
 
     public Command position() {
-        return run(this::autoWork);
+        return startRun(this::reset, this::autoWork);
     }
 
     public void autoWork() {
@@ -117,12 +118,18 @@ public class ShooterHood extends SubsystemBase {
         return run(this::stopServo).withName("Shooter Hood Stop");
     }
 
-    public void stopServo() {
-        m_servo.stop();
-    }
-
     public boolean onTarget() {
         return m_servo.atGoal();
+    }
+
+    /////////////////////////////////////////
+
+    private void reset() {
+        m_servo.reset();
+    }
+
+    private void stopServo() {
+        m_servo.stop();
     }
 
     /** Use a profile to set the position. */

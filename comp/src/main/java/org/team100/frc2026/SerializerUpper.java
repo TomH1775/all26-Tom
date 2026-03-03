@@ -33,8 +33,6 @@ public class SerializerUpper extends SubsystemBase {
 
     private final Shooter m_Shooter;
 
-    private final double m_speed = 30;
-
     public SerializerUpper(LoggerFactory parent, Shooter shooter) {
         LoggerFactory log = parent.type(this);
         LoggerFactory log1 = log.name("SerializerUpper1");
@@ -105,18 +103,28 @@ public class SerializerUpper extends SubsystemBase {
     }
 
     public Command serializerUpperFullspeed() {
-        return run(this::fullSpeed).withName(" to Shooter full speed");
+        return startRun(this::reset, this::fullSpeed)
+                .withName("to Shooter full speed");
     }
 
     public Command testSerializerUpper() {
-        return run(this::testSpeed).withName("test to Shooter full speed");
+        return run(this::testSpeed)
+                .withName("test to Shooter full speed");
     }
 
     public Command stop() {
-        return run(this::stopMotor).withName("stop Shooter feed");
+        return run(this::stopMotor)
+                .withName("stop Shooter feed");
     }
 
-    public void stopMotor() {
+    ///////////////////////////////////////////////////////
+
+    private void reset() {
+        m_servo1.reset();
+        m_servo2.reset();
+    }
+
+    private void stopMotor() {
         m_servo1.stop();
         m_servo2.stop();
     }
@@ -138,15 +146,4 @@ public class SerializerUpper extends SubsystemBase {
         m_servo1.setDutyCycle(Velocity);
         m_servo2.setDutyCycle(Velocity);
     }
-
-
-    public void setSpeed(double Velocity) {
-        m_servo1.setVelocityProfiled(Velocity);
-        m_servo2.setVelocityProfiled(Velocity);
-    }
-
-    public void setSerializerSpeed() {
-        setSpeed(m_speed);
-    }
-
 }

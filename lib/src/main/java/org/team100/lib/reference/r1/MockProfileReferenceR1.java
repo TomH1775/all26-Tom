@@ -23,5 +23,10 @@ public class MockProfileReferenceR1 implements ReferenceR1 {
     public boolean profileDone() {
         return true;
     }
+
+    @Override
+    public boolean valid() {
+        return true;
+    }
     
 }

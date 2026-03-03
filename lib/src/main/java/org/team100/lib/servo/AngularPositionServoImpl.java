@@ -201,7 +201,7 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
         if (DEBUG) {
             System.out.printf("initReference old %s new %s\n", m_unwrappedGoal, unwrappedGoal);
         }
-        if (unwrappedGoal.near(m_unwrappedGoal, POSITION_TOLERANCE, VELOCITY_TOLERANCE)) {
+        if (unwrappedGoal.near(m_unwrappedGoal, POSITION_TOLERANCE, VELOCITY_TOLERANCE) && m_ref.valid()) {
             // If the new goal is the same as the old goal, no change is needed.
             if (DEBUG)
                 System.out.println("keep old goal");
@@ -254,7 +254,7 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
         }
         if (m_nextUnwrappedSetpoint == null) {
             if (DEBUG)
-                System.out.println("NO SETPOINT 2222");
+                System.out.println("NO NEXT SETPOINT");
             return false;
         }
         double positionError = MathUtil.angleModulus(m_nextUnwrappedSetpoint.x() - m_mechanism.getWrappedPositionRad());

@@ -24,4 +24,9 @@ public class NoVelocityReferenceR1 implements VelocityReferenceR1 {
         return false;
     }
 
+    @Override
+    public boolean valid() {
+        return false;
+    }
+
 }

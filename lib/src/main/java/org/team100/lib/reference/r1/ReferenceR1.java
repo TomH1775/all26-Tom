@@ -20,4 +20,7 @@ public interface ReferenceR1 {
 
     /** The profile has reached the goal. */
     boolean profileDone();
+
+    /** The setpoint has been initialized. */
+    boolean valid();
 }

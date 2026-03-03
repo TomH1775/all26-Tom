@@ -32,6 +32,30 @@ public class OutboardAngularPositionServoTest implements Timeless {
     private static final LoggerFactory log = new TestLoggerFactory(new TestPrimitiveLogger());
 
     @Test
+    void testNoReset() {
+        // what happens if you don't reset it?
+        SimpleDynamics ff = new SimpleDynamics(log, 0.100, 0.100);
+        Friction friction = new Friction(log, 0.100, 0.100, 0.0, 0.1);
+        MockBareMotor motor = new MockBareMotor(ff, friction);
+        MockIncrementalBareEncoder encoder = new MockIncrementalBareEncoder();
+        MockRotaryPositionSensor sensor = new MockRotaryPositionSensor();
+
+        ProxyRotaryPositionSensor proxy = new ProxyRotaryPositionSensor(encoder, 1);
+        CombinedRotaryPositionSensor combinedEncoder = new CombinedRotaryPositionSensor(
+                log, sensor, proxy);
+
+        RotaryMechanism mech = new RotaryMechanism(
+                log, motor, combinedEncoder, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+
+        ProfileR1 profile = new TrapezoidProfileR1(log, 1, 1, 0.05);
+        ProfileReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.01, 0.01);
+        OutboardAngularPositionServo servo = new OutboardAngularPositionServo(
+                log, mech, ref);
+        // set to current position
+        servo.setPositionProfiled(0, 0);
+    }
+
+    @Test
     void testProfiled() {
         SimpleDynamics ff = new SimpleDynamics(log, 0.100, 0.100);
         Friction friction = new Friction(log, 0.100, 0.100, 0.0, 0.1);

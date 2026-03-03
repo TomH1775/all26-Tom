@@ -22,6 +22,8 @@ public class Intake extends SubsystemBase {
     public Intake(LoggerFactory parent) {
         LoggerFactory log = parent.type(this);
 
+        LoggerFactory log1 = log.name("motor1");
+        LoggerFactory log2 = log.name("motor2");
         switch (Identity.instance) {
             case TEST_BOARD_B0, COMP_BOT -> {
                 //
@@ -29,43 +31,27 @@ public class Intake extends SubsystemBase {
                 // two is too low, even for unloaded case
                 double supplyLimit = 50;
                 double statorLimit = 50;
+                SimpleDynamics ff = new SimpleDynamics(log, 0.004, 0.002);
+                Friction friction = new Friction(log, 0.26, 0.26, 0.006, 0.5);
                 m_motor = new KrakenX44Motor(
-                        log.name("motor1"), // LoggerFactory parent,
-                        new CanId(15), // CanId canId,
-                        NeutralMode100.COAST, // NeutralMode neutral,
-                        MotorPhase.FORWARD, // MotorPhase motorPhase,
-                        supplyLimit, // supplyLimit,
-                        statorLimit, // statorLimit,
-                        new SimpleDynamics(log, 0.004, 0.002), // Feedforward100 ff
-                        new Friction(log, 0.26, 0.26, 0.006, 0.5),
-                        PID// PIDConstants pid,
-                );
+                        log1, new CanId(15),
+                        NeutralMode100.COAST, MotorPhase.FORWARD,
+                        supplyLimit, statorLimit,
+                        ff, friction, PID);
 
                 m_motor2 = new KrakenX44Motor(
-                        log.name("motor2"), // LoggerFactory parent,
-                        new CanId(17), // CanId canId,
-                        NeutralMode100.COAST, // NeutralMode neutral,
-                        MotorPhase.FORWARD, // MotorPhase motorPhase,
-                        supplyLimit, // supplyLimit,
-                        statorLimit, // statorLimit,
-                        new SimpleDynamics(log, 0.004, 0.002), // Feedforward100 ff
-                        new Friction(log, 0.26, 0.26, 0.006, 0.5),
-                        PID// PIDConstants pid,
-                );
+                        log2, new CanId(17),
+                        NeutralMode100.COAST, MotorPhase.FORWARD,
+                        supplyLimit, statorLimit,
+                        ff, friction, PID);
 
             }
 
             default -> {
-                m_motor = new SimulatedBareMotor(log.name("motor1"), 600);
-                m_motor2 = new SimulatedBareMotor(log.name("motor2"), 600);
+                m_motor = new SimulatedBareMotor(log1, 600);
+                m_motor2 = new SimulatedBareMotor(log2, 600);
             }
         }
-    }
-
-    @Override
-    public void periodic() {
-        m_motor.periodic();
-        m_motor2.periodic();
     }
 
     public Command intake() {
@@ -76,7 +62,15 @@ public class Intake extends SubsystemBase {
         return run(this::stopMotor).withName("Intake Stop");
     }
 
-    public void stopMotor() {
+    @Override
+    public void periodic() {
+        m_motor.periodic();
+        m_motor2.periodic();
+    }
+
+    ////////////////////////////////
+
+    private void stopMotor() {
         m_motor.stop();
         m_motor2.stop();
     }
