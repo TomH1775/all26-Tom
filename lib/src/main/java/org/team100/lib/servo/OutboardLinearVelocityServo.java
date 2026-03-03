@@ -6,6 +6,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.logging.LoggerFactory.VelocityControlR1Logger;
 import org.team100.lib.mechanism.LinearMechanism;
+import org.team100.lib.motor.BareMotor;
 import org.team100.lib.reference.r1.VelocityReferenceR1;
 import org.team100.lib.state.VelocityControlR1;
 
@@ -23,7 +24,7 @@ public class OutboardLinearVelocityServo implements LinearVelocityServo {
 
     private final LinearMechanism m_mechanism;
     private final VelocityReferenceR1 m_ref;
-    private final double m_tolerance;
+    private final double m_toleranceM_S;
 
     private final DoubleLogger m_log_goal;
     private final VelocityControlR1Logger m_log_control;
@@ -41,14 +42,32 @@ public class OutboardLinearVelocityServo implements LinearVelocityServo {
             LoggerFactory parent,
             LinearMechanism mechanism,
             VelocityReferenceR1 ref,
-            double tolerance) {
+            double toleranceM_S) {
         LoggerFactory log = parent.type(this);
         m_mechanism = mechanism;
         m_ref = ref;
-        m_tolerance = tolerance;
+        m_toleranceM_S = toleranceM_S;
         m_log_goal = log.doubleLogger(Level.COMP, "goal (m_s)");
         m_log_control = log.VelocityControlR1Logger(Level.COMP, "control (m_s)");
         m_log_velocity = log.doubleLogger(Level.COMP, "velocity (m_s)");
+    }
+
+    /**
+     * Make a servo from a motor and a velocity reference.
+     * Creates the mechanism in between.
+     */
+    public static OutboardLinearVelocityServo make(
+            LoggerFactory log,
+            BareMotor motor,
+            VelocityReferenceR1 ref,
+            double gearRatio,
+            double wheelDiameterM,
+            double toleranceM_S) {
+        LinearMechanism mech = new LinearMechanism(
+                log, motor, motor.encoder(), gearRatio, wheelDiameterM,
+                Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+        return new OutboardLinearVelocityServo(
+                log, mech, ref, toleranceM_S);
     }
 
     @Override
@@ -66,7 +85,7 @@ public class OutboardLinearVelocityServo implements LinearVelocityServo {
     @Override
     public void setVelocityProfiled(double goalM_S) {
         m_log_goal.log(() -> goalM_S);
-        if (m_goal == null || !MathUtil.isNear(goalM_S, m_goal, m_tolerance)
+        if (m_goal == null || !MathUtil.isNear(goalM_S, m_goal, m_toleranceM_S)
                 || !m_ref.valid()) {
             m_goal = goalM_S;
             m_ref.setGoal(goalM_S);
@@ -153,7 +172,7 @@ public class OutboardLinearVelocityServo implements LinearVelocityServo {
     public boolean atSetpoint() {
         // Note x field for velocity.
         double vErr = m_nextSetpoint.v() - m_mechanism.getVelocityM_S();
-        return Math.abs(vErr) < m_tolerance;
+        return Math.abs(vErr) < m_toleranceM_S;
     }
 
     @Override

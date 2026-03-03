@@ -15,6 +15,8 @@ import edu.wpi.first.math.MathUtil;
  * 
  * If you use this in tests, you'll have to control the clock somehow, e.g. by
  * using {@link Timeless}.
+ * 
+ * TODO: I think this can be replaced by ProxyRotaryPositionSensor.
  */
 public class SimulatedRotaryPositionSensor implements RotaryPositionSensor {
     private final IncrementalBareEncoder m_encoder;
@@ -51,9 +53,7 @@ public class SimulatedRotaryPositionSensor implements RotaryPositionSensor {
 
     @Override
     public double getVelocityRad_S() {
-        // motor velocity is rad/s
         double m_rate = encoderVelocityRad_S();
-
         m_log_rate.log(() -> m_rate);
         return m_rate;
     }

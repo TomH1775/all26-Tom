@@ -5,7 +5,6 @@ import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.config.SimpleDynamics;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.mechanism.LinearMechanism;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
@@ -37,61 +36,35 @@ public class SerializerUpper extends SubsystemBase {
         LoggerFactory log = parent.type(this);
         LoggerFactory log1 = log.name("SerializerUpper1");
         LoggerFactory log2 = log.name("SerializerUpper2");
-
         m_Shooter = shooter;
         VelocityProfileR1 profile = new AccelLimitedVelocityProfileR1(10);
         VelocityReferenceR1 ref = new VelocityProfileReferenceR1(
                 log, () -> profile, 1);
-
+        final BareMotor m1;
+        final BareMotor m2;
         switch (Identity.instance) {
             case TEST_BOARD_B0, COMP_BOT -> {
-                PIDConstants PID = PIDConstants.makeVelocityPID(log, WHEEL_DIAMETER_M);
-                // two is too low, even for unloaded case
                 double supplyLimit = 50;
                 double statorLimit = 40;
-
                 SimpleDynamics dynamics = new SimpleDynamics(log, 0.004, 0.002);
                 Friction friction = new Friction(log, 0.26, 0.26, 0.006, 0.5);
-                BareMotor m_motor1 = new KrakenX44Motor(
+                PIDConstants pid = PIDConstants.makeVelocityPID(log, WHEEL_DIAMETER_M);
+                m1 = new KrakenX44Motor(
                         log1, canID1, NeutralMode100.COAST, MotorPhase.FORWARD,
-                        supplyLimit, statorLimit, dynamics, friction, PID);
-
-                BareMotor m_motor2 = new KrakenX44Motor(
+                        supplyLimit, statorLimit, dynamics, friction, pid);
+                m2 = new KrakenX44Motor(
                         log2, canID2, NeutralMode100.COAST, MotorPhase.FORWARD,
-                        supplyLimit, statorLimit, dynamics, friction, PID);
-
-                // verify these numbers
-                LinearMechanism mechanism1 = new LinearMechanism(
-                        log1, m_motor1, m_motor1.encoder(), GEAR_RATIO, WHEEL_DIAMETER_M,
-                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-
-                LinearMechanism mechanism2 = new LinearMechanism(
-                        log2, m_motor2, m_motor2.encoder(), GEAR_RATIO, WHEEL_DIAMETER_M,
-                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-
-                m_servo1 = new OutboardLinearVelocityServo(
-                        log1, mechanism1, ref, TOLERANCE_M_S);
-
-                m_servo2 = new OutboardLinearVelocityServo(
-                        log2, mechanism2, ref, TOLERANCE_M_S);
+                        supplyLimit, statorLimit, dynamics, friction, pid);
             }
             default -> {
-                SimulatedBareMotor m_motor1 = new SimulatedBareMotor(log1, 600);
-                SimulatedBareMotor m_motor2 = new SimulatedBareMotor(log2, 600);
-
-                LinearMechanism mechanism1 = new LinearMechanism(
-                        log1, m_motor1, m_motor1.encoder(), GEAR_RATIO, WHEEL_DIAMETER_M,
-                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-                LinearMechanism mechanism2 = new LinearMechanism(
-                        log2, m_motor2, m_motor2.encoder(), GEAR_RATIO, WHEEL_DIAMETER_M,
-                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-
-                m_servo1 = new OutboardLinearVelocityServo(
-                        log1, mechanism1, ref, TOLERANCE_M_S);
-                m_servo2 = new OutboardLinearVelocityServo(
-                        log2, mechanism2, ref, TOLERANCE_M_S);
+                m1 = new SimulatedBareMotor(log1, 600);
+                m2 = new SimulatedBareMotor(log2, 600);
             }
         }
+        m_servo1 = OutboardLinearVelocityServo.make(
+                log1, m1, ref, GEAR_RATIO, WHEEL_DIAMETER_M, TOLERANCE_M_S);
+        m_servo2 = OutboardLinearVelocityServo.make(
+                log2, m2, ref, GEAR_RATIO, WHEEL_DIAMETER_M, TOLERANCE_M_S);
     }
 
     @Override
@@ -101,12 +74,12 @@ public class SerializerUpper extends SubsystemBase {
     }
 
     public Command serializerUpperFullspeed() {
-        return startRun(this::reset, this::fullSpeed)
+        return startRun(this::reset, this::feedWhenReady)
                 .withName("to Shooter full speed");
     }
 
     public Command testSerializerUpper() {
-        return run(this::testSpeed)
+        return run(this::dutyCycleAll)
                 .withName("test to Shooter full speed");
     }
 
@@ -127,21 +100,20 @@ public class SerializerUpper extends SubsystemBase {
         m_servo2.stop();
     }
 
-    private void fullSpeed() {
-        double Velocity = 5.0;
-        double Zero = 0;
+    private void feedWhenReady() {
         if (m_Shooter.atSpeed()) {
+            double Velocity = 5.0;
             m_servo1.setVelocityProfiled(Velocity);
             m_servo2.setVelocityProfiled(Velocity);
         } else {
+            double Zero = 0;
             m_servo1.setVelocityProfiled(Zero);
             m_servo2.setVelocityProfiled(Zero);
         }
     }
 
-    private void testSpeed() {
-        double Velocity = 1;
-        m_servo1.setDutyCycle(Velocity);
-        m_servo2.setDutyCycle(Velocity);
+    private void dutyCycleAll() {
+        m_servo1.setDutyCycle(1);
+        m_servo2.setDutyCycle(1);
     }
 }

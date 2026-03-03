@@ -5,7 +5,6 @@ import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.config.SimpleDynamics;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.mechanism.LinearMechanism;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
@@ -22,9 +21,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
-    public static final CanId canID1 = new CanId(4);
-    public static final CanId canID2 = new CanId(5);
-    public static final CanId canID3 = new CanId(14);
+    private static final CanId CAN_ID_1 = new CanId(4);
+    private static final CanId CAN_ID_2 = new CanId(5);
+    private static final CanId CAN_ID_3 = new CanId(14);
+    private static final double TOLERANCE_M_S = 1;
+    private static final double GEAR_RATIO = 1;
+    private static final double WHEEL_DIAMETER_M = 0.1;
 
     private final OutboardLinearVelocityServo m_servo1;
     private final OutboardLinearVelocityServo m_servo2;
@@ -40,76 +42,39 @@ public class Shooter extends SubsystemBase {
                 10, 10, 20, 30);
         VelocityReferenceR1 ref = new VelocityProfileReferenceR1(
                 log, () -> profile, 1);
-        double tolerance = 1;
-        double gearRatio = 1;
-        double wheelDiameterM = 0.1;
-
+        final BareMotor m1;
+        final BareMotor m2;
+        final BareMotor m3;
         switch (Identity.instance) {
             case TEST_BOARD_B0, COMP_BOT -> {
-                //
-                PIDConstants PID = PIDConstants.makeVelocityPID(log, 0.1);
-                // two is too low, even for unloaded case
                 double supplyLimit = 50;
                 double statorLimit = 50;
-
-                SimpleDynamics dynamics = new SimpleDynamics(log, 0.004, 0.002);
+                SimpleDynamics ff = new SimpleDynamics(log, 0.004, 0.002);
                 Friction friction = new Friction(log, 0.26, 0.26, 0.006, 0.5);
-                BareMotor m_motor1 = new KrakenX60Motor(
-                        log1, canID1, NeutralMode100.COAST, MotorPhase.FORWARD,
-                        supplyLimit, statorLimit, dynamics, friction, PID);
+                PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.1);
 
-                BareMotor m_motor2 = new KrakenX60Motor(
-                        log2, canID2, NeutralMode100.COAST, MotorPhase.REVERSE,
-                        supplyLimit, statorLimit, dynamics, friction, PID);
-
-                BareMotor m_motor3 = new KrakenX60Motor(
-                        log3, canID3, NeutralMode100.COAST, MotorPhase.FORWARD,
-                        supplyLimit, statorLimit, dynamics, friction, PID);
-
-                // verify these numbers
-                LinearMechanism mechanism1 = new LinearMechanism(
-                        log1, m_motor1, m_motor1.encoder(), gearRatio, wheelDiameterM,
-                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-
-                LinearMechanism mechanism2 = new LinearMechanism(
-                        log2, m_motor2, m_motor2.encoder(), gearRatio, wheelDiameterM,
-                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-
-                LinearMechanism mechanism3 = new LinearMechanism(
-                        log3, m_motor3, m_motor3.encoder(), gearRatio, wheelDiameterM,
-                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-
-                m_servo1 = new OutboardLinearVelocityServo(
-                        log1, mechanism1, ref, tolerance);
-                m_servo2 = new OutboardLinearVelocityServo(
-                        log2, mechanism2, ref, tolerance);
-                m_servo3 = new OutboardLinearVelocityServo(
-                        log3, mechanism3, ref, tolerance);
+                m1 = new KrakenX60Motor(
+                        log1, CAN_ID_1, NeutralMode100.COAST, MotorPhase.FORWARD,
+                        supplyLimit, statorLimit, ff, friction, pid);
+                m2 = new KrakenX60Motor(
+                        log2, CAN_ID_2, NeutralMode100.COAST, MotorPhase.REVERSE,
+                        supplyLimit, statorLimit, ff, friction, pid);
+                m3 = new KrakenX60Motor(
+                        log3, CAN_ID_3, NeutralMode100.COAST, MotorPhase.FORWARD,
+                        supplyLimit, statorLimit, ff, friction, pid);
             }
             default -> {
-                SimulatedBareMotor m_motor1 = new SimulatedBareMotor(log1, 600);
-                LinearMechanism mechanism1 = new LinearMechanism(
-                        log1, m_motor1, m_motor1.encoder(), gearRatio, wheelDiameterM,
-                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-
-                SimulatedBareMotor m_motor2 = new SimulatedBareMotor(log2, 600);
-                LinearMechanism mechanism2 = new LinearMechanism(
-                        log2, m_motor2, m_motor2.encoder(), gearRatio, wheelDiameterM,
-                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-
-                SimulatedBareMotor m_motor3 = new SimulatedBareMotor(log3, 600);
-                LinearMechanism mechanism3 = new LinearMechanism(
-                        log3, m_motor3, m_motor3.encoder(), gearRatio, wheelDiameterM,
-                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-
-                m_servo1 = new OutboardLinearVelocityServo(
-                        log1, mechanism1, ref, tolerance);
-                m_servo2 = new OutboardLinearVelocityServo(
-                        log2, mechanism2, ref, tolerance);
-                m_servo3 = new OutboardLinearVelocityServo(
-                        log3, mechanism3, ref, tolerance);
+                m1 = new SimulatedBareMotor(log1, 600);
+                m2 = new SimulatedBareMotor(log2, 600);
+                m3 = new SimulatedBareMotor(log3, 600);
             }
         }
+        m_servo1 = OutboardLinearVelocityServo.make(
+                log1, m1, ref, GEAR_RATIO, WHEEL_DIAMETER_M, TOLERANCE_M_S);
+        m_servo2 = OutboardLinearVelocityServo.make(
+                log2, m2, ref, GEAR_RATIO, WHEEL_DIAMETER_M, TOLERANCE_M_S);
+        m_servo3 = OutboardLinearVelocityServo.make(
+                log3, m3, ref, GEAR_RATIO, WHEEL_DIAMETER_M, TOLERANCE_M_S);
     }
 
     @Override
@@ -120,24 +85,24 @@ public class Shooter extends SubsystemBase {
     }
 
     public Command shooterFullspeed() {
-        return startRun(this::reset, this::fullSpeed)
+        return startRun(this::reset, () -> setVelocityProfiled(10))
                 .withName("Shoot full speed");
     }
 
     public Command testShooterFullspeed() {
-        return run(this::testSpeed).withName("Test shoot full speed");
+        return run(this::dutyCycleAll).withName("Test shoot full speed");
     }
 
     public Command testMotor1Command() {
-        return run(this::testMotor1).withName("Motor 1 Spin");
+        return run(this::dutyCycle1).withName("Motor 1 Spin");
     }
 
     public Command testMotor2Command() {
-        return run(this::testMotor2).withName("Motor 2 Spin");
+        return run(this::dutyCycle2).withName("Motor 2 Spin");
     }
 
     public Command testMotor3Command() {
-        return run(this::testMotor3).withName("Motor 3 Spin");
+        return run(this::dutyCycle3).withName("Motor 3 Spin");
     }
 
     public Command stop() {
@@ -163,29 +128,27 @@ public class Shooter extends SubsystemBase {
         m_servo3.stop();
     }
 
-    private void fullSpeed() {
-        double Velocity = 10;
-        m_servo1.setVelocityProfiled(Velocity);
-        m_servo2.setVelocityProfiled(Velocity);
-        m_servo3.setVelocityProfiled(Velocity);
+    private void setVelocityProfiled(double goalM_S) {
+        m_servo1.setVelocityProfiled(goalM_S);
+        m_servo2.setVelocityProfiled(goalM_S);
+        m_servo3.setVelocityProfiled(goalM_S);
     }
 
-    private void testSpeed() {
-        double Velocity = 1;
-        m_servo1.setDutyCycle(Velocity);
-        m_servo2.setDutyCycle(Velocity);
-        m_servo3.setDutyCycle(Velocity);
+    private void dutyCycleAll() {
+        m_servo1.setDutyCycle(1);
+        m_servo2.setDutyCycle(1);
+        m_servo3.setDutyCycle(1);
     }
 
-    private void testMotor1() {
+    private void dutyCycle1() {
         m_servo1.setDutyCycle(1);
     }
 
-    private void testMotor2() {
+    private void dutyCycle2() {
         m_servo2.setDutyCycle(1);
     }
 
-    private void testMotor3() {
+    private void dutyCycle3() {
         m_servo3.setDutyCycle(1);
     }
 

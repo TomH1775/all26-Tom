@@ -5,6 +5,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.ControlR1Logger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.mechanism.RotaryMechanism;
+import org.team100.lib.motor.BareMotor;
 import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.reference.r1.SetpointsR1;
 import org.team100.lib.state.ControlR1;
@@ -32,6 +33,22 @@ public class OutboardAngularPositionServo extends AngularPositionServoImpl {
         LoggerFactory log = parent.type(this);
         m_log_ff_torque = log.doubleLogger(Level.TRACE, "Feedforward Torque (Nm)");
         m_log_control = log.ControlR1Logger(Level.TRACE, "setpoint (rad)");
+    }
+
+    /**
+     * Make a servo from a motor and a position reference.
+     * Creates the mechanism in between.
+     */
+    public static OutboardAngularPositionServo make(
+            LoggerFactory log,
+            BareMotor motor,
+            ReferenceR1 ref,
+            double gearRatio,
+            double initialPosition) {
+        RotaryMechanism mech = new RotaryMechanism(
+                log, motor, motor.encoder(), initialPosition, gearRatio,
+                Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+        return new OutboardAngularPositionServo(log, mech, ref);
     }
 
     /**

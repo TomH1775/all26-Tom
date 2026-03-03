@@ -10,52 +10,64 @@ import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.KrakenX44Motor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
+import org.team100.lib.profile.r1.CurrentLimitedExponentialVelocityProfileR1;
+import org.team100.lib.profile.r1.VelocityProfileR1;
+import org.team100.lib.reference.r1.VelocityProfileReferenceR1;
+import org.team100.lib.reference.r1.VelocityReferenceR1;
+import org.team100.lib.servo.OutboardLinearVelocityServo;
 import org.team100.lib.util.CanId;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
-    private final BareMotor m_motor;
-    private final BareMotor m_motor2;
+    private static final CanId CAN_ID_1 = new CanId(15);
+    private static final CanId CAN_ID_2 = new CanId(17);
+    private static final double TOLERANCE_M_S = 1;
+    private static final double GEAR_RATIO = 1;
+    private static final double WHEEL_DIAMETER_M = 0.1;
+
+    private final OutboardLinearVelocityServo m_servo1;
+    private final OutboardLinearVelocityServo m_servo2;
 
     public Intake(LoggerFactory parent) {
         LoggerFactory log = parent.type(this);
-
         LoggerFactory log1 = log.name("motor1");
         LoggerFactory log2 = log.name("motor2");
+        VelocityProfileR1 profile = new CurrentLimitedExponentialVelocityProfileR1(
+                10, 10, 20, 30);
+        VelocityReferenceR1 ref = new VelocityProfileReferenceR1(
+                log, () -> profile, 1);
+        final BareMotor m1;
+        final BareMotor m2;
         switch (Identity.instance) {
             case TEST_BOARD_B0, COMP_BOT -> {
-                //
-                PIDConstants PID = PIDConstants.makeVelocityPID(log, 0.1);
-                // two is too low, even for unloaded case
                 double supplyLimit = 50;
                 double statorLimit = 50;
                 SimpleDynamics ff = new SimpleDynamics(log, 0.004, 0.002);
                 Friction friction = new Friction(log, 0.26, 0.26, 0.006, 0.5);
-                m_motor = new KrakenX44Motor(
-                        log1, new CanId(15),
-                        NeutralMode100.COAST, MotorPhase.FORWARD,
-                        supplyLimit, statorLimit,
-                        ff, friction, PID);
-
-                m_motor2 = new KrakenX44Motor(
-                        log2, new CanId(17),
-                        NeutralMode100.COAST, MotorPhase.FORWARD,
-                        supplyLimit, statorLimit,
-                        ff, friction, PID);
-
+                PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.1);
+                m1 = new KrakenX44Motor(
+                        log1, CAN_ID_1, NeutralMode100.COAST, MotorPhase.FORWARD,
+                        supplyLimit, statorLimit, ff, friction, pid);
+                m2 = new KrakenX44Motor(
+                        log2, CAN_ID_2, NeutralMode100.COAST, MotorPhase.FORWARD,
+                        supplyLimit, statorLimit, ff, friction, pid);
             }
-
             default -> {
-                m_motor = new SimulatedBareMotor(log1, 600);
-                m_motor2 = new SimulatedBareMotor(log2, 600);
+                m1 = new SimulatedBareMotor(log1, 600);
+                m2 = new SimulatedBareMotor(log2, 600);
             }
         }
+        m_servo1 = OutboardLinearVelocityServo.make(
+                log1, m1, ref, GEAR_RATIO, WHEEL_DIAMETER_M, TOLERANCE_M_S);
+        m_servo2 = OutboardLinearVelocityServo.make(
+                log2, m2, ref, GEAR_RATIO, WHEEL_DIAMETER_M, TOLERANCE_M_S);
     }
 
     public Command intake() {
-        return run(this::intakeFullSpeed).withName("Intake Full Speed");
+        return startRun(this::reset, () -> setVelocityProfiled(5))
+                .withName("Intake Full Speed");
     }
 
     public Command stop() {
@@ -64,25 +76,24 @@ public class Intake extends SubsystemBase {
 
     @Override
     public void periodic() {
-        m_motor.periodic();
-        m_motor2.periodic();
+        m_servo1.periodic();
+        m_servo2.periodic();
     }
 
     ////////////////////////////////
 
+    private void reset() {
+        m_servo1.reset();
+        m_servo2.reset();
+    }
+
     private void stopMotor() {
-        m_motor.stop();
-        m_motor2.stop();
+        m_servo1.stop();
+        m_servo2.stop();
     }
 
-    private void intakeFullSpeed() {
-        // motor max velocity is 6000 RPM or 100 rev/s or 600 rad/s
-        // we want to choose about 75% of that, so 450 rad/s
-        double velocityRad_S = 450;
-        m_motor.setVelocity(velocityRad_S, 0, 0);
-        m_motor2.setVelocity(velocityRad_S, 0, 0);
-        // m_motor.setDutyCycle(1);
-        // System.out.println(BumpZones.BLUE_BUMP_LEFT);
+    private void setVelocityProfiled(double velocityM_S) {
+        m_servo1.setVelocityProfiled(velocityM_S);
+        m_servo2.setVelocityProfiled(velocityM_S);
     }
-
 }
