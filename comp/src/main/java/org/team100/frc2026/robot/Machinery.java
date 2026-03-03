@@ -173,7 +173,7 @@ public class Machinery {
         m_shooterHood = new ShooterHood(
                 logger, m_drive::getState, FieldConstants2026.HUB::toTranslation2d);
         m_ClimberExtension = new ClimberExtension(logger);
-        m_Climber = new Climber(logger, new CanId(32));
+        m_Climber = new Climber(logger);
         m_serializerUpper = new SerializerUpper(logger, m_shooter);
 
         ////////////////////////////////////////////////////////////
