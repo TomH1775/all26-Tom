@@ -22,7 +22,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Serializer extends SubsystemBase {
-    public static final CanId canID = new CanId(0);
+    public static final CanId canID1 = new CanId(19);
+    public static final CanId canID2 = new CanId(20);
 
     private final OutboardLinearVelocityServo m_servo1;
     private final OutboardLinearVelocityServo m_servo2;
@@ -50,11 +51,11 @@ public class Serializer extends SubsystemBase {
                 Friction friction = new Friction(log, 0.26, 0.26, 0.006, 0.5);
                 // TODO: set canIDs
                 BareMotor m_motor1 = new KrakenX44Motor(
-                        log1, canID, NeutralMode100.COAST, MotorPhase.REVERSE,
+                        log1, canID1, NeutralMode100.COAST, MotorPhase.REVERSE,
                         supplyLimit, statorLimit, dynamics, friction, PID);
 
                 BareMotor m_motor2 = new KrakenX44Motor(
-                        log2, canID, NeutralMode100.COAST, MotorPhase.REVERSE,
+                        log2, canID2, NeutralMode100.COAST, MotorPhase.REVERSE,
                         supplyLimit, statorLimit, dynamics, friction, PID);
 
                 // verify these numbers
@@ -96,6 +97,10 @@ public class Serializer extends SubsystemBase {
         return run(this::fullSpeed).withName("Serialize");
     }
 
+    public Command testSerialize() {
+        return run(this::testSpeed).withName("Test Serialize");
+    }
+
     public Command stop() {
         return run(this::stopMotor).withName("stop serializing");
     }
@@ -109,6 +114,12 @@ public class Serializer extends SubsystemBase {
         double Velocity = 0.5;
         m_servo1.setVelocityProfiled(Velocity);
         m_servo2.setVelocityProfiled(Velocity);
+    }
+
+    private void testSpeed() {
+        double Velocity = 1;
+        m_servo1.setDutyCycle(Velocity);
+        m_servo2.setDutyCycle(Velocity);
     }
 
     public void setSpeed(double Velocity) {

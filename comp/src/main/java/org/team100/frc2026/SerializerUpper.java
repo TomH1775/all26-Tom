@@ -22,7 +22,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class SerializerUpper extends SubsystemBase {
-    public static final CanId canID = new CanId(0);
+    public static final CanId canID1 = new CanId(8);
+    public static final CanId canID2 = new CanId(9);
     private static final double WHEEL_DIAMETER_M = 0.1;
     private static final double TOLERANCE_M_S = 1.0;
     private static final double GEAR_RATIO = 1.0;
@@ -50,17 +51,17 @@ public class SerializerUpper extends SubsystemBase {
                 PIDConstants PID = PIDConstants.makeVelocityPID(log, WHEEL_DIAMETER_M);
                 // two is too low, even for unloaded case
                 double supplyLimit = 50;
-                double statorLimit = 20;
+                double statorLimit = 40;
 
                 SimpleDynamics dynamics = new SimpleDynamics(log, 0.004, 0.002);
                 Friction friction = new Friction(log, 0.26, 0.26, 0.006, 0.5);
                 // TODO: set canIDs
                 BareMotor m_motor1 = new KrakenX44Motor(
-                        log1, canID, NeutralMode100.COAST, MotorPhase.REVERSE,
+                        log1, canID1, NeutralMode100.COAST, MotorPhase.FORWARD,
                         supplyLimit, statorLimit, dynamics, friction, PID);
 
                 BareMotor m_motor2 = new KrakenX44Motor(
-                        log2, canID, NeutralMode100.COAST, MotorPhase.REVERSE,
+                        log2, canID2, NeutralMode100.COAST, MotorPhase.FORWARD,
                         supplyLimit, statorLimit, dynamics, friction, PID);
 
                 // verify these numbers
@@ -107,6 +108,10 @@ public class SerializerUpper extends SubsystemBase {
         return run(this::fullSpeed).withName(" to Shooter full speed");
     }
 
+    public Command testSerializerUpper() {
+        return run(this::testSpeed).withName("test to Shooter full speed");
+    }
+
     public Command stop() {
         return run(this::stopMotor).withName("stop Shooter feed");
     }
@@ -127,6 +132,13 @@ public class SerializerUpper extends SubsystemBase {
             m_servo2.setVelocityProfiled(Zero);
         }
     }
+
+    private void testSpeed() {
+        double Velocity = 1;
+        m_servo1.setDutyCycle(Velocity);
+        m_servo2.setDutyCycle(Velocity);
+    }
+
 
     public void setSpeed(double Velocity) {
         m_servo1.setVelocityProfiled(Velocity);

@@ -47,7 +47,7 @@ public class Shooter extends SubsystemBase {
                 PIDConstants PID = PIDConstants.makeVelocityPID(log, 0.1);
                 // two is too low, even for unloaded case
                 double supplyLimit = 50;
-                double statorLimit = 40;
+                double statorLimit = 50;
 
                 SimpleDynamics dynamics = new SimpleDynamics(log, 0.004, 0.002);
                 Friction friction = new Friction(log, 0.26, 0.26, 0.006, 0.5);
@@ -121,6 +121,10 @@ public class Shooter extends SubsystemBase {
         return run(this::fullSpeed).withName("Shoot full speed");
     }
 
+    public Command testShooterFullspeed() {
+        return run(this::testSpeed).withName("Test shoot full speed");
+    }
+
     public Command testMotor1Command() {
         return run(this::testMotor1).withName("Motor 1 Spin");
     }
@@ -148,6 +152,13 @@ public class Shooter extends SubsystemBase {
         m_servo1.setVelocityProfiled(Velocity);
         m_servo2.setVelocityProfiled(Velocity);
         m_servo3.setVelocityProfiled(Velocity);
+    }
+
+    private void testSpeed() {
+        double Velocity = 1;
+        m_servo1.setDutyCycle(Velocity);
+        m_servo2.setDutyCycle(Velocity);
+        m_servo3.setDutyCycle(Velocity);
     }
     
     private void testMotor1() {

@@ -1,7 +1,6 @@
 package org.team100.frc2026.robot;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-import static edu.wpi.first.wpilibj2.command.Commands.print;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 import static org.team100.frc2026.util.TriggerUtil.onTrue;
@@ -91,9 +90,9 @@ public class Binder {
         HolonomicProfile profile = HolonomicProfileFactory.get(
                 m_log, m_machinery.m_swerveKinodynamics, 1, 0.5, 1, 0.2);
         onTrue(driver::b,
-                new DriveToPoseWithProfile(
-                        m_log, m_machinery.m_drive, m_machinery.m_holonomicController,
-                        profile, () -> new Pose2d(15.387, 3.501, new Rotation2d(0))));
+               new DriveToPoseWithProfile(
+                       m_log, m_machinery.m_drive, m_machinery.m_holonomicController,
+                     profile, () -> new Pose2d(15.387, 3.501, new Rotation2d(0))));
 
         // whileTrue(driver::leftBumper, m_machinery.m_extender.goToExtendedPosition());
         // whileTrue(driver::rightBumper,
@@ -104,8 +103,8 @@ public class Binder {
 
         // CLIMBER
         whileTrue(driver::x,
-                m_machinery.m_ClimberExtension.setPosition()
-                        .andThen(m_machinery.m_Climber.setClimb1()));
+               m_machinery.m_ClimberExtension.setPosition()
+                      .andThen(m_machinery.m_Climber.setClimb1()));
         whileTrue(driver::a,
                 sequence(
                         m_machinery.m_ClimberExtension.setPosition().withTimeout(1),
@@ -173,7 +172,6 @@ public class Binder {
         Command runHood = m_machinery.m_shooterHood.position();
         Command runSerial = m_machinery.m_serializer.serialize();
         Command runSerialUpper = m_machinery.m_serializerUpper.serializerUpperFullspeed();
-
         whileTrue(driver::rightTrigger,
                 parallel(
                         runHood,
@@ -182,6 +180,15 @@ public class Binder {
                         Commands.repeatingSequence(
                                 waitUntil(m_machinery.m_shooter::atSpeed),
                                 runSerial.onlyWhile(m_machinery.m_shooter::atSpeed))));
+
+        // TESTING
+        // whileTrue(driver::b,
+        // parallel(runShooter, runSerial, runSerialUpper)
+        // );
+
+        // whileTrue(driver::x,
+        // runShooter2
+        // );
 
         ////////////////////////////////////////////////////
         //
