@@ -65,6 +65,7 @@ public class Machinery {
     public final SwerveLimiter m_limiter;
     public final SwerveDriveSubsystem m_drive;
     public final Beeper m_beeper;
+    public final Climber m_Climber;
 
     public final ClimberExtension m_ClimberExtension;
    
@@ -154,6 +155,7 @@ public class Machinery {
         
                 
         m_ClimberExtension = new ClimberExtension(logger);
+        m_Climber = new Climber(logger);
         ////////////////////////////////////////////////////////////
         ///
         /// GROUND TRUTH

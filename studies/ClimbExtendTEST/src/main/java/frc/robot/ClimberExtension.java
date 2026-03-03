@@ -36,7 +36,7 @@ public class ClimberExtension extends SubsystemBase {
         int gearRatio = 1;
 
         switch (Identity.instance) {
-            case COMP_BOT,TEST_BOARD_B0 -> {
+            case COMP_BOT -> {
                 int statorLimit = 40;
                 NeoVortexCANSparkMotor m_motor = new NeoVortexCANSparkMotor(
                         log,

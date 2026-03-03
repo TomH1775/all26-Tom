@@ -137,6 +137,8 @@ public class Robot extends TimedRobot {
     whileTrue(driver::x,
         m_machinery.m_ClimberExtension.setPosition());
     whileTrue(driver ::y, m_machinery.m_ClimberExtension.setHomePosition());
+    whileTrue(driver:: a, m_machinery.m_Climber.setClimb3());
+    whileTrue(driver:: b, m_machinery.m_Climber.setClimb0());
   }
 
   /** This function is called periodically during operator control. */
