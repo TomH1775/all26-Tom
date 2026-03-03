@@ -27,8 +27,8 @@ public class Climber extends SubsystemBase {
     private final BareMotor m_motor;
     private final AngularPositionServo m_servo;
     private static final double m_level0 = 0.1;
-    private static final double m_level1 = 90;
-    private static final double m_level3 = 180;
+    private static final double m_level1 = Math.PI/2;
+    private static final double m_level3 = Math.PI;
 
     public Climber(LoggerFactory parent, CanId CanId) {
         LoggerFactory log = parent.type(this);
@@ -73,12 +73,12 @@ public class Climber extends SubsystemBase {
     }
 
     public Command setClimb1() {
-        return run(this::setL1);
+        return run(this::setL1).withName("Level 1");
     }
 
 
-    public Command setClimb3() {
-        return run(this::setL3);
+    public Command setClimb3() { 
+        return run(this::setL3).withName("Level 3");
     }
 
     private void setL0() {
