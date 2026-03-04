@@ -1,6 +1,7 @@
 package org.team100.lib.servo;
 
 import org.team100.lib.music.Player;
+import org.team100.lib.state.ModelR1;
 
 /**
  * Angular position control, e.g. for swerve steering axes or arm axes.
@@ -12,7 +13,9 @@ public interface AngularPositionServo extends Player {
     /**
      * Zeros controller errors, sets setpoint and goal to current measurement.
      *
-     * It is essential to call this after a period of disuse, to prevent transients.
+     * It is ESSENTIAL TO CALL RESET in your INITIALIZE logic, so that the reference
+     * starts with the current measurement. Otherwise, the reference will "remember"
+     * whatever it was doing before.
      * 
      * To prevent oscillation, the previous setpoint is used to compute the profile,
      * but there needs to be an initial setpoint.
@@ -79,6 +82,9 @@ public interface AngularPositionServo extends Player {
 
     /** The "unwrapped" value domain is infinite. */
     double getUnwrappedPositionRad();
+
+    /** For testing. */
+    ModelR1 getUnwrappedGoal();
 
     /** Mechanism is following the desired setpoint. */
     boolean atSetpoint();

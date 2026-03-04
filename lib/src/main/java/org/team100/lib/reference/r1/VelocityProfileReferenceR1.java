@@ -52,6 +52,8 @@ public class VelocityProfileReferenceR1 implements VelocityReferenceR1 {
 
     @Override
     public VelocityControlR1 get() {
+        if (m_currentSetpoint == null)
+            throw new IllegalStateException("Must init!");
         double t = Takt.get();
         if (t == m_currentInstant) {
             // Time hasn't passed since last time, so don't change anything.
@@ -73,6 +75,11 @@ public class VelocityProfileReferenceR1 implements VelocityReferenceR1 {
                 m_currentSetpoint.v(), m_goal, m_tolerance);
         m_log_done.log(() -> done);
         return done;
+    }
+
+    @Override
+    public boolean valid() {
+        return m_currentSetpoint != null;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////

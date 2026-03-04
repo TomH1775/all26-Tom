@@ -60,8 +60,8 @@ public class InterlinkBinder {
                 m_machinery.m_shooter.stop());
         m_machinery.m_intake.setDefaultCommand(
                 m_machinery.m_intake.stop());
-        m_machinery.m_extender.setDefaultCommand(
-                m_machinery.m_extender.stop());
+        m_machinery.m_intakeExtend.setDefaultCommand(
+                m_machinery.m_intakeExtend.stop());
         m_machinery.m_shooterHood.setDefaultCommand(
                 m_machinery.m_shooterHood.stop());
 
@@ -76,9 +76,9 @@ public class InterlinkBinder {
         /// INTAKE
         ///
         whileTrue(driver::c2,
-                m_machinery.m_extender.goToRetractedPosition());
+                m_machinery.m_intakeExtend.goToRetractedPosition());
         whileTrue(driver::c0,
-                m_machinery.m_extender.goToExtendedPosition()
+                m_machinery.m_intakeExtend.goToExtendedPosition()
                         .andThen(m_machinery.m_intake.intake()));
 
         ////////////////////////////////////////////////////

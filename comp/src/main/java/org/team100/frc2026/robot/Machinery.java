@@ -35,7 +35,6 @@ import org.team100.lib.subsystems.swerve.kinodynamics.limiter.SwerveLimiter;
 import org.team100.lib.subsystems.swerve.module.SwerveModuleCollection;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.VariableR1;
-import org.team100.lib.util.CanId;
 import org.team100.lib.visualization.RobotPoseVisualization;
 import org.team100.lib.visualization.TrajectoryVisualization;
 
@@ -77,7 +76,7 @@ public class Machinery {
     public final Beeper m_beeper;
     public final Shooter m_shooter;
     public final Intake m_intake;
-    public final IntakeExtend m_extender;
+    public final IntakeExtend m_intakeExtend;
     public final Serializer m_serializer;
     public final ShooterHood m_shooterHood;
     public final ClimberExtension m_ClimberExtension;
@@ -166,15 +165,17 @@ public class Machinery {
         //
         // SUBSYSTEMS
         //
-        m_shooter = new Shooter(logger);
         m_intake = new Intake(logger);
-        m_extender = new IntakeExtend(logger);
+        m_intakeExtend = new IntakeExtend(logger);
+
         m_serializer = new Serializer(logger);
+        m_shooter = new Shooter(logger);
+        m_serializerUpper = new SerializerUpper(logger, m_shooter);
         m_shooterHood = new ShooterHood(
                 logger, m_drive::getState, FieldConstants2026.HUB::toTranslation2d);
+
         m_ClimberExtension = new ClimberExtension(logger);
-        m_Climber = new Climber(logger, new CanId(32));
-        m_serializerUpper = new SerializerUpper(logger, m_shooter);
+        m_Climber = new Climber(logger);
 
         ////////////////////////////////////////////////////////////
         ///

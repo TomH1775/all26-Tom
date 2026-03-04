@@ -1,6 +1,7 @@
 package org.team100.frc2026.robot;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 import static org.team100.frc2026.util.TriggerUtil.onTrue;
 import static org.team100.frc2026.util.TriggerUtil.whileTrue;
@@ -45,7 +46,6 @@ public class Binder {
         ///
         /// CONTROLLER
         ///
-
         DriverXboxControl driver = new DriverXboxControl(0);
 
         ////////////////////////////////////////////////////
@@ -60,18 +60,22 @@ public class Binder {
                         m_machinery.m_localizer::setHeedRadiusM,
                         m_machinery.m_drive,
                         m_machinery.m_limiter));
-        m_machinery.m_shooter.setDefaultCommand(
-                m_machinery.m_shooter.stop());
         m_machinery.m_intake.setDefaultCommand(
                 m_machinery.m_intake.stop());
-        m_machinery.m_extender.setDefaultCommand(
-                m_machinery.m_extender.stop());
+        m_machinery.m_intakeExtend.setDefaultCommand(
+                m_machinery.m_intakeExtend.stop());
+        m_machinery.m_serializer.setDefaultCommand(
+                m_machinery.m_serializer.stop());
+        m_machinery.m_shooter.setDefaultCommand(
+                m_machinery.m_shooter.stop());
+        m_machinery.m_serializerUpper.setDefaultCommand(
+                m_machinery.m_serializerUpper.stop());
         m_machinery.m_shooterHood.setDefaultCommand(
                 m_machinery.m_shooterHood.stop());
-        m_machinery.m_serializer.setDefaultCommand(
-            m_machinery.m_serializer.stop());
-        m_machinery.m_serializerUpper.setDefaultCommand(
-            m_machinery.m_serializerUpper.stop());
+        m_machinery.m_Climber.setDefaultCommand(
+                m_machinery.m_Climber.stop());
+        m_machinery.m_ClimberExtension.setDefaultCommand(
+                m_machinery.m_ClimberExtension.stop());
 
         ////////////////////////////////////////////////////
         ///
@@ -83,7 +87,6 @@ public class Binder {
         ///
         /// TEST/DEV
         ///
-
         // This is for testing pose estimation accuracy and drivetrain positioning
         // accuracy.
         HolonomicProfile profile = HolonomicProfileFactory.get(
@@ -93,38 +96,53 @@ public class Binder {
                         m_log, m_machinery.m_drive, m_machinery.m_holonomicController,
                         profile, () -> new Pose2d(15.387, 3.501, new Rotation2d(0))));
 
+        ////////////////////////////////////////////////////
+        ///
+        /// CLIMBER
+        ///
 
+        whileTrue(driver::x,
+                m_machinery.m_ClimberExtension.setPosition()
+                        .andThen(m_machinery.m_Climber.setClimb1()));
+        whileTrue(driver::a,
+                sequence(
+                        m_machinery.m_ClimberExtension.setPosition().withTimeout(1),
+                        m_machinery.m_Climber.setClimb3().withTimeout(1)));
 
-        // whileTrue(driver::leftBumper, m_machinery.m_extender.goToExtendedPosition());
-        // whileTrue(driver::rightBumper,
-        // m_machinery.m_extender.goToRetractedPosition());
-        //
+        whileTrue(driver::y,
+                m_machinery.m_Climber.setClimb0()
+                        .andThen(m_machinery.m_ClimberExtension.setHomePosition()));
+
+        // These are from ClimberExtendTEST
+        // whileTrue(driver::x, m_machinery.m_ClimberExtension.setPosition());
+        // whileTrue(driver::y, m_machinery.m_ClimberExtension.setHomePosition());
         // whileTrue(driver::rightTrigger,
         // m_machinery.m_ClimberExtension.setPosition());
-
-        //CLIMBER
-        whileTrue(driver::x,
-        m_machinery.m_ClimberExtension.setPosition()
-        .andThen(m_machinery.m_Climber.setClimb1()));
-        whileTrue(driver::a,
-        m_machinery.m_ClimberExtension.setPosition()
-        .andThen(m_machinery.m_Climber.setClimb3()));
-        whileTrue(driver::y,
-        m_machinery.m_Climber.setClimb0()
-        .andThen(m_machinery.m_ClimberExtension.setHomePosition()));
+        // whileTrue(driver::a, m_machinery.m_Climber.setClimb3());
+        // whileTrue(driver::b, m_machinery.m_Climber.setClimb0());
 
         ////////////////////////////////////////////////////
         ///
         /// INTAKE
+        ///
+
         whileTrue(driver::leftBumper,
-                m_machinery.m_extender.goToRetractedPosition());
+                m_machinery.m_intakeExtend.goToRetractedPosition());
         whileTrue(driver::leftTrigger,
-                m_machinery.m_extender.goToExtendedPosition()
+                m_machinery.m_intakeExtend.goToExtendedPosition()
                         .andThen(m_machinery.m_intake.intake()));
+
+        // For testing
+        // whileTrue(driver::leftBumper,
+        // m_machinery.m_intakeExtender.goToExtendedPosition());
+        // whileTrue(driver::rightBumper,
+        // m_machinery.m_intakeExtender.goToRetractedPosition());
 
         ////////////////////////////////////////////////////
         ///
         /// AIM
+        ///
+
         FeedbackR1 thetaFeedback = new PIDFeedback(
                 m_log, 3.2, 0, 0, true, 0.05, 1);
         // aim at the hub, button 6 and also in the alliance zone
@@ -162,24 +180,34 @@ public class Binder {
         ////////////////////////////////////////////////////
         ///
         /// SHOOT
-        Command runShooter = m_machinery.m_shooter.shooterFullspeed();
+        ///
+
+        Command runShooter = m_machinery.m_shooter.testShooterFullspeed();
         Command runHood = m_machinery.m_shooterHood.position();
-        Command runSerial = m_machinery.m_serializer.serialize();
-        Command runSerialUpper = m_machinery.m_serializerUpper.serializerUpperFullspeed();
+        Command runSerial = m_machinery.m_serializer.testSerialize();
+        Command runSerialUpper = m_machinery.m_serializerUpper.testSerializerUpper();
+        // whileTrue(driver::rightTrigger,
+        // parallel(
+        // runHood,
+        // runShooter,
+        // runSerialUpper,
+        // Commands.repeatingSequence(
+        // waitUntil(m_machinery.m_shooter::atSpeed),
+        // runSerial.onlyWhile(m_machinery.m_shooter::atSpeed))));
 
-        whileTrue(driver::rightTrigger,
-                parallel(
-                        runHood,
-                        runShooter,
-                        runSerialUpper,
-                        Commands.repeatingSequence(
-                                waitUntil(m_machinery.m_shooter::atSpeed),
-                                runSerial.onlyWhile(m_machinery.m_shooter::atSpeed))));
+        // For testing
+        // whileTrue(driver::x, m_machinery.m_shooter.shooterFullspeed());
+        // whileTrue(driver::y, m_machinery.m_shooter.testMotor1Command());
+        // whileTrue(driver::a, m_machinery.m_shooter.testMotor2Command());
+        // whileTrue(driver::x, m_machinery.m_shooter.testMotor3Command());
+        // whileTrue(driver::b, parallel(runShooter, runSerial, runSerialUpper));
 
+        whileTrue(driver::rightTrigger, parallel(runSerial, runSerialUpper, runShooter));
         ////////////////////////////////////////////////////
-        //
-        // TEST
-        //
+        ///
+        /// TEST
+        ///
+
         Tester tester = new Tester(m_machinery);
         whileTrue(() -> (RobotState.isTest() && driver.a() && driver.b()),
                 tester.prematch());

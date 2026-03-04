@@ -1,5 +1,7 @@
 package org.team100.lib.servo;
 
+import org.team100.lib.state.ModelR1;
+
 public class MockAngularPositionServo implements AngularPositionServo {
     double m_setpoint;
 
@@ -32,6 +34,11 @@ public class MockAngularPositionServo implements AngularPositionServo {
     @Override
     public double getUnwrappedPositionRad() {
         return 0;
+    }
+
+    @Override
+    public ModelR1 getUnwrappedGoal() {
+        return null;
     }
 
     @Override

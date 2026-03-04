@@ -5,7 +5,6 @@ import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.config.SimpleDynamics;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.mechanism.LinearMechanism;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
@@ -22,12 +21,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Serializer extends SubsystemBase {
-    public static final CanId canID = new CanId(0);
+    private static final CanId canID1 = new CanId(19);
+    private static final CanId canID2 = new CanId(20);
+    private static final double TOLERANCE_M_S = 1;
+    private static final double GEAR_RATIO = 3;
+    private static final double WHEEL_DIAMETER_M = 0.1;
 
     private final OutboardLinearVelocityServo m_servo1;
     private final OutboardLinearVelocityServo m_servo2;
-
-    private final double m_speed = 30;
 
     public Serializer(LoggerFactory parent) {
         LoggerFactory log = parent.type(this);
@@ -38,52 +39,32 @@ public class Serializer extends SubsystemBase {
         VelocityReferenceR1 ref = new VelocityProfileReferenceR1(
                 log, () -> profile, 1);
 
+        final BareMotor m1;
+        final BareMotor m2;
+
         switch (Identity.instance) {
             case TEST_BOARD_B0, COMP_BOT -> {
-                //
-                PIDConstants PID = PIDConstants.makeVelocityPID(log, 0.1);
-                // two is too low, even for unloaded case
-                double supplyLimit = 50;
-                double statorLimit = 20;
-
+                double supplyLimit = 120;
+                double statorLimit = 120;
                 SimpleDynamics dynamics = new SimpleDynamics(log, 0.004, 0.002);
                 Friction friction = new Friction(log, 0.26, 0.26, 0.006, 0.5);
-                // TODO: set canIDs
-                BareMotor m_motor1 = new KrakenX44Motor(
-                        log1, canID, NeutralMode100.COAST, MotorPhase.REVERSE,
-                        supplyLimit, statorLimit, dynamics, friction, PID);
-
-                BareMotor m_motor2 = new KrakenX44Motor(
-                        log2, canID, NeutralMode100.COAST, MotorPhase.REVERSE,
-                        supplyLimit, statorLimit, dynamics, friction, PID);
-
-                // verify these numbers
-                LinearMechanism mechanism1 = new LinearMechanism(
-                        log1, m_motor1, m_motor1.encoder(), 1, 0.1,
-                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-
-                LinearMechanism mechanism2 = new LinearMechanism(
-                        log2, m_motor2, m_motor2.encoder(), 1, 0.1,
-                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-
-                double tolerance = 1;
-                m_servo1 = new OutboardLinearVelocityServo(
-                        log1, mechanism1, ref, tolerance);
-                m_servo2 = new OutboardLinearVelocityServo(
-                        log2, mechanism2, ref, tolerance);
+                PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.1);
+                m1 = new KrakenX44Motor(
+                        log1, canID1, NeutralMode100.COAST, MotorPhase.REVERSE,
+                        supplyLimit, statorLimit, dynamics, friction, pid);
+                m2 = new KrakenX44Motor(
+                        log2, canID2, NeutralMode100.COAST, MotorPhase.REVERSE,
+                        supplyLimit, statorLimit, dynamics, friction, pid);
             }
             default -> {
-                SimulatedBareMotor m_motor = new SimulatedBareMotor(log.name("Serializer"), 600);
-                LinearMechanism mechanism = new LinearMechanism(
-                        log, m_motor, m_motor.encoder(), 1, 0.1,
-                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-
-                m_servo1 = new OutboardLinearVelocityServo(
-                        log1, mechanism, ref, 1);
-                m_servo2 = new OutboardLinearVelocityServo(
-                        log2, mechanism, ref, 1);
+                m1 = new SimulatedBareMotor(log1, 600);
+                m2 = new SimulatedBareMotor(log2, 600);
             }
         }
+        m_servo1 = OutboardLinearVelocityServo.make(
+                log1, m1, ref, GEAR_RATIO, WHEEL_DIAMETER_M, TOLERANCE_M_S);
+        m_servo2 = OutboardLinearVelocityServo.make(
+                log2, m2, ref, GEAR_RATIO, WHEEL_DIAMETER_M, TOLERANCE_M_S);
     }
 
     @Override
@@ -93,31 +74,39 @@ public class Serializer extends SubsystemBase {
     }
 
     public Command serialize() {
-        return run(this::fullSpeed).withName("Serialize");
+        return startRun(this::reset, ()->setVelocityProfiled(0.5))
+                .withName("Serialize");
+    }
+
+    public Command testSerialize() {
+        return run(this::dutyCycleAll)
+                .withName("Test Serialize");
     }
 
     public Command stop() {
-        return run(this::stopMotor).withName("stop serializing");
+        return run(this::stopMotor)
+                .withName("stop serializing");
     }
 
-    public void stopMotor() {
+    //////////////////////////////////////////
+
+    private void reset() {
+        m_servo1.reset();
+        m_servo2.reset();
+    }
+
+    private void stopMotor() {
         m_servo1.stop();
         m_servo2.stop();
     }
 
-    private void fullSpeed() {
-        double Velocity = 0.5;
-        m_servo1.setVelocityProfiled(Velocity);
-        m_servo2.setVelocityProfiled(Velocity);
+    private void setVelocityProfiled(double goalM_S) {
+        m_servo1.setVelocityProfiled(goalM_S);
+        m_servo2.setVelocityProfiled(goalM_S);
     }
 
-    public void setSpeed(double Velocity) {
-        m_servo1.setVelocityProfiled(Velocity);
-        m_servo2.setVelocityProfiled(Velocity);
+    private void dutyCycleAll() {
+        m_servo1.setDutyCycle(1);
+        m_servo2.setDutyCycle(1);
     }
-
-    public void setSerializerSpeed() {
-        setSpeed(m_speed);
-    }
-
 }

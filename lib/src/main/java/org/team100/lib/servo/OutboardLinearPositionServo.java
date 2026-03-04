@@ -5,6 +5,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.ControlR1Logger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.mechanism.LinearMechanism;
+import org.team100.lib.motor.BareMotor;
 import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.reference.r1.SetpointsR1;
 import org.team100.lib.state.ControlR1;
@@ -46,6 +47,24 @@ public class OutboardLinearPositionServo implements LinearPositionServo {
         m_log_control = log.ControlR1Logger(Level.COMP, "control (m)");
         m_log_position = log.doubleLogger(Level.COMP, "position (m)");
         m_log_velocity = log.doubleLogger(Level.COMP, "velocity (m_s)");
+    }
+
+    /**
+     * Make a servo from a motor and a position reference.
+     * Creates the mechanism in between.
+     */
+    public static OutboardLinearPositionServo make(
+            LoggerFactory log,
+            BareMotor motor,
+            ReferenceR1 ref,
+            double gearRatio,
+            double wheelDiameterM) {
+        LinearMechanism climberMech = new LinearMechanism(
+                log, motor, motor.encoder(), gearRatio, wheelDiameterM,
+                Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+        OutboardLinearPositionServo s = new OutboardLinearPositionServo(
+                log, climberMech, ref, 0.01, 0.01);
+        return s;
     }
 
     @Override
@@ -114,7 +133,7 @@ public class OutboardLinearPositionServo implements LinearPositionServo {
         return m_nextSetpoint.a();
     }
 
-        /** Invalidates the current profile */
+    /** Invalidates the current profile */
     public void setDutyCycle(double value) {
         m_goal = null;
         m_nextSetpoint = null;

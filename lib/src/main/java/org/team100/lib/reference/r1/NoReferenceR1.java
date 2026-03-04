@@ -23,4 +23,9 @@ public class NoReferenceR1 implements ReferenceR1 {
         return false;
     }
 
+    @Override
+    public boolean valid() {
+        return true;
+    }
+
 }

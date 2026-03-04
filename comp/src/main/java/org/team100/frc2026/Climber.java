@@ -5,7 +5,6 @@ import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.config.SimpleDynamics;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
@@ -15,7 +14,6 @@ import org.team100.lib.profile.r1.ProfileR1;
 import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
 import org.team100.lib.reference.r1.ReferenceR1;
-import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
 import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.OutboardAngularPositionServo;
 import org.team100.lib.util.CanId;
@@ -24,76 +22,88 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Climber extends SubsystemBase {
-    private final BareMotor m_motor;
-    private final AngularPositionServo m_servo;
-    private static final double m_level0 = 0.1;
-    private static final double m_level1 = 90;
-    private static final double m_level3 = 180;
+    public static final double GEAR_RATIO = 28;
+    private static final double L0 = 0;
+    private static final double L1 = -Math.PI / 2;
+    private static final double L3 = -Math.PI;
 
-    public Climber(LoggerFactory parent, CanId CanId) {
+    private final AngularPositionServo m_servo1;
+    private final AngularPositionServo m_servo2;
+
+    public Climber(LoggerFactory parent) {
         LoggerFactory log = parent.type(this);
-        ProfileR1 profile = new TrapezoidProfileR1(log, 1, 2, 0.05);
+        LoggerFactory log1 = log.name("motor1");
+        LoggerFactory log2 = log.name("motor2");
+        ProfileR1 profile = new TrapezoidProfileR1(log, 3, 5, 0.05);
         ReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.05, 0.05);
-        double gearRatio = 2;
         double initialPosition = 0;
-
+        final BareMotor m1;
+        final BareMotor m2;
         switch (Identity.instance) {
-            case COMP_BOT -> {
+            case COMP_BOT, TEST_BOARD_B0 -> {
                 int supplyLimit = 60;
-                int statorLimit = 1;
-                m_motor = new KrakenX60Motor(
-                        log,
-                        new CanId(0),
-                        NeutralMode100.BRAKE,
-                        MotorPhase.FORWARD,
+                int statorLimit = 40;
+                SimpleDynamics ff = new SimpleDynamics(log, 0, 0);
+                Friction friction = new Friction(log, 0, 0, 0, 0);
+                PIDConstants pid = new PIDConstants(log, 1, 0, 0, 0, 0, 0);
+                m1 = new KrakenX60Motor(
+                        log1, new CanId(6),
+                        NeutralMode100.BRAKE, MotorPhase.FORWARD,
                         supplyLimit, statorLimit,
-                        new SimpleDynamics(log, 0, 0),
-                        new Friction(log, 0, 0, 0, 0),
-                        new PIDConstants(log, 0, 0, 0, 0, 0, 0));
-                IncrementalBareEncoder encoder = m_motor.encoder();
-                RotaryMechanism climberMech = new RotaryMechanism(
-                        log, m_motor, encoder, initialPosition, gearRatio,
-                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-                m_servo = new OutboardAngularPositionServo(log, climberMech, ref);
+                        ff, friction, pid);
+                m2 = new KrakenX60Motor(
+                        log2, new CanId(7),
+                        NeutralMode100.BRAKE, MotorPhase.FORWARD,
+                        supplyLimit, statorLimit,
+                        ff, friction, pid);
             }
-
             default -> {
-                m_motor = new SimulatedBareMotor(log, 600);
-                IncrementalBareEncoder encoder = m_motor.encoder();
-                RotaryMechanism climberMech = new RotaryMechanism(
-                        log, m_motor, encoder, initialPosition, gearRatio,
-                        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-                m_servo = new OutboardAngularPositionServo(log, climberMech, ref);
+                m1 = new SimulatedBareMotor(log1, 600);
+                m2 = new SimulatedBareMotor(log2, 600);
             }
         }
+        m_servo1 = OutboardAngularPositionServo.make(
+                log1, m1, ref, GEAR_RATIO, initialPosition);
+        m_servo2 = OutboardAngularPositionServo.make(
+                log2, m2, ref, GEAR_RATIO, initialPosition);
     }
 
     public Command setClimb0() {
-        return run(this::setL0);
+        return startRun(this::reset, () -> actuateWithProfile(L0));
     }
 
     public Command setClimb1() {
-        return run(this::setL1);
+        return startRun(this::reset, () -> actuateWithProfile(L1));
     }
 
     public Command setClimb3() {
-        return run(this::setL3);
+        return startRun(this::reset, () -> actuateWithProfile(L3));
     }
 
-    private void setL0() {
-        m_servo.setPositionProfiled(m_level0, 0);
-    }
-
-    private void setL1() {
-        m_servo.setPositionProfiled(m_level1, 0);
-    }
-
-    private void setL3() {
-        m_servo.setPositionProfiled(m_level3, 0);
+    public Command stop() {
+        return run(this::stopMotor);
     }
 
     @Override
     public void periodic() {
-        m_servo.periodic();
+        m_servo1.periodic();
+        m_servo2.periodic();
+    }
+
+    ///////////////////////////////////////
+
+    private void reset() {
+        m_servo1.reset();
+        m_servo2.reset();
+    }
+
+    private void stopMotor() {
+        m_servo1.stop();
+        m_servo2.stop();
+    }
+
+    private void actuateWithProfile(double unwrappedGoalRad) {
+        m_servo1.actuateWithProfile(unwrappedGoalRad, 0);
+        m_servo2.actuateWithProfile(unwrappedGoalRad, 0);
     }
 }

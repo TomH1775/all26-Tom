@@ -20,7 +20,9 @@ public class ProxyRotaryPositionSensor implements RotaryPositionSensor {
     }
 
     public ProxyRotaryPositionSensor(
-            IncrementalBareEncoder encoder, double gearRatio, double initialPosition) {
+            IncrementalBareEncoder encoder,
+            double gearRatio,
+            double initialPosition) {
         this(encoder, gearRatio);
         setEncoderPosition(initialPosition);
     }

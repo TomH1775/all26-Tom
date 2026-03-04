@@ -79,7 +79,7 @@ public class SwerveModuleCollection implements Player {
                         WCPSwerveModule100.getKrakenDrive(frontRightLogger, supplyLimit, statorLimit,
                                 new CanId(22), // drive
                                 DriveRatio.MEDIUM,
-                                new CanId(20), // steer
+                                new CanId(18), // steer
                                 new RoboRioChannel(6),
                                 0.876519,
                                 kinodynamics,

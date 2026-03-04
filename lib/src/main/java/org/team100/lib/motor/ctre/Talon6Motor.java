@@ -167,7 +167,7 @@ public abstract class Talon6Motor implements BareMotor {
         m_position = Cache.ofDouble(() -> {
             double latency = Utils.fpgaToCurrentTime(Takt.get()) - motorPositionRev.getTimestamp().getTime();
             if (latency > 0.04) {
-                System.out.println("WARNING: !!!!!!! stale position! !!!!!!!" + canId);
+                System.out.printf("WARNING: stale position %s latency %f ", canId, latency);
                 latency = 0.1;
             }
             double motorRad = motorPositionRev.getValueAsDouble() * 2 * Math.PI;
