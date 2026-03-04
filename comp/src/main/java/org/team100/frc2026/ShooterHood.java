@@ -105,8 +105,13 @@ public class ShooterHood extends SubsystemBase {
         ModelSE2 state = m_state.get();
         Translation2d target = m_target.get();
         double rangeM = state.translation().getDistance(target);
-        double angle = m_table.getAngleRad(rangeM);
-        setPositionProfiled(angle);
+        Double angle = m_table.getAngleRad(rangeM);
+        if (angle == null) {
+            // out of bounds
+            stopServo();
+        } else {
+            setPositionProfiled(angle);
+        }
     }
 
 }
