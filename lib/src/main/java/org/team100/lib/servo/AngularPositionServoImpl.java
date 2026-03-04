@@ -240,6 +240,11 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
         return m_mechanism.getUnwrappedPositionRad();
     }
 
+    @Override
+    public ModelR1 getUnwrappedGoal() {
+        return m_unwrappedGoal;
+    }
+
     /**
      * Compares robotPeriodic-updated measurements to the setpoint,
      * so you need to know when the setpoint was updated: is it for the

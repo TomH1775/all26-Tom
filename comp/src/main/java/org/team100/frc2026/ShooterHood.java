@@ -17,6 +17,7 @@ import org.team100.lib.reference.r1.ProfileReferenceR1;
 import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.OutboardAngularPositionServo;
+import org.team100.lib.state.ModelR1;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.util.CanId;
 
@@ -74,6 +75,7 @@ public class ShooterHood extends SubsystemBase {
         m_servo.periodic();
     }
 
+    /** Uses a profile. Maybe don't use a profile? */
     public Command position() {
         return startRun(this::reset, this::autoWork);
     }
@@ -88,6 +90,16 @@ public class ShooterHood extends SubsystemBase {
 
     /////////////////////////////////////////
 
+    /** For testing. */
+    double getUnwrappedPositionRad() {
+        return m_servo.getUnwrappedPositionRad();
+    }
+
+    /** For testing. */
+    ModelR1 getUnwrappedGoal() {
+        return m_servo.getUnwrappedGoal();
+    }
+
     private void reset() {
         m_servo.reset();
     }
@@ -97,8 +109,8 @@ public class ShooterHood extends SubsystemBase {
     }
 
     /** Use a profile to set the position. */
-    private void setPositionProfiled(double value) {
-        m_servo.setPositionProfiled(value, 0);
+    private void actuateWithProfile(double value) {
+        m_servo.actuateWithProfile(value, 0);
     }
 
     private void autoWork() {
@@ -110,7 +122,7 @@ public class ShooterHood extends SubsystemBase {
             // out of bounds
             stopServo();
         } else {
-            setPositionProfiled(angle);
+            actuateWithProfile(angle);
         }
     }
 
