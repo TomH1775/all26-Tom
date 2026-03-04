@@ -35,7 +35,7 @@ public class ClimberExtension extends SubsystemBase {
         ReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.05, 0.05);
         final BareMotor motor;
         switch (Identity.instance) {
-            case COMP_BOT -> {
+            case TEST_BOARD_6B -> {
                 int statorLimit = 40;
                 SimpleDynamics ff = new SimpleDynamics(log, 0, 0);
                 Friction friction = new Friction(log, 0, 0, 0, 0);
@@ -61,6 +61,10 @@ public class ClimberExtension extends SubsystemBase {
         return startRun(this::reset, () -> setPositionProfiled(MIN_EXTENSION_M));
     }
 
+    public Command stop() {
+        return run(this::stopMotor);
+    }
+
     @Override
     public void periodic() {
         m_servo.periodic();
@@ -70,6 +74,10 @@ public class ClimberExtension extends SubsystemBase {
 
     private void reset() {
         m_servo.reset();
+    }
+
+    private void stopMotor() {
+        m_servo.stop();
     }
 
     private void setPositionProfiled(double goalM) {

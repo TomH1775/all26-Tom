@@ -47,12 +47,12 @@ public class Climber extends SubsystemBase {
                 Friction friction = new Friction(log, 0, 0, 0, 0);
                 PIDConstants pid = new PIDConstants(log, 1, 0, 0, 0, 0, 0);
                 m1 = new KrakenX60Motor(
-                        log1, new CanId(18),
+                        log1, new CanId(6),
                         NeutralMode100.BRAKE, MotorPhase.FORWARD,
                         supplyLimit, statorLimit,
                         ff, friction, pid);
                 m2 = new KrakenX60Motor(
-                        log2, new CanId(19),
+                        log2, new CanId(7),
                         NeutralMode100.BRAKE, MotorPhase.FORWARD,
                         supplyLimit, statorLimit,
                         ff, friction, pid);
@@ -80,6 +80,10 @@ public class Climber extends SubsystemBase {
         return startRun(this::reset, () -> actuateWithProfile(L3));
     }
 
+    public Command stop() {
+        return run(this::stopMotor);
+    }
+
     @Override
     public void periodic() {
         m_servo1.periodic();
@@ -91,6 +95,11 @@ public class Climber extends SubsystemBase {
     private void reset() {
         m_servo1.reset();
         m_servo2.reset();
+    }
+
+    private void stopMotor() {
+        m_servo1.stop();
+        m_servo2.stop();
     }
 
     private void actuateWithProfile(double unwrappedGoalRad) {

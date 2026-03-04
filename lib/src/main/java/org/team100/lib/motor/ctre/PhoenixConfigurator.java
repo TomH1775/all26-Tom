@@ -20,7 +20,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 /** Utilities for CTRE Phoenix motors: Falcon, Kraken. */
 public class PhoenixConfigurator {
     private static final boolean DEBUG = false;
-    private static final boolean ACTUALLY_CRASH = false;
+    private static final boolean ACTUALLY_CRASH = true;
     /**
      * The default is 0.05. This is much longer, to eliminate unnecessary config
      * failures.
@@ -57,10 +57,11 @@ public class PhoenixConfigurator {
     }
 
     public void logCrashStatus() {
-        if (ACTUALLY_CRASH)
+        if (ACTUALLY_CRASH) {
             System.out.println("WARNING: ***** Config fail will CRASH the robot, NOT FOR COMP!");
-        else
+        } else {
             System.out.println("***** Config fail will not be caught, NOT FOR DEV!");
+        }
 
     }
 

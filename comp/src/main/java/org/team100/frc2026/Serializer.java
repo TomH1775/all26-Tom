@@ -24,7 +24,7 @@ public class Serializer extends SubsystemBase {
     private static final CanId canID1 = new CanId(19);
     private static final CanId canID2 = new CanId(20);
     private static final double TOLERANCE_M_S = 1;
-    private static final double GEAR_RATIO = 1;
+    private static final double GEAR_RATIO = 3;
     private static final double WHEEL_DIAMETER_M = 0.1;
 
     private final OutboardLinearVelocityServo m_servo1;
@@ -44,8 +44,8 @@ public class Serializer extends SubsystemBase {
 
         switch (Identity.instance) {
             case TEST_BOARD_B0, COMP_BOT -> {
-                double supplyLimit = 50;
-                double statorLimit = 20;
+                double supplyLimit = 120;
+                double statorLimit = 120;
                 SimpleDynamics dynamics = new SimpleDynamics(log, 0.004, 0.002);
                 Friction friction = new Friction(log, 0.26, 0.26, 0.006, 0.5);
                 PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.1);

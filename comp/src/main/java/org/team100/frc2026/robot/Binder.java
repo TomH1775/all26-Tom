@@ -72,6 +72,10 @@ public class Binder {
                 m_machinery.m_serializerUpper.stop());
         m_machinery.m_shooterHood.setDefaultCommand(
                 m_machinery.m_shooterHood.stop());
+        m_machinery.m_Climber.setDefaultCommand(
+                m_machinery.m_Climber.stop());
+        m_machinery.m_ClimberExtension.setDefaultCommand(
+                m_machinery.m_ClimberExtension.stop());
 
         ////////////////////////////////////////////////////
         ///
@@ -178,18 +182,18 @@ public class Binder {
         /// SHOOT
         ///
 
-        Command runShooter = m_machinery.m_shooter.shooterFullspeed();
+        Command runShooter = m_machinery.m_shooter.testShooterFullspeed();
         Command runHood = m_machinery.m_shooterHood.position();
-        Command runSerial = m_machinery.m_serializer.serialize();
-        Command runSerialUpper = m_machinery.m_serializerUpper.serializerUpperFullspeed();
-        whileTrue(driver::rightTrigger,
-                parallel(
-                        runHood,
-                        runShooter,
-                        runSerialUpper,
-                        Commands.repeatingSequence(
-                                waitUntil(m_machinery.m_shooter::atSpeed),
-                                runSerial.onlyWhile(m_machinery.m_shooter::atSpeed))));
+        Command runSerial = m_machinery.m_serializer.testSerialize();
+        Command runSerialUpper = m_machinery.m_serializerUpper.testSerializerUpper();
+        // whileTrue(driver::rightTrigger,
+        // parallel(
+        // runHood,
+        // runShooter,
+        // runSerialUpper,
+        // Commands.repeatingSequence(
+        // waitUntil(m_machinery.m_shooter::atSpeed),
+        // runSerial.onlyWhile(m_machinery.m_shooter::atSpeed))));
 
         // For testing
         // whileTrue(driver::x, m_machinery.m_shooter.shooterFullspeed());
@@ -198,6 +202,7 @@ public class Binder {
         // whileTrue(driver::x, m_machinery.m_shooter.testMotor3Command());
         // whileTrue(driver::b, parallel(runShooter, runSerial, runSerialUpper));
 
+        whileTrue(driver::rightTrigger, parallel(runSerial, runSerialUpper, runShooter));
         ////////////////////////////////////////////////////
         ///
         /// TEST

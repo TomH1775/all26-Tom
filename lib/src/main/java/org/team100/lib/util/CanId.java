@@ -12,4 +12,9 @@ public class CanId {
     public CanId(int id) {
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return "CanId [id=" + id + "]";
+    }
 }
