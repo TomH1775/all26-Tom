@@ -173,7 +173,7 @@ public class Binder {
                 fieldLogger, m_machinery.m_drive::getState, target, solver);
         // here we rely only on PID so make it stronger
         FeedbackR1 aggressiveFeedback = new FullStateFeedback(
-                m_log, 1, 0.1, true, 0.025, 0.25);
+                m_log, 3, 0.1, true, 0.025, 0.25);
         // button 5
         whileTrue(() -> driver.leftBumper(),
                 new DriveMovingTargetLock(
