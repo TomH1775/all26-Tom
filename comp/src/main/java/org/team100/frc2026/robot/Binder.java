@@ -172,7 +172,7 @@ public class Binder {
                         m_machinery.m_limiter)
                         .withName("Direct target lock"));
 
-        InverseRange ir = new InverseRange(
+        InverseRange rangeToParams = new InverseRange(
                 FieldConstants2026.FUEL_DRAG,
                 0.75,
                 2.5,
@@ -180,7 +180,10 @@ public class Binder {
                 FieldConstants2026.HUB_ELEVATION,
                 7,
                 1);
-        solver = new ProxySolver(ir);
+        solver = new ProxySolver(rangeToParams);
+
+        // solver = new ProxySolver(m_machinery.m_targeter::forRange);
+
         CachedSolution tofSolution = new CachedSolution(
                 fieldLogger, m_machinery.m_drive::getState, target, solver);
         // here we rely only on PID so make it stronger

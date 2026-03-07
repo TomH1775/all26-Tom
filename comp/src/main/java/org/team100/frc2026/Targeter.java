@@ -1,6 +1,7 @@
 package org.team100.frc2026;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.function.Supplier;
 
@@ -62,6 +63,17 @@ public class Targeter {
             return m_lob.speed(FieldConstants2026.rangeToLob(p));
         }
         return OptionalDouble.empty();
+    }
+
+    public Optional<FiringParameters> forRange(double rangeM) {
+        Translation2d p = m_position.get();
+        if (FieldConstants2026.isInAllianceZone(p)) {
+            return m_score.forRange(rangeM);
+        }
+        if (FieldConstants2026.isInNeutralZone(p)) {
+            return m_lob.forRange(rangeM);
+        }
+        return Optional.empty();
     }
 
 }

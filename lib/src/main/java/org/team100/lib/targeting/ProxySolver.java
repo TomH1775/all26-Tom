@@ -18,10 +18,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class ProxySolver implements Solver {
     private final SendableChooser<Solver> m_chooser;
 
-    public ProxySolver(DoubleFunction<FiringParameters> ir) {
+    public ProxySolver(DoubleFunction<FiringParameters> rangeToParams) {
         m_chooser = new NamedChooser<>("Target Solver");
-        addTOFRecursion(ir);
-        addLaser();
+        addTOFRecursion(rangeToParams);
+        addLaser(rangeToParams);
         SmartDashboard.putData(m_chooser);
     }
 
@@ -35,10 +35,8 @@ public class ProxySolver implements Solver {
      * 
      * Iterates on predicted TOF using inverse map.
      */
-    private void addTOFRecursion(
-            DoubleFunction<FiringParameters> ir) {
-        m_chooser.addOption("TOFR",
-                new TimeOfFlightRecursion(ir, 0.01));
+    private void addTOFRecursion(DoubleFunction<FiringParameters> rangeToParams) {
+        m_chooser.addOption("TOFR", new TimeOfFlightRecursion(rangeToParams, 0.01));
     }
 
     /**
@@ -46,9 +44,8 @@ public class ProxySolver implements Solver {
      * 
      * For testing, using the flashlight.
      */
-    private void addLaser() {
-        m_chooser.setDefaultOption("Laser",
-                new LaserSolver());
+    private void addLaser(DoubleFunction<FiringParameters> rangeToParams) {
+        m_chooser.setDefaultOption("Laser", new LaserSolver(rangeToParams));
     }
 
     @Override

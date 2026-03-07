@@ -1,6 +1,7 @@
 package org.team100.lib.subsystems.turret;
 
 import java.util.Optional;
+import java.util.function.DoubleFunction;
 import java.util.function.Supplier;
 
 import org.team100.lib.controller.r1.PIDFeedback;
@@ -22,6 +23,7 @@ import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.OnboardAngularPositionServo;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.targeting.Drag;
+import org.team100.lib.targeting.FiringParameters;
 import org.team100.lib.targeting.Intercept;
 import org.team100.lib.targeting.LaserSolver;
 import org.team100.lib.targeting.RangeCache;
@@ -71,6 +73,7 @@ public class Turret extends SubsystemBase {
     public Turret(
             LoggerFactory parent,
             LoggerFactory field,
+            DoubleFunction<FiringParameters> rangeToParams,
             Supplier<ModelSE2> state,
             Supplier<Translation2d> target,
             double speed) {
@@ -88,7 +91,7 @@ public class Turret extends SubsystemBase {
         RangeSolver rangeSolver = new RangeSolver(d, TARGET_HEIGHT, TARGET_ELEVATION, 0.001);
         RangeCache range = new RangeCache(rangeSolver, speed, 0);
         m_shootingMethod = new ShootingMethod(range, 0.1, 1.4, 0.01, 0.1);
-        m_laser = new LaserSolver();
+        m_laser = new LaserSolver(rangeToParams);
         m_aiming = false;
     }
 

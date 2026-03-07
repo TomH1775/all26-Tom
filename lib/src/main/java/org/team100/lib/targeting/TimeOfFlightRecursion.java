@@ -25,19 +25,19 @@ public class TimeOfFlightRecursion implements Solver {
     private static final boolean DEBUG = false;
 
     /** Look up solution parameters for range. */
-    private final DoubleFunction<FiringParameters> m_inverseRange;
+    private final DoubleFunction<FiringParameters> m_rangeToParams;
     /** Solution TOF tolerance, seconds. */
     private final double m_tolerance;
 
     /**
-     * @param inverseRange FiringParameters as a function of desired range
-     * @param tolerance    complete when the solution doesn't change more than this,
-     *                     in seconds
+     * @param rangeToParams FiringParameters as a function of desired range
+     * @param tolerance     complete when the solution doesn't change more than
+     *                      this, in seconds
      */
     public TimeOfFlightRecursion(
-            DoubleFunction<FiringParameters> inverseRange,
+            DoubleFunction<FiringParameters> rangeToParams,
             double tolerance) {
-        m_inverseRange = inverseRange;
+        m_rangeToParams = rangeToParams;
         m_tolerance = tolerance;
     }
 
@@ -47,30 +47,30 @@ public class TimeOfFlightRecursion implements Solver {
                 FiringParameters params, Translation2d targetPositionAtTOF) {
         }
 
-        private final DoubleFunction<FiringParameters> m_inverseRange;
+        private final DoubleFunction<FiringParameters> m_rangeToParams;
         /** Target position relative to robot. */
-        final Translation2d T0;
+        private final Translation2d m_T0;
         /** Target velocity relative to robot. */
-        final GlobalVelocityR2 vT;
+        private final GlobalVelocityR2 m_vT;
 
         public Looper(
-                DoubleFunction<FiringParameters> inverseRange,
+                DoubleFunction<FiringParameters> rangeToParams,
                 Translation2d T0,
                 GlobalVelocityR2 vT) {
-            m_inverseRange = inverseRange;
-            this.T0 = T0;
-            this.vT = vT;
+            m_rangeToParams = rangeToParams;
+            m_T0 = T0;
+            m_vT = vT;
         }
 
         LoopSolution step(Double targetTOF) {
 
             // where is the target at the specified TOF?
-            Translation2d targetPositionAtTOF = vT.integrate(T0, targetTOF);
+            Translation2d targetPositionAtTOF = m_vT.integrate(m_T0, targetTOF);
             double rangeAtTOF = targetPositionAtTOF.getNorm();
 
             // What gun elevation gets to that range, and what is the
             // ball TOF to get there?
-            FiringParameters params = m_inverseRange.apply(rangeAtTOF);
+            FiringParameters params = m_rangeToParams.apply(rangeAtTOF);
             LoopSolution var2 = new LoopSolution(
                     params, targetPositionAtTOF);
             if (DEBUG)
@@ -91,13 +91,15 @@ public class TimeOfFlightRecursion implements Solver {
 
         // Target relative to robot
         final Translation2d T0 = targetPosition.minus(robotPosition);
+        double rangeM = T0.getNorm();
         // Target velocity relative to robot
         final GlobalVelocityR2 vT = targetVelocity.minus(robotVelocity);
-
-        Looper looper = new Looper(m_inverseRange, T0, vT);
+        
+        Looper looper = new Looper(m_rangeToParams, T0, vT);
 
         // Initial guess is the initial location.
-        double targetTOF = m_inverseRange.apply(T0.getNorm()).tof();
+        double targetTOF = m_rangeToParams.apply(rangeM).tof();
+
         for (int i = 0; i < 100; ++i) {
             Looper.LoopSolution soln = looper.step(targetTOF);
             double ballTOF = soln.params.tof();
