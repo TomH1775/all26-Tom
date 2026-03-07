@@ -36,7 +36,7 @@ public class InverseRange implements DoubleFunction<FiringParameters> {
         m_maxElevation = maxElevation;
         RangeSolver rangeSolver = new RangeSolver(d, targetHeight, minTargetElevation, 0.001);
         m_map = new InterpolatingTreeMap<>(
-                InverseInterpolator.forDouble(), new FiringParametersInterpolator());
+                InverseInterpolator.forDouble(), FiringParameters::interpolate);
         if (DEBUG)
             System.out.println("range, elevation, tof");
         for (double elevation = m_minElevation; elevation <= m_maxElevation; elevation += ELEVATION_STEP) {
