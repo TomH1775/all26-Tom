@@ -83,9 +83,9 @@ public class ShooterHood extends SubsystemBase {
         return startRun(
                 this::reset,
                 () -> actuateDirect(
-                        m_tuningSetting.getAsDouble())).withName("tune");
+                        m_tuningSetting.getAsDouble()))
+                .withName("Tune Hood");
     }
-
 
     public Command stop() {
         return run(this::stopServo).withName("Stop Hood");

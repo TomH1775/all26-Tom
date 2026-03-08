@@ -18,6 +18,7 @@ import org.team100.lib.profile.r1.VelocityProfileR1;
 import org.team100.lib.reference.r1.VelocityProfileReferenceR1;
 import org.team100.lib.reference.r1.VelocityReferenceR1;
 import org.team100.lib.servo.OutboardLinearVelocityServo;
+import org.team100.lib.tuning.Mutable;
 import org.team100.lib.util.CanId;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -36,6 +37,7 @@ public class Shooter extends SubsystemBase {
     private final OutboardLinearVelocityServo m_servo1;
     private final OutboardLinearVelocityServo m_servo2;
     private final OutboardLinearVelocityServo m_servo3;
+    private final Mutable m_tuningSetting;
 
     /**
      * @param parent log
@@ -47,6 +49,7 @@ public class Shooter extends SubsystemBase {
         LoggerFactory log2 = log.name("Shooter2");
         LoggerFactory log3 = log.name("Shooter3");
         m_speed = speed;
+        m_tuningSetting = new Mutable(log, "for tuning", 0);
 
         VelocityProfileR1 profile = new CurrentLimitedExponentialVelocityProfileR1(
                 10, 10, 20, 30);
@@ -92,6 +95,14 @@ public class Shooter extends SubsystemBase {
         m_servo1.periodic();
         m_servo2.periodic();
         m_servo3.periodic();
+    }
+
+    public Command tune() {
+        return startRun(
+                this::reset,
+                () -> setVelocityDirect(
+                        m_tuningSetting.getAsDouble()))
+                .withName("Tune Shooter");
     }
 
     public Command shooterFullspeed() {

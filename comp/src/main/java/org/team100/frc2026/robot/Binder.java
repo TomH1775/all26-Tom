@@ -208,8 +208,9 @@ public class Binder {
         ///
 
         Command runShooter = m_machinery.m_shooter.testShooterFullspeed();
+        Command tuneShooter = m_machinery.m_shooter.tune();
         Command runHood = m_machinery.m_shooterHood.position();
-        Command testHood = m_machinery.m_shooterHood.tune();
+        Command tuneHood = m_machinery.m_shooterHood.tune();
         Command runConveyor = m_machinery.m_conveyor.testConveyor();
         Command runConveyorBack = m_machinery.m_conveyor.testConveyorBack();
         Command runFeeder = m_machinery.m_feeder.testFeed();
@@ -241,11 +242,12 @@ public class Binder {
 
         // whileTrue(driver::rightTrigger, parallel(runSerial, runSerialUpper,
         // runShooter));
+        
         ////////////////////////////////////////////////////
         ///
         /// TEST
         ///
-        ///
+    
         if (m_machinery.m_intakeExtend.atExtendedPosition()) {
             whileTrue(driver::y, Commands.repeatingSequence(runIntakeWobbleExtendOut.withTimeout(0.5)
                     .andThen(runIntakeWobbleRetractOut).withTimeout(0.5)));
@@ -258,7 +260,9 @@ public class Binder {
             if (pov == null)
                 return false;
             return pov.equals(new Rotation2d(0));
-        }, testHood);
+        }, parallel(
+                tuneHood,
+                tuneShooter));
 
         Tester tester = new Tester(m_machinery);
         whileTrue(() -> (RobotState.isTest() && driver.a() && driver.b()),
