@@ -48,8 +48,7 @@ public class LaserSolver implements Solver {
         return Optional.of(new Solution(
                 absoluteBearing,
                 azimuthVelocity,
-                params.speed(),
-                new Rotation2d(params.elevation())));
+                params));
     }
 
 }

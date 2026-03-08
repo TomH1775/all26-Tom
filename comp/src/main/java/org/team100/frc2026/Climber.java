@@ -69,19 +69,19 @@ public class Climber extends SubsystemBase {
     }
 
     public Command setClimb0() {
-        return startRun(this::reset, () -> actuateWithProfile(L0));
+        return startRun(this::reset, () -> actuateWithProfile(L0)).withName("Climb L0");
     }
 
     public Command setClimb1() {
-        return startRun(this::reset, () -> actuateWithProfile(L1));
+        return startRun(this::reset, () -> actuateWithProfile(L1)).withName("Climb L1");
     }
 
     public Command setClimb3() {
-        return startRun(this::reset, () -> actuateWithProfile(L3));
+        return startRun(this::reset, () -> actuateWithProfile(L3)).withName("Climb L3");
     }
 
     public Command stop() {
-        return run(this::stopMotor);
+        return run(this::stopMotor).withName("Stop Climber");
     }
 
     @Override

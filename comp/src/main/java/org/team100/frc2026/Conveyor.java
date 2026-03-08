@@ -75,22 +75,22 @@ public class Conveyor extends SubsystemBase {
 
     public Command conveyor() {
         return startRun(this::reset, () -> setVelocityProfiled(0.5))
-                .withName("Serialize");
+                .withName("Convey");
     }
 
     public Command testConveyor() {
         return run(this::dutyCycleAll)
-                .withName("Test Serialize");
+                .withName("Test Conveyor");
     }
 
     public Command testConveyorBack() {
         return run(this::dutyCycleBackAll)
-                .withName("Test Back Serialize");
+                .withName("Test Back Conveyor");
     }
 
     public Command stop() {
         return run(this::stopMotor)
-                .withName("stop serializing");
+                .withName("Stop Conveyor");
     }
 
     //////////////////////////////////////////

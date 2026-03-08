@@ -54,15 +54,15 @@ public class ClimberExtension extends SubsystemBase {
     }
 
     public Command setPosition() {
-        return startRun(this::reset, () -> setPositionProfiled(MAX_EXTENSION_M));
+        return startRun(this::reset, () -> setPositionProfiled(MAX_EXTENSION_M)).withName("Climber Extension Extend");
     }
 
     public Command setHomePosition() {
-        return startRun(this::reset, () -> setPositionProfiled(MIN_EXTENSION_M));
+        return startRun(this::reset, () -> setPositionProfiled(MIN_EXTENSION_M)).withName("Climber Extension Retract");
     }
 
     public Command stop() {
-        return run(this::stopMotor);
+        return run(this::stopMotor).withName("Stop Climber Extension");
     }
 
     @Override

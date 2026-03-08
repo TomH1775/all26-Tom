@@ -120,7 +120,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public Command stop() {
-        return run(this::stopMotor).withName("stop Shooter");
+        return run(this::stopMotor).withName("Stop Shooter");
     }
 
     public Boolean atSpeed() {

@@ -72,7 +72,7 @@ public class IntakeExtend extends SubsystemBase {
     }
 
     public Command stop() {
-        return run(this::stopServo).withName("Intake Extend Stop");
+        return run(this::stopServo).withName("Stop Intake Extend");
     }
 
     /////////////////////////////////////////

@@ -76,7 +76,7 @@ public class ShooterHood extends SubsystemBase {
     }
 
     public Command stop() {
-        return run(this::stopServo).withName("Shooter Hood Stop");
+        return run(this::stopServo).withName("Stop Hood");
     }
 
     public boolean onTarget() {

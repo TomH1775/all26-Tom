@@ -3,16 +3,14 @@ package org.team100.lib.targeting;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 /**
- * Firing solution
+ * Firing solution.
  * 
  * @param azimuth         field-relative (rad)
  * @param azimuthVelocity for feed-forward, for moving shooter or target (rad/s)
- * @param speed           muzzle speed (m/s)
- * @param elevation       above the horizontal (rad)
+ * @param parameters      parameters for shooter
  */
 public record Solution(
         Rotation2d azimuth,
         double azimuthVelocity,
-        double speed,
-        Rotation2d elevation) {
+        FiringParameters parameters) {
 }

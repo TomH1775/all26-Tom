@@ -71,7 +71,7 @@ public class Intake extends SubsystemBase {
     }
 
     public Command stop() {
-        return run(this::stopMotor).withName("Intake Stop");
+        return run(this::stopMotor).withName("Stop Intake");
     }
 
     @Override

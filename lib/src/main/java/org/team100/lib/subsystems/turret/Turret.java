@@ -153,7 +153,7 @@ public class Turret extends SubsystemBase {
         Rotation2d absoluteBearing = soln.get().azimuth();
         Rotation2d relativeBearing = absoluteBearing.minus(m_state.get().rotation());
         m_pivot.setPositionProfiled(relativeBearing.getRadians(), 0);
-        m_elevation.setPositionProfiled(soln.get().elevation().getRadians(), 0);
+        m_elevation.setPositionProfiled(soln.get().parameters().elevation(), 0);
     }
 
     private Optional<Solution> getSolution() {
@@ -212,8 +212,7 @@ public class Turret extends SubsystemBase {
                 new Solution(
                         azimuth.get(),
                         0,
-                        0,
-                        Rotation2d.kZero));
+                        new FiringParameters(0, 0, 0, 0)));
     }
 
     private void stopAiming() {

@@ -75,22 +75,22 @@ public class Feeder extends SubsystemBase {
 
     public Command fullspeed() {
         return startRun(this::reset, this::feedWhenReady)
-                .withName("to Shooter full speed");
+                .withName("Feed");
     }
 
     public Command testFeed() {
         return run(this::dutyCycleAll)
-                .withName("test to Shooter full speed");
+                .withName("Test Feed");
     }
 
     public Command testFeedBack() {
         return run(this::dutyCycleAllBack)
-                .withName("test to Shooter full speed back");
+                .withName("Test Feed Back");
     }
 
     public Command stop() {
         return run(this::stopMotor)
-                .withName("stop Shooter feed");
+                .withName("Stop Feeder");
     }
 
     ///////////////////////////////////////////////////////

@@ -42,8 +42,7 @@ import edu.wpi.first.wpilibj2.command.Command;
  */
 public class DriveTargetLockDirect extends Command {
     /**
-     * While driving manually, pay attention to tags even if they are somewhat far
-     * away.
+     * Pay attention to tags even if they are far away.
      */
     private static final double HEED_RADIUS_M = 6.0;
 
@@ -82,15 +81,15 @@ public class DriveTargetLockDirect extends Command {
         m_log_thetaFB = log.doubleLogger(Level.TRACE, "thetaFB");
         m_log_thetaFF = log.doubleLogger(Level.TRACE, "thetaFF");
         m_log_omega = log.doubleLogger(Level.TRACE, "omega");
+        m_log_target = fieldLogger.doubleArrayLogger(Level.TRACE, "target");
+        m_log_apparent_motion = log.doubleLogger(Level.TRACE, "apparent motion");
         m_twistSupplier = twistSupplier;
         m_heedRadiusM = heedRadiusM;
         m_drive = drive;
         m_limiter = limiter;
-        m_log_target = fieldLogger.doubleArrayLogger(Level.TRACE, "target");
         m_swerveKinodynamics = swerveKinodynamics;
         m_target = target;
         m_thetaController = thetaController;
-        m_log_apparent_motion = log.doubleLogger(Level.TRACE, "apparent motion");
         addRequirements(m_drive);
     }
 

@@ -165,7 +165,7 @@ public class ShootingMethodTest {
         Drag d = new Drag(0.5, 0.025, 0.1, 0.1, 0.1);
         RangeSolver rangeSolver = new RangeSolver(d, 0, 0.01, 0.001);
         IRange ir = (e) -> rangeSolver.getSolution(7, 0, e);
-        ShootingMethod m = new ShootingMethod(ir, Math.PI/4, Math.PI/2, 0.001, 1);
+        ShootingMethod m = new ShootingMethod(ir, Math.PI / 4, Math.PI / 2, 0.001, 1);
         // target is 2m away along +x
         Translation2d targetPosition = new Translation2d(2, 0);
         GlobalVelocityR2 targetVelocity = GlobalVelocityR2.ZERO;
@@ -305,11 +305,11 @@ public class ShootingMethodTest {
 
     private void checkX(Solution x, double azimuth, double elevation, double delta) {
         assertEquals(azimuth, x.azimuth().getRadians(), delta);
-        assertEquals(elevation, x.elevation().getRadians(), delta);
+        assertEquals(elevation, x.parameters().elevation(), delta);
     }
 
     private void checkSolution(IRange range, Solution x, double r, double tof, double delta) {
-        Interception s = range.get(x.elevation().getRadians());
+        Interception s = range.get(x.parameters().elevation());
         assertEquals(r, s.range(), delta);
         assertEquals(tof, s.tof(), delta);
     }

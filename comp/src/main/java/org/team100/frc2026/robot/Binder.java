@@ -19,9 +19,7 @@ import org.team100.lib.profile.se2.HolonomicProfileFactory;
 import org.team100.lib.subsystems.se2.commands.DriveToPoseWithProfile;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveFieldRelative;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveMovingTargetLock;
-import org.team100.lib.subsystems.swerve.commands.manual.DriveTargetLockDirect;
 import org.team100.lib.targeting.CachedSolution;
-import org.team100.lib.targeting.InverseRange;
 import org.team100.lib.targeting.ProxySolver;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -159,30 +157,30 @@ public class Binder {
         };
 
         // aim at the hub or our zone, button 6
-        whileTrue(() -> driver.rightBumper(),
-                new DriveTargetLockDirect(
-                        fieldLogger,
-                        m_log,
-                        m_machinery.m_swerveKinodynamics,
-                        target,
-                        thetaFeedback,
-                        driver::velocity,
-                        m_machinery.m_localizer::setHeedRadiusM,
-                        m_machinery.m_drive,
-                        m_machinery.m_limiter)
-                        .withName("Direct target lock"));
+        // whileTrue(() -> driver.rightBumper(),
+        // new DriveTargetLockDirect(
+        // fieldLogger,
+        // m_log,
+        // m_machinery.m_swerveKinodynamics,
+        // target,
+        // thetaFeedback,
+        // driver::velocity,
+        // m_machinery.m_localizer::setHeedRadiusM,
+        // m_machinery.m_drive,
+        // m_machinery.m_limiter)
+        // .withName("Direct target lock"));
 
-        InverseRange rangeToParams = new InverseRange(
-                FieldConstants2026.FUEL_DRAG,
-                0.75,
-                2.5,
-                FieldConstants2026.HUB.getZ(),
-                FieldConstants2026.HUB_ELEVATION,
-                7,
-                1);
-        solver = new ProxySolver(rangeToParams);
+        // InverseRange rangeToParams = new InverseRange(
+        // FieldConstants2026.FUEL_DRAG,
+        // 0.75,
+        // 2.5,
+        // FieldConstants2026.HUB.getZ(),
+        // FieldConstants2026.HUB_ELEVATION,
+        // 7,
+        // 1);
+        // solver = new ProxySolver(rangeToParams);
 
-        // solver = new ProxySolver(m_machinery.m_targeter::forRange);
+        solver = new ProxySolver(m_machinery.m_targeter::forRange);
 
         CachedSolution tofSolution = new CachedSolution(
                 fieldLogger, m_machinery.m_drive::getState, target, solver);
@@ -190,8 +188,8 @@ public class Binder {
         FeedbackR1 aggressiveFeedback = new FullStateFeedback(
                 m_log, 3, 0.1, true, 0.025, 0.25);
 
-        // button 5
-        whileTrue(() -> driver.leftBumper(),
+        // button 6
+        whileTrue(() -> driver.rightBumper(),
                 new DriveMovingTargetLock(
                         m_log,
                         m_machinery.m_swerveKinodynamics,

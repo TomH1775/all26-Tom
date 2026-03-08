@@ -27,26 +27,31 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /**
- * A version of target lock that allows moving robot, with fixed target.
+ * Manual cartesian control, with rotational control based on a target position.
  * 
- * NOTE this does not yet work :-)
+ * Allows moving robot, with fixed target.
+ *
+ * Rotation uses velocity feedforward and feedback, but no profile, because I
+ * think the profile might be a source of noise.
  */
 public class DriveMovingTargetLock extends Command {
     /**
-     * I'm not sure why feedforward seems too low; this just makes it bigger.
-     * TODO: get rid of this.
+     * Pay attention to tags even if they are far away.
      */
-    private static final int FEEDFORWARD_SCALE = 2;
-
     private static final double HEED_RADIUS_M = 6.0;
 
     private final SwerveKinodynamics m_swerveKinodynamics;
+    /**
+     * Velocity control in control units, [-1,1] on all axes.
+     */
     private final Supplier<Velocity> m_twistSupplier;
     private final DoubleConsumer m_heedRadiusM;
     private final SwerveLimiter m_limiter;
     private final Supplier<Optional<Solution>> m_solver;
     private final FeedbackR1 m_thetaController;
     private final SwerveDriveSubsystem m_drive;
+
+    private final DoubleLogger m_log_apparent_motion;
     private final ModelR1Logger m_log_goal;
     private final DoubleLogger m_log_thetaFB;
     private final DoubleLogger m_log_thetaFF;
@@ -66,6 +71,12 @@ public class DriveMovingTargetLock extends Command {
             FeedbackR1 thetaController,
             SwerveDriveSubsystem drive) {
         LoggerFactory log = parent.type(this);
+        m_log_goal = log.ModelR1Logger(Level.TRACE, "goal");
+        m_log_thetaFB = log.doubleLogger(Level.TRACE, "thetaFB");
+        m_log_thetaFF = log.doubleLogger(Level.TRACE, "thetaFF");
+        m_log_omega = log.doubleLogger(Level.TRACE, "omega");
+        m_log_apparent_motion = log.doubleLogger(Level.TRACE, "apparent motion");
+        log.doubleLogger(Level.TRACE, "max omega").log(swerveKinodynamics::getMaxAngleSpeedRad_S);
         m_swerveKinodynamics = swerveKinodynamics;
         m_twistSupplier = twistSupplier;
         m_heedRadiusM = heedRadiusM;
@@ -73,11 +84,7 @@ public class DriveMovingTargetLock extends Command {
         m_solver = solver;
         m_thetaController = thetaController;
         m_drive = drive;
-        m_log_goal = log.ModelR1Logger(Level.TRACE, "goal");
-        m_log_thetaFB = log.doubleLogger(Level.TRACE, "thetaFB");
-        m_log_thetaFF = log.doubleLogger(Level.TRACE, "thetaFF");
-        m_log_omega = log.doubleLogger(Level.TRACE, "omega");
-        log.doubleLogger(Level.TRACE, "max omega").log(swerveKinodynamics::getMaxAngleSpeedRad_S);
+        addRequirements(m_drive);
     }
 
     @Override
@@ -90,7 +97,6 @@ public class DriveMovingTargetLock extends Command {
 
     @Override
     public void execute() {
-
         Optional<Solution> oSolution = m_solver.get();
         if (oSolution.isEmpty()) {
             // there's no target, so use the driver input.
@@ -99,21 +105,9 @@ public class DriveMovingTargetLock extends Command {
         }
         // Setpoints for the next time step
         Solution solution = oSolution.get();
-
-        ModelSE2 state = m_drive.getState();
-
-        // Feedback uses the previous goal
-        double thetaFB = m_thetaController.calculate(state.theta(), m_goal);
-        m_log_thetaFB.log(() -> thetaFB);
-
-        double yaw = state.pose().getRotation().getRadians();
-        double goalYaw = Math100.getMinDistance(yaw, solution.azimuth().getRadians());
-        m_goal = new ModelR1(goalYaw, 0);
-        // m_goal = new ModelR1(goalYaw, solution.azimuthVelocity());
-        m_log_goal.log(() -> m_goal);
-
-        double thetaFF = m_goal.v() * FEEDFORWARD_SCALE;
-        m_log_thetaFF.log(() -> thetaFF);
+        
+        double thetaFB = getThetaFB(m_drive.getState());
+        double thetaFF = getThetaFF(solution, m_drive.getState());
 
         double omega = MathUtil.clamp(
                 thetaFF + thetaFB,
@@ -122,6 +116,30 @@ public class DriveMovingTargetLock extends Command {
         m_log_omega.log(() -> omega);
 
         actuate(omega);
+    }
+
+    private double getThetaFB(ModelSE2 state) {
+        double thetaFB = m_thetaController.calculate(state.theta(), m_goal);
+        m_log_thetaFB.log(() -> thetaFB);
+        return thetaFB;
+    }
+
+    private double getThetaFF(Solution solution, ModelSE2 state) {
+
+        double robotYaw = state.pose().getRotation().getRadians();
+        double goalYaw = Math100.getMinDistance(robotYaw, solution.azimuth().getRadians());
+        // m_goal = new ModelR1(goalYaw, 0);
+        double targetMotion = solution.azimuthVelocity();
+        m_log_apparent_motion.log(() -> targetMotion);
+
+        // Assign the new goal
+        m_goal = new ModelR1(goalYaw, targetMotion);
+        m_log_goal.log(() -> m_goal);
+
+        double thetaFF = m_goal.v();
+        m_log_thetaFF.log(() -> thetaFF);
+
+        return thetaFF;
     }
 
     /** Null to skip override */

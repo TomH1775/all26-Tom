@@ -49,7 +49,7 @@ public class TimeOfFlightRecursionTest {
                 new ModelSE2(), targetPosition, targetVelocity);
         Solution x = o.orElseThrow();
         assertEquals(0, x.azimuth().getRadians(), DELTA);
-        assertEquals(0.206, x.elevation().getRadians(), DELTA);
+        assertEquals(0.206, x.parameters().elevation(), DELTA);
     }
 
     /**
@@ -174,7 +174,7 @@ public class TimeOfFlightRecursionTest {
                 targetPosition, targetVelocity);
         Solution x = o.orElseThrow();
         assertEquals(0, x.azimuth().getRadians(), DELTA);
-        assertEquals(0.390, x.elevation().getRadians(), 0.006);
+        assertEquals(0.390, x.parameters().elevation(), 0.006);
     }
 
     /** More of an arc */
@@ -197,7 +197,7 @@ public class TimeOfFlightRecursionTest {
                 targetPosition, targetVelocity);
         Solution solution = o.orElseThrow();
         assertEquals(0, solution.azimuth().getRadians(), DELTA);
-        assertEquals(0.95, solution.elevation().getRadians(), 0.006);
+        assertEquals(0.95, solution.parameters().elevation(), 0.006);
     }
 
     /**
@@ -265,7 +265,7 @@ public class TimeOfFlightRecursionTest {
                 targetPosition, targetVelocity);
         Solution x = o.orElseThrow();
         assertEquals(-0.484, x.azimuth().getRadians(), 0.002);
-        assertEquals(0.449, x.elevation().getRadians(), 0.003);
+        assertEquals(0.449, x.parameters().elevation(), 0.003);
     }
 
 }

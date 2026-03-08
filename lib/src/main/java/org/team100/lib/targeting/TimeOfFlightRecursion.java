@@ -133,8 +133,7 @@ public class TimeOfFlightRecursion implements Solver {
                 return Optional.of(new Solution(
                         soln.targetPositionAtTOF.getAngle(),
                         targetMotion,
-                        soln.params.speed(),
-                        new Rotation2d(soln.params.elevation())));
+                        soln.params));
             }
             // try again with a new target TOF guess
             targetTOF = ballTOF;

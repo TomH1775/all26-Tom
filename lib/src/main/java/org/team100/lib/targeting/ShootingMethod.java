@@ -125,8 +125,7 @@ public class ShootingMethod implements Solver {
                     new Solution(
                             new Rotation2d(x.get(0)),
                             0,
-                            0,
-                            new Rotation2d(x.get(1))));
+                            new FiringParameters(0, 0, x.get(1), 0)));
         } catch (IllegalArgumentException ex) {
             System.out.println("solver failed");
             ex.printStackTrace();

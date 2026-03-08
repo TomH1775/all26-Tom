@@ -10,6 +10,8 @@ import edu.wpi.first.math.interpolation.InverseInterpolator;
 
 /**
  * Lookup shooting parameters for a given target range
+ * 
+ * DO NOT USE THIS FOR COMP
  */
 public class InverseRange implements DoubleFunction<Optional<FiringParameters>> {
     private static final boolean DEBUG = false;
