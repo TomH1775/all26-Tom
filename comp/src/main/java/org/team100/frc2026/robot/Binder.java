@@ -211,6 +211,7 @@ public class Binder {
 
         Command runShooter = m_machinery.m_shooter.testShooterFullspeed();
         Command runHood = m_machinery.m_shooterHood.position();
+        Command testHood = m_machinery.m_shooterHood.tune();
         Command runConveyor = m_machinery.m_conveyor.testConveyor();
         Command runConveyorBack = m_machinery.m_conveyor.testConveyorBack();
         Command runFeeder = m_machinery.m_feeder.testFeed();
@@ -220,7 +221,6 @@ public class Binder {
         Command runIntakeWobbleRetractIn = m_machinery.m_intakeExtend.goToWobbleSlightlyOutRetractedPosition();
         Command runIntakeWobbleExtendOut = m_machinery.m_intakeExtend.goToWobbleSlightlyInExtendedPosition();
         Command runIntakeWobbleRetractOut = m_machinery.m_intakeExtend.goToWobbleInRetractedPosition();
-
 
         // whileTrue(driver::rightTrigger,
         // parallel(
@@ -248,12 +248,19 @@ public class Binder {
         /// TEST
         ///
         ///
-        if(m_machinery.m_intakeExtend.atExtendedPosition()){
-             whileTrue(driver::y, Commands.repeatingSequence(runIntakeWobbleExtendOut.withTimeout(0.5)
-                .andThen(runIntakeWobbleRetractOut).withTimeout(0.5)));
+        if (m_machinery.m_intakeExtend.atExtendedPosition()) {
+            whileTrue(driver::y, Commands.repeatingSequence(runIntakeWobbleExtendOut.withTimeout(0.5)
+                    .andThen(runIntakeWobbleRetractOut).withTimeout(0.5)));
         }
-       whileTrue(driver::y, Commands.repeatingSequence(runIntakeWobbleExtendIn.withTimeout(0.5)
+        whileTrue(driver::y, Commands.repeatingSequence(runIntakeWobbleExtendIn.withTimeout(0.5)
                 .andThen(runIntakeWobbleRetractIn).withTimeout(0.5)));
+
+        whileTrue(() -> {
+            Rotation2d pov = driver.pov();
+            if (pov == null)
+                return false;
+            return pov.equals(new Rotation2d(0));
+        }, testHood);
 
         Tester tester = new Tester(m_machinery);
         whileTrue(() -> (RobotState.isTest() && driver.a() && driver.b()),

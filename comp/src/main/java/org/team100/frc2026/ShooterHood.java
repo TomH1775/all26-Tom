@@ -19,6 +19,7 @@ import org.team100.lib.reference.r1.ReferenceR1;
 import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.OutboardAngularPositionServo;
 import org.team100.lib.state.ModelR1;
+import org.team100.lib.tuning.Mutable;
 import org.team100.lib.util.CanId;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -32,6 +33,8 @@ public class ShooterHood extends SubsystemBase {
     private final Supplier<OptionalDouble> m_angle;
     private final AngularPositionServo m_servo;
 
+    private final Mutable m_tuningSetting;
+
     /**
      * @param parent log
      * @param angle  angle for auto mode
@@ -39,6 +42,7 @@ public class ShooterHood extends SubsystemBase {
     public ShooterHood(LoggerFactory parent, Supplier<OptionalDouble> angle) {
         LoggerFactory log = parent.type(this);
         m_angle = angle;
+        m_tuningSetting = new Mutable(log, "for tuning", 0);
         double initialPosition = 0;
         TrapezoidProfileR1 profile = new TrapezoidProfileR1(log, 1, 2, 0.05);
         ReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.05, 0.05);
@@ -74,6 +78,14 @@ public class ShooterHood extends SubsystemBase {
     public Command position() {
         return startRun(this::reset, this::autoWork);
     }
+
+    public Command tune() {
+        return startRun(
+                this::reset,
+                () -> actuateDirect(
+                        m_tuningSetting.getAsDouble())).withName("tune");
+    }
+
 
     public Command stop() {
         return run(this::stopServo).withName("Shooter Hood Stop");
