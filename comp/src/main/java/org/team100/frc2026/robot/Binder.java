@@ -248,10 +248,10 @@ public class Binder {
         /// TEST
         ///
     
-        if (m_machinery.m_intakeExtend.atExtendedPosition()) {
-            whileTrue(driver::y, Commands.repeatingSequence(runIntakeWobbleExtendOut.withTimeout(0.5)
-                    .andThen(runIntakeWobbleRetractOut).withTimeout(0.5)));
-        }
+        // if (m_machinery.m_intakeExtend.atExtendedPosition()) {
+        //     whileTrue(driver::y, Commands.repeatingSequence(runIntakeWobbleExtendOut.withTimeout(0.5)
+        //             .andThen(runIntakeWobbleRetractOut).withTimeout(0.5)));
+        // };
         whileTrue(driver::y, Commands.repeatingSequence(runIntakeWobbleExtendIn.withTimeout(0.5)
                 .andThen(runIntakeWobbleRetractIn).withTimeout(0.5)));
 
