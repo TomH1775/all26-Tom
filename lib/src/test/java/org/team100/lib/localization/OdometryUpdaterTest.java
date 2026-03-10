@@ -21,6 +21,7 @@ import org.team100.lib.uncertainty.VariableR1;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class OdometryUpdaterTest {
+    private static final boolean DEBUG = false;
     private static final double DELTA = 0.001;
     private static final LoggerFactory log = new TestLoggerFactory(new TestPrimitiveLogger());
     private static final SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forRealisticTest(log);
@@ -69,7 +70,8 @@ public class OdometryUpdaterTest {
         // a few more times
         for (int i = 0; i < 50; ++i) {
             newState = ou.newState(newState, 0.02, gyroYaw, positions);
-            System.out.println(newState.gyroBias().sigma());
+            if (DEBUG)
+                System.out.println(newState.gyroBias().sigma());
         }
         // now the gyro bias is improved further
         // note how slow this is

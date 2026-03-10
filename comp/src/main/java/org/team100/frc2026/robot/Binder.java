@@ -4,14 +4,9 @@ import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static org.team100.frc2026.util.TriggerUtil.onTrue;
 import static org.team100.frc2026.util.TriggerUtil.whileTrue;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
-import org.team100.frc2026.field.FieldConstants2026;
 import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.controller.r1.FullStateFeedback;
-import org.team100.lib.controller.r1.LeadingAim;
-import org.team100.lib.controller.r1.PIDFeedback;
+import org.team100.lib.controller.r1.AzimuthController;
 import org.team100.lib.hid.DriverXboxControl;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
@@ -20,12 +15,9 @@ import org.team100.lib.profile.se2.HolonomicProfileFactory;
 import org.team100.lib.subsystems.se2.commands.DriveToPoseWithProfile;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveFieldRelative;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveMovingTargetLock;
-import org.team100.lib.targeting.CachedSolution;
-import org.team100.lib.targeting.ProxySolver;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -39,7 +31,6 @@ public class Binder {
 
     private final Machinery m_machinery;
     private final LoggerFactory m_log;
-    private final ProxySolver solver;
 
     public Binder(Machinery machinery) {
         m_machinery = machinery;
@@ -150,48 +141,11 @@ public class Binder {
         /// AIM
         ///
 
-        FeedbackR1 thetaFeedback = new PIDFeedback(
-                m_log, 3.2, 0, 0, true, 0.05, 1);
-
-        Supplier<Optional<Translation2d>> target = () -> {
-            return FieldConstants2026.TARGET(
-                    m_machinery.m_drive.getState().translation());
-        };
-
-        // aim at the hub or our zone, button 6
-        // whileTrue(() -> driver.rightBumper(),
-        // new DriveTargetLockDirect(
-        // fieldLogger,
-        // m_log,
-        // m_machinery.m_swerveKinodynamics,
-        // target,
-        // thetaFeedback,
-        // driver::velocity,
-        // m_machinery.m_localizer::setHeedRadiusM,
-        // m_machinery.m_drive,
-        // m_machinery.m_limiter)
-        // .withName("Direct target lock"));
-
-        // InverseRange rangeToParams = new InverseRange(
-        // FieldConstants2026.FUEL_DRAG,
-        // 0.75,
-        // 2.5,
-        // FieldConstants2026.HUB.getZ(),
-        // FieldConstants2026.HUB_ELEVATION,
-        // 7,
-        // 1);
-        // solver = new ProxySolver(rangeToParams);
-
-        solver = new ProxySolver(m_machinery.m_targeter::forRange);
-
-        CachedSolution tofSolution = new CachedSolution(
-                fieldLogger, m_machinery.m_drive::getState, target, solver);
-        // here we rely only on PID so make it stronger
         FeedbackR1 aggressiveFeedback = new FullStateFeedback(
                 m_log, 3, 0.1, true, 0.025, 0.25);
 
         // button 6
-        LeadingAim aim = new LeadingAim(
+        AzimuthController aim = new AzimuthController(
                 m_log,
                 m_machinery.m_swerveKinodynamics::getMaxAngleSpeedRad_S,
                 aggressiveFeedback);
@@ -203,9 +157,9 @@ public class Binder {
                         driver::velocity,
                         m_machinery.m_localizer::setHeedRadiusM,
                         m_machinery.m_limiter,
-                        tofSolution,
+                        m_machinery.m_cachedSolution,
                         m_machinery.m_drive)
-                        .withName("Moving target lock"));
+                        .withName("Target lock"));
 
         ////////////////////////////////////////////////////
         ///
@@ -278,6 +232,6 @@ public class Binder {
 
     /** Keeps tests from conflicting. */
     public void close() {
-        solver.close();
+        //
     }
 }

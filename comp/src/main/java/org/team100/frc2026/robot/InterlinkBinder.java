@@ -5,20 +5,15 @@ import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 import static org.team100.frc2026.util.TriggerUtil.onTrue;
 import static org.team100.frc2026.util.TriggerUtil.whileTrue;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
-import org.team100.frc2026.field.FieldConstants2026;
+import org.team100.lib.controller.r1.AzimuthController;
 import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.controller.r1.PIDFeedback;
-import org.team100.lib.controller.r1.SimpleAim;
 import org.team100.lib.hid.InterLinkDX;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveFieldRelative;
-import org.team100.lib.subsystems.swerve.commands.manual.DriveTargetLockDirect;
+import org.team100.lib.subsystems.swerve.commands.manual.DriveMovingTargetLock;
 
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -38,9 +33,6 @@ public class InterlinkBinder {
     public InterlinkBinder(Machinery machinery) {
         m_machinery = machinery;
         m_log = rootLogger.name("Commands");
-    }
-
-    public void bind() {
 
         ////////////////////////////////////////////////////
         ///
@@ -92,28 +84,21 @@ public class InterlinkBinder {
         FeedbackR1 thetaFeedback = new PIDFeedback(
                 m_log, 3.2, 0, 0, true, 0.05, 1);
 
-        Supplier<Optional<Translation2d>> target = () -> {
-            return FieldConstants2026.TARGET(
-                    m_machinery.m_drive.getPose().getTranslation());
-        };
-
-        // aim at the hub or our zone
-        SimpleAim aim = new SimpleAim(
-                fieldLogger,
+        AzimuthController aim = new AzimuthController(
                 m_log,
                 m_machinery.m_swerveKinodynamics::getMaxAngleSpeedRad_S,
                 thetaFeedback);
         whileTrue(() -> driver.a1(),
-                new DriveTargetLockDirect(
+                new DriveMovingTargetLock(
                         m_log,
                         m_machinery.m_swerveKinodynamics,
-                        target,
                         aim,
                         driver::velocity,
                         m_machinery.m_localizer::setHeedRadiusM,
-                        m_machinery.m_drive,
-                        m_machinery.m_limiter)
-                        .withName("Direct target lock"));
+                        m_machinery.m_limiter,
+                        m_machinery.m_cachedSolution,
+                        m_machinery.m_drive)
+                        .withName("Target lock"));
 
         ////////////////////////////////////////////////////
         ///

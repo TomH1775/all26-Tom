@@ -1,8 +1,11 @@
 package org.team100.frc2026.robot;
 
 import java.io.IOException;
+import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
+import org.team100.frc2026.field.FieldConstants2026;
 import org.team100.frc2026.subsystems.Climber;
 import org.team100.frc2026.subsystems.ClimberExtension;
 import org.team100.frc2026.subsystems.Conveyor;
@@ -33,6 +36,8 @@ import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.subsystems.swerve.kinodynamics.limiter.SwerveLimiter;
 import org.team100.lib.subsystems.swerve.module.SwerveModuleCollection;
+import org.team100.lib.targeting.CachedSolution;
+import org.team100.lib.targeting.ProxySolver;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.NoisyPose2d;
 import org.team100.lib.uncertainty.VariableR1;
@@ -41,6 +46,7 @@ import org.team100.lib.visualization.TrajectoryVisualization;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
@@ -77,7 +83,10 @@ public class Machinery {
     public final SwerveLimiter m_limiter;
     public final SwerveDriveSubsystem m_drive;
     public final Beeper m_beeper;
-    public final Targeter m_targeter;
+
+    public final ProxySolver m_solver;
+    public final CachedSolution m_cachedSolution;
+
     public final Shooter m_shooter;
     public final Intake m_intake;
     public final IntakeExtend m_intakeExtend;
@@ -167,18 +176,32 @@ public class Machinery {
 
         ////////////////////////////////////////////////////////////
         //
-        // SUBSYSTEMS
+        // TARGETING
         //
 
-        m_targeter = new Targeter(() -> m_drive.getState().translation());
+        Targeter targeter = new Targeter(() -> m_drive.getState().translation());
+        m_solver = new ProxySolver(targeter::forRange);
+
+        Supplier<Optional<Translation2d>> target = () -> {
+            return FieldConstants2026.TARGET(
+                    m_drive.getState().translation());
+        };
+
+        m_cachedSolution = new CachedSolution(
+                fieldLogger, m_drive::getState, target, m_solver);
+
+        ////////////////////////////////////////////////////////////
+        //
+        // SUBSYSTEMS
+        //
 
         m_intake = new Intake(logger);
         m_intakeExtend = new IntakeExtend(logger);
 
         m_conveyor = new Conveyor(logger);
-        m_shooter = new Shooter(logger, m_targeter::speed);
+        m_shooter = new Shooter(logger, m_cachedSolution::speed);
         m_feeder = new Feeder(logger, m_shooter);
-        m_shooterHood = new ShooterHood(logger, m_targeter::angle);
+        m_shooterHood = new ShooterHood(logger, m_cachedSolution::elevation);
 
         m_ClimberExtension = new ClimberExtension(logger);
         m_Climber = new Climber(logger);
@@ -250,6 +273,7 @@ public class Machinery {
      */
     public void close() {
         m_modules.close();
+        m_solver.close();
     }
 
     /** Trap the IO exception. */

@@ -5,7 +5,7 @@ import java.util.function.DoubleConsumer;
 import java.util.function.Supplier;
 
 import org.team100.lib.config.DriverSkill;
-import org.team100.lib.controller.r1.LeadingAim;
+import org.team100.lib.controller.r1.AzimuthController;
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
 import org.team100.lib.geometry.GeometryUtil;
@@ -14,9 +14,11 @@ import org.team100.lib.hid.Velocity;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
+import org.team100.lib.state.ModelR1;
 import org.team100.lib.subsystems.swerve.SwerveDriveSubsystem;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.limiter.SwerveLimiter;
+import org.team100.lib.targeting.CachedSolution;
 import org.team100.lib.targeting.Solution;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -42,20 +44,20 @@ public class DriveMovingTargetLock extends Command {
     private final Supplier<Velocity> m_twistSupplier;
     private final DoubleConsumer m_heedRadiusM;
     private final SwerveLimiter m_limiter;
-    private final Supplier<Optional<Solution>> m_solver;
+    private final CachedSolution m_solver;
     private final SwerveDriveSubsystem m_drive;
 
-    private final LeadingAim m_aim;
+    private final AzimuthController m_aim;
     private final BooleanLogger m_log_aiming;
 
     public DriveMovingTargetLock(
             LoggerFactory parent,
             SwerveKinodynamics swerveKinodynamics,
-            LeadingAim aim,
+            AzimuthController aim,
             Supplier<Velocity> twistSupplier,
             DoubleConsumer heedRadiusM,
             SwerveLimiter limiter,
-            Supplier<Optional<Solution>> solver,
+            CachedSolution solver,
             SwerveDriveSubsystem drive) {
         LoggerFactory log = parent.type(this);
         m_log_aiming = log.booleanLogger(Level.TRACE, "aiming");
@@ -74,7 +76,7 @@ public class DriveMovingTargetLock extends Command {
     public void initialize() {
         m_heedRadiusM.accept(HEED_RADIUS_M);
         m_limiter.updateSetpoint(m_drive.getVelocity());
-        m_aim.reset(m_drive.getState());
+        m_aim.reset();
     }
 
     @Override
@@ -88,7 +90,12 @@ public class DriveMovingTargetLock extends Command {
             // No target, so use the driver input.
             return null;
         }
-        return m_aim.getOmega(m_drive.getState(), oSolution.get());
+        Solution solution = oSolution.get();
+        ModelR1 target = new ModelR1(
+                solution.azimuth().getRadians(),
+                solution.azimuthVelocity());
+        ModelR1 measurement = m_drive.getState().theta();
+        return m_aim.getOmega(measurement, target);
     }
 
     /** Null to skip override */
