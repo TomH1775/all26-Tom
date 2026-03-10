@@ -104,16 +104,14 @@ public class InterlinkBinder {
         ///
         /// SHOOT
         ///
-        Command runshooter = m_machinery.m_shooter.shooterFullspeed();
-        Command runhood = m_machinery.m_shooterHood.autoPosition();
-        Command runserial = m_machinery.m_conveyor.conveyor();
         whileTrue(driver::i,
                 parallel(
-                        runshooter,
-                        runhood,
+                        m_machinery.m_shooter.shooterFullspeed(),
+                        m_machinery.m_shooterHood.autoPosition(),
                         Commands.repeatingSequence(
                                 waitUntil(m_machinery.m_shooter::atSpeed),
-                                runserial.onlyWhile(m_machinery.m_shooter::atSpeed))));
+                                m_machinery.m_conveyor.convey()
+                                        .onlyWhile(m_machinery.m_shooter::atSpeed))));
 
         ////////////////////////////////////////////////////
         ///

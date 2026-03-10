@@ -231,9 +231,9 @@ public class Binder {
                 m_machinery.m_shooter.tune()));
 
         Tester tester = new Tester(m_machinery);
+        onTrue(() -> RobotState.isTest(), tester.prompt());
         whileTrue(() -> (RobotState.isTest() && driver.a() && driver.b()),
                 tester.prematch());
-
     }
 
     /** Keeps tests from conflicting. */

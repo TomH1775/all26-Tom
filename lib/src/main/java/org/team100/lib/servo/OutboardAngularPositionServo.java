@@ -52,6 +52,24 @@ public class OutboardAngularPositionServo extends AngularPositionServoImpl {
     }
 
     /**
+     * Make a servo from a motor and a position reference.
+     * Creates the mechanism in between.
+     */
+    public static OutboardAngularPositionServo make(
+            LoggerFactory log,
+            BareMotor motor,
+            ReferenceR1 ref,
+            double gearRatio,
+            double initialPosition,
+            double minPosition,
+            double maxPosition) {
+        RotaryMechanism mech = new RotaryMechanism(
+                log, motor, motor.encoder(), initialPosition, gearRatio,
+                minPosition, maxPosition);
+        return new OutboardAngularPositionServo(log, mech, ref);
+    }
+
+    /**
      * Pass the next setpoint directly to the mechanism's position controller.
      * Ignores current setpoint. We only use the "next" setpoint.
      */

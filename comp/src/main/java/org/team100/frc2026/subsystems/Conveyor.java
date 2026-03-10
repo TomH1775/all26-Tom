@@ -27,6 +27,8 @@ public class Conveyor extends SubsystemBase {
     private static final double GEAR_RATIO = 3;
     private static final double WHEEL_DIAMETER_M = 0.035;
 
+    private static final double NORMAL_SPEED = 0.5;
+
     private final OutboardLinearVelocityServo m_servo1;
     private final OutboardLinearVelocityServo m_servo2;
 
@@ -73,24 +75,35 @@ public class Conveyor extends SubsystemBase {
         m_servo2.periodic();
     }
 
-    public Command conveyor() {
-        return startRun(this::reset, () -> setVelocityProfiled(0.5))
+    /**
+     * Use a profile to spin up the conveyor to the normal speed.
+     * Never ends.
+     */
+    public Command convey() {
+        return startRun(
+                this::reset,
+                () -> setVelocityProfiled(NORMAL_SPEED))
                 .withName("Convey");
     }
 
     public Command testConveyor() {
         return run(this::dutyCycleAll)
-                .withName("Test Conveyor");
+                .withName("Conveyor Test");
     }
 
     public Command testConveyorBack() {
         return run(this::dutyCycleBackAll)
-                .withName("Test Back Conveyor");
+                .withName("Conveyor Test Back");
     }
 
     public Command stop() {
         return run(this::stopMotor)
                 .withName("Stop Conveyor");
+    }
+
+    public Command stopOnce() {
+        return runOnce(this::stopMotor)
+                .withName("Stop Conveyor Once");
     }
 
     //////////////////////////////////////////
