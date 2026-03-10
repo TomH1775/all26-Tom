@@ -27,6 +27,8 @@ public class Intake extends SubsystemBase {
     private static final double GEAR_RATIO = 1;
     private static final double WHEEL_DIAMETER_M = 0.1;
 
+    private static final double NORMAL_SPEED = 5;
+
     private final OutboardLinearVelocityServo m_servo1;
     private final OutboardLinearVelocityServo m_servo2;
 
@@ -65,13 +67,27 @@ public class Intake extends SubsystemBase {
                 log2, m2, ref, GEAR_RATIO, WHEEL_DIAMETER_M, TOLERANCE_M_S);
     }
 
+    /**
+     * Use a profile to spin up the roller to the normal speed.
+     * Never ends.
+     */
     public Command intake() {
-        return startRun(this::reset, () -> setVelocityProfiled(5))
-                .withName("Intake Full Speed");
+        return startRun(
+                this::reset,
+                () -> setVelocityProfiled(NORMAL_SPEED))
+                .withName("Intake Normal Speed");
     }
 
+    /** Stop forever */
     public Command stop() {
-        return run(this::stopMotor).withName("Stop Intake");
+        return run(this::stopMotor)
+                .withName("Stop Intake");
+    }
+
+    /** Stop and then end */
+    public Command stopOnce() {
+        return runOnce(this::stopMotor)
+                .withName("Stop Intake Once");
     }
 
     @Override

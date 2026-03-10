@@ -17,6 +17,7 @@ import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.OutboardAngularPositionServo;
 import org.team100.lib.util.CanId;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -24,13 +25,16 @@ public class IntakeExtend extends SubsystemBase {
     private static final CanId CAN_ID = new CanId(16);
     private static final double gearRatio = 15.3;
 
+    private static final double INITIAL_POSITION = 0;
+    private static final double RETRACTED_POSITION = 0;
+    private static final double EXTENDED_POSITION = 3;
+
     private final AngularPositionServo m_servo;
 
     public IntakeExtend(LoggerFactory parent) {
         LoggerFactory log = parent.type(this);
         TrapezoidProfileR1 profile = new TrapezoidProfileR1(log, 8, 8, 0.05);
         ReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.05, 0.05);
-        double initialPosition = 0;
         final BareMotor motor;
         switch (Identity.instance) {
             case COMP_BOT -> {
@@ -50,7 +54,8 @@ public class IntakeExtend extends SubsystemBase {
             }
         }
         m_servo = OutboardAngularPositionServo.make(
-                log, motor, ref, gearRatio, initialPosition);
+                log, motor, ref, gearRatio, INITIAL_POSITION,
+                RETRACTED_POSITION, EXTENDED_POSITION);
     }
 
     @Override
@@ -58,48 +63,72 @@ public class IntakeExtend extends SubsystemBase {
         m_servo.periodic();
     }
 
-    // ends when complete
+    /**
+     * Use a profile to go to the extended position.
+     * Ends when complete.
+     */
     public Command goToExtendedPosition() {
-        return startRun(this::reset, () -> actuateWithProfile(3))
+        return startRun(
+                this::reset,
+                () -> actuateWithProfile(EXTENDED_POSITION))
                 .until(m_servo::atGoal)
                 .withName("Intake Extend GoToExtendedPosition");
     }
 
-    // never ends
+    /**
+     * Use a profile to go to the retracted position.
+     * Never ends.
+     */
     public Command goToRetractedPosition() {
-        return startRun(this::reset, () -> actuateWithProfile(0))
+        return startRun(
+                this::reset,
+                () -> actuateWithProfile(RETRACTED_POSITION))
                 .withName("Intake Extend GoToRetractedPosition");
     }
 
+    /** Stop and then end -- this is for compositions where doing nothing is OK */
+    public Command stopOnce() {
+        return runOnce(this::stopServo)
+                .withName("Intake Extend Stop Once");
+    }
+
+    /** Stop forever */
     public Command stop() {
-        return run(this::stopServo).withName("Stop Intake Extend");
+        return run(this::stopServo)
+                .withName("Stop Intake Extend");
     }
 
     public Command goToWobbleSlightlyInExtendedPosition() {
-        return startRun(this::reset, () -> actuateWithProfile(0.75))
+        return startRun(
+                this::reset,
+                () -> actuateWithProfile(0.75))
                 .until(m_servo::atGoal)
                 .withName("Intake Extend GoToWobbleExtendedPosition");
     }
-    //ballscoredalreA
-
 
     public Command goToWobbleSlightlyOutRetractedPosition() {
-        return startRun(this::reset, () -> actuateWithProfile(0.25))
+        return startRun(
+                this::reset,
+                () -> actuateWithProfile(0.25))
                 .until(m_servo::atGoal)
                 .withName("Intake Extend GoToWobbleRetractedPosition");
     }
+
     public Command goToWobbleOutExtendedPosition() {
-        return startRun(this::reset, () -> actuateWithProfile(2.25))
+        return startRun(
+                this::reset,
+                () -> actuateWithProfile(2.25))
                 .until(m_servo::atGoal)
                 .withName("Intake Extend GoToWobbleExtendedPosition");
     }
 
     public Command goToWobbleInRetractedPosition() {
-        return startRun(this::reset, () -> actuateWithProfile(1.75))
+        return startRun(
+                this::reset,
+                () -> actuateWithProfile(1.75))
                 .until(m_servo::atGoal)
                 .withName("Intake Extend GoToWobbleRetractedPosition");
     }
-    
 
     /////////////////////////////////////////
 
@@ -114,7 +143,8 @@ public class IntakeExtend extends SubsystemBase {
     private void actuateWithProfile(double value) {
         m_servo.actuateWithProfile(value, 0);
     }
-    public boolean atExtendedPosition(){
-        return m_servo.getUnwrappedPositionRad() > 2.5;
+
+    public boolean atExtendedPosition() {
+        return MathUtil.isNear(m_servo.getUnwrappedPositionRad(), EXTENDED_POSITION, 0.1);
     }
 }

@@ -27,6 +27,8 @@ public class Feeder extends SubsystemBase {
     private static final double GEAR_RATIO = 1.0;
     private static final double WHEEL_DIAMETER_M = 0.05;
 
+    private static final double NORMAL_SPEED = 5.0;
+
     private final OutboardLinearVelocityServo m_servo1;
     private final OutboardLinearVelocityServo m_servo2;
 
@@ -74,8 +76,21 @@ public class Feeder extends SubsystemBase {
     }
 
     public Command fullspeed() {
-        return startRun(this::reset, this::feedWhenReady)
+        return startRun(
+                this::reset,
+                this::feedWhenReady)
                 .withName("Feed");
+    }
+
+    /**
+     * Use a profile to spin up the feeder to the normal speed.
+     * Never ends.
+     */
+    public Command normal() {
+        return startRun(
+                this::reset,
+                this::feedNormally)
+                .withName("Feed Normally");
     }
 
     public Command testFeed() {
@@ -93,6 +108,11 @@ public class Feeder extends SubsystemBase {
                 .withName("Stop Feeder");
     }
 
+    public Command stopOnce() {
+        return runOnce(this::stopMotor)
+                .withName("Stop Feeder Once");
+    }
+
     ///////////////////////////////////////////////////////
 
     private void reset() {
@@ -107,14 +127,20 @@ public class Feeder extends SubsystemBase {
 
     private void feedWhenReady() {
         if (m_Shooter.atSpeed()) {
-            double Velocity = 5.0;
-            m_servo1.setVelocityProfiled(Velocity);
-            m_servo2.setVelocityProfiled(Velocity);
+            feedNormally();
         } else {
-            double Zero = 0;
-            m_servo1.setVelocityProfiled(Zero);
-            m_servo2.setVelocityProfiled(Zero);
+            stopFeeding();
         }
+    }
+
+    private void feedNormally() {
+        m_servo1.setVelocityProfiled(NORMAL_SPEED);
+        m_servo2.setVelocityProfiled(NORMAL_SPEED);
+    }
+
+    private void stopFeeding() {
+        m_servo1.setVelocityProfiled(0);
+        m_servo2.setVelocityProfiled(0);
     }
 
     private void dutyCycleAll() {

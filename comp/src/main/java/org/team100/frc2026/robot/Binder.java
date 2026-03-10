@@ -1,12 +1,14 @@
 package org.team100.frc2026.robot;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static edu.wpi.first.wpilibj2.command.Commands.repeatingSequence;
+import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 import static org.team100.frc2026.util.TriggerUtil.onTrue;
 import static org.team100.frc2026.util.TriggerUtil.whileTrue;
 
+import org.team100.lib.controller.r1.AzimuthController;
 import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.controller.r1.FullStateFeedback;
-import org.team100.lib.controller.r1.AzimuthController;
 import org.team100.lib.hid.DriverXboxControl;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
@@ -19,11 +21,12 @@ import org.team100.lib.subsystems.swerve.commands.manual.DriveMovingTargetLock;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 
 /**
  * Binds buttons to commands. Also creates default commands.
+ * 
+ * See
+ * https://docs.google.com/document/d/15HcburjCvwOEBL8ZtQdk-7iotF5qATGK3fO7c5HyWCk
  */
 public class Binder {
     private static final LoggerFactory rootLogger = Logging.instance().rootLogger;
@@ -124,9 +127,9 @@ public class Binder {
         /// INTAKE
         ///
 
-        whileTrue(driver::leftBumper,
+        whileTrue(driver::rightBumper,
                 m_machinery.m_intakeExtend.goToRetractedPosition());
-        whileTrue(driver::leftTrigger,
+        whileTrue(driver::rightTrigger,
                 m_machinery.m_intakeExtend.goToExtendedPosition()
                         .andThen(m_machinery.m_intake.intake()));
 
@@ -149,7 +152,7 @@ public class Binder {
                 m_log,
                 m_machinery.m_swerveKinodynamics::getMaxAngleSpeedRad_S,
                 aggressiveFeedback);
-        whileTrue(() -> driver.rightBumper(),
+        whileTrue(() -> driver.leftBumper(),
                 new DriveMovingTargetLock(
                         m_log,
                         m_machinery.m_swerveKinodynamics,
@@ -166,38 +169,38 @@ public class Binder {
         /// SHOOT
         ///
 
-        Command runShooter = m_machinery.m_shooter.testShooterFullspeed();
-        Command tuneShooter = m_machinery.m_shooter.tune();
-        Command runHood = m_machinery.m_shooterHood.position();
-        Command tuneHood = m_machinery.m_shooterHood.tune();
-        Command runConveyor = m_machinery.m_conveyor.testConveyor();
-        Command runConveyorBack = m_machinery.m_conveyor.testConveyorBack();
-        Command runFeeder = m_machinery.m_feeder.testFeed();
-        Command runShooter3 = m_machinery.m_shooter.testMotor3Command();
-        Command runFeederBack = m_machinery.m_feeder.testFeedBack();
-        Command runIntakeWobbleExtendIn = m_machinery.m_intakeExtend.goToWobbleSlightlyInExtendedPosition();
-        Command runIntakeWobbleRetractIn = m_machinery.m_intakeExtend.goToWobbleSlightlyOutRetractedPosition();
-        Command runIntakeWobbleExtendOut = m_machinery.m_intakeExtend.goToWobbleSlightlyInExtendedPosition();
-        Command runIntakeWobbleRetractOut = m_machinery.m_intakeExtend.goToWobbleInRetractedPosition();
+        whileTrue(driver::leftTrigger,
+                parallel(
+                        m_machinery.m_shooterHood.autoPosition(),
+                        m_machinery.m_shooter.testShooterFullspeed(),
+                        m_machinery.m_conveyor.testConveyor(),
+                        repeatingSequence(
+                                waitUntil(
+                                        m_machinery.m_shooter::atSpeed),
+                                m_machinery.m_feeder.testFeed()
+                                        .onlyWhile(m_machinery.m_shooter::atSpeed))));
 
-        // whileTrue(driver::rightTrigger,
-        // parallel(
-        // runHood,
-        // runShooter,
-        // runSerialUpper,
-        // Commands.repeatingSequence(
-        // waitUntil(m_machinery.m_shooter::atSpeed),
-        // runSerial.onlyWhile(m_machinery.m_shooter::atSpeed))));
+        //////////////////
+        ///
+        /// SHOOTER TESTING
+        ///
 
-        // For testing
         // whileTrue(driver::x, m_machinery.m_shooter.shooterFullspeed());
         // whileTrue(driver::x, m_machinery.m_shooter.testMotor1Command());
         // whileTrue(driver::y, m_machinery.m_shooter.testMotor2Command());
         // whileTrue(driver::a, m_machinery.m_shooter.testMotor3Command());
         // whileTrue(driver::b, parallel(runShooter, runSerial, runSerialUpper));
-        whileTrue(driver::a, parallel(runConveyor, runFeeder));
-        whileTrue(driver::b, parallel(runConveyorBack, runFeederBack));
-        whileTrue(driver::x, runShooter);
+
+        whileTrue(driver::a,
+                parallel(
+                        m_machinery.m_conveyor.testConveyor(),
+                        m_machinery.m_feeder.testFeed()));
+        whileTrue(driver::b,
+                parallel(
+                        m_machinery.m_conveyor.testConveyorBack(),
+                        m_machinery.m_feeder.testFeedBack()));
+        whileTrue(driver::x,
+                m_machinery.m_shooter.testShooterFullspeed());
 
         // whileTrue(driver::rightTrigger, parallel(runSerial, runSerialUpper,
         // runShooter));
@@ -212,8 +215,11 @@ public class Binder {
         // Commands.repeatingSequence(runIntakeWobbleExtendOut.withTimeout(0.5)
         // .andThen(runIntakeWobbleRetractOut).withTimeout(0.5)));
         // };
-        whileTrue(driver::y, Commands.repeatingSequence(runIntakeWobbleExtendIn.withTimeout(0.5)
-                .andThen(runIntakeWobbleRetractIn).withTimeout(0.5)));
+
+        whileTrue(driver::y,
+                repeatingSequence(
+                        m_machinery.m_intakeExtend.goToWobbleSlightlyInExtendedPosition().withTimeout(0.5),
+                        m_machinery.m_intakeExtend.goToWobbleSlightlyOutRetractedPosition().withTimeout(0.5)));
 
         whileTrue(() -> {
             Rotation2d pov = driver.pov();
@@ -221,13 +227,13 @@ public class Binder {
                 return false;
             return pov.equals(new Rotation2d(0));
         }, parallel(
-                tuneHood,
-                tuneShooter));
+                m_machinery.m_shooterHood.tune(),
+                m_machinery.m_shooter.tune()));
 
         Tester tester = new Tester(m_machinery);
+        onTrue(() -> RobotState.isTest(), tester.prompt());
         whileTrue(() -> (RobotState.isTest() && driver.a() && driver.b()),
                 tester.prematch());
-
     }
 
     /** Keeps tests from conflicting. */

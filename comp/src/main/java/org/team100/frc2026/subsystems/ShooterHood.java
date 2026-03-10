@@ -30,6 +30,13 @@ public class ShooterHood extends SubsystemBase {
     private static final CanId CAN_ID = new CanId(0);
     private static final double GEAR_RATIO = 10;
 
+    // MECHANISM POSITIONS
+
+    private static final double INITIAL_POSITION_RAD = 0;
+    private static final double MIN_POSITION_RAD = 0;
+    // TODO: this is definitely wrong
+    private static final double MAX_POSITION_RAD = 1;
+
     private final Supplier<OptionalDouble> m_angle;
     private final AngularPositionServo m_servo;
 
@@ -43,7 +50,6 @@ public class ShooterHood extends SubsystemBase {
         LoggerFactory log = parent.type(this);
         m_angle = angle;
         m_tuningSetting = new Mutable(log, "for tuning", 0);
-        double initialPosition = 0;
         TrapezoidProfileR1 profile = new TrapezoidProfileR1(log, 1, 2, 0.05);
         ReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.05, 0.05);
 
@@ -65,8 +71,9 @@ public class ShooterHood extends SubsystemBase {
                 motor = new SimulatedBareMotor(log, 600);
             }
         }
+
         m_servo = OutboardAngularPositionServo.make(
-                log, motor, ref, GEAR_RATIO, initialPosition);
+                log, motor, ref, GEAR_RATIO, INITIAL_POSITION_RAD, MIN_POSITION_RAD, MAX_POSITION_RAD);
     }
 
     @Override
@@ -74,11 +81,40 @@ public class ShooterHood extends SubsystemBase {
         m_servo.periodic();
     }
 
-    /** Uses a profile. Maybe don't use a profile? */
-    public Command position() {
-        return startRun(this::reset, this::autoWork);
+    /** Use a profile to set the position according to the angle supplier. */
+    public Command autoPosition() {
+        return startRun(
+                this::reset,
+                this::autoPositionWork)
+                .withName("Hood Auto Position");
     }
 
+    /**
+     * Use a profile to set the position to minimum.
+     * Never ends.
+     */
+    public Command in() {
+        return startRun(
+                this::reset,
+                () -> actuateWithProfile(MIN_POSITION_RAD))
+                .withName("Hood In");
+    }
+
+    /**
+     * Use a profile to set the position to maximum.
+     * Never ends.
+     */
+    public Command out() {
+        return startRun(
+                this::reset,
+                () -> actuateWithProfile(MAX_POSITION_RAD))
+                .withName("Hood Out");
+    }
+
+    /**
+     * Set the position to the tuning value in glass, without a profile.
+     * Never ends.
+     */
     public Command tune() {
         return startRun(
                 this::reset,
@@ -88,7 +124,13 @@ public class ShooterHood extends SubsystemBase {
     }
 
     public Command stop() {
-        return run(this::stopServo).withName("Stop Hood");
+        return run(this::stopServo)
+                .withName("Stop Hood");
+    }
+
+    public Command stopOnce() {
+        return runOnce(this::stopServo)
+                .withName("Stop Hood Once");
     }
 
     public boolean onTarget() {
@@ -125,7 +167,7 @@ public class ShooterHood extends SubsystemBase {
         m_servo.actuateDirect(value, 0);
     }
 
-    private void autoWork() {
+    private void autoPositionWork() {
         m_angle.get().ifPresentOrElse(
                 this::actuateWithProfile, this::stopServo);
     }

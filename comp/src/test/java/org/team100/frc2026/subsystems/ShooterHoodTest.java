@@ -26,7 +26,7 @@ public class ShooterHoodTest implements Timeless2026 {
         assertEquals(0, hood.getUnwrappedPositionRad(), DELTA);
         // Goal starts at measurement.
         assertEquals(0, hood.getUnwrappedGoal().x(), DELTA);
-        Command position = hood.position();
+        Command position = hood.autoPosition();
         position.initialize();
         position.execute();
         // Out-of-bounds means there is no goal.
@@ -44,7 +44,7 @@ public class ShooterHoodTest implements Timeless2026 {
         assertEquals(0, hood.getUnwrappedPositionRad(), DELTA);
         // Goal starts at measurement.
         assertEquals(0, hood.getUnwrappedGoal().x(), DELTA);
-        Command position = hood.position();
+        Command position = hood.autoPosition();
         position.initialize();
         position.execute();
         // Goal is OK

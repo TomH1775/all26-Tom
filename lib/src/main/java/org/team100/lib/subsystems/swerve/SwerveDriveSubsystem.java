@@ -197,18 +197,37 @@ public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsy
     // Commands
     //
 
-    public Command stopCommand() {
-        return runOnce(this::stop);
+    /** Stop and then end -- this is for compositions where doing nothing is OK */
+    public Command stopOnce() {
+        return runOnce(this::stop).withName("Drive Stop Once");
     }
 
-    /** Use raw mode to set modules driving ahead. */
+    /**
+     * Use raw mode to set modules driving ahead.
+     * Never ends.
+     */
     public Command aheadSlow() {
-        return run(() -> setRawModuleStates(SwerveModuleStates.aheadSlow));
+        return run(() -> setRawModuleStates(SwerveModuleStates.aheadSlow))
+                .withName("Drive Ahead");
+
     }
 
-    /** Use robot-relative mode to set modules driving to the right. */
+    /**
+     * Use robot-relative mode to set modules driving to the right.
+     * Never ends.
+     */
     public Command rightwardSlow() {
-        return run(() -> setChassisSpeeds(new ChassisSpeeds(0, -1.0, 0)));
+        return run(() -> setChassisSpeeds(new ChassisSpeeds(0, -1.0, 0)))
+                .withName("Drive Right Slow");
+    }
+
+    /**
+     * Use robot-relative mode to spin to the left.
+     * Never ends.
+     */
+    public Command spinLeft() {
+        return run(() -> setChassisSpeeds(new ChassisSpeeds(0, 0, 1.0)))
+                .withName("Drive Spin Left");
     }
 
     /**

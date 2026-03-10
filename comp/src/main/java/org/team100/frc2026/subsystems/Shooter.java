@@ -32,6 +32,10 @@ public class Shooter extends SubsystemBase {
     private static final double GEAR_RATIO = 1;
     private static final double WHEEL_DIAMETER_M = 0.075;
 
+    /** Speed used in selftest. */
+    private static final double TEST_SPEED = 5;
+    private static final double FULL_SPEED = 10;
+
     private final Supplier<OptionalDouble> m_speed;
 
     private final OutboardLinearVelocityServo m_servo1;
@@ -100,43 +104,66 @@ public class Shooter extends SubsystemBase {
     public Command tune() {
         return startRun(
                 this::reset,
-                () -> setVelocityDirect(
-                        m_tuningSetting.getAsDouble()))
+                () -> setVelocityDirect(m_tuningSetting.getAsDouble()))
                 .withName("Tune Shooter");
     }
 
     public Command shooterFullspeed() {
-        return startRun(this::reset, () -> setVelocityProfiled(10))
+        return startRun(
+                this::reset,
+                () -> setVelocityProfiled(FULL_SPEED))
                 .withName("Shoot full speed");
     }
 
+    /**
+     * Use a profile to spin up the shooter wheels to the test speed.
+     * Never ends.
+     */
+    public Command testRun() {
+        return startRun(
+                this::reset,
+                () -> setVelocityProfiled(TEST_SPEED))
+                .withName("Shooter Test");
+    }
+
     public Command testShooterFullspeed() {
-        return run(this::dutyCycleAll).withName("Test shoot full speed");
+        return run(this::dutyCycleAll)
+                .withName("Test shoot full speed");
     }
 
     public Command testMotor1Command() {
-        return run(this::dutyCycle1).withName("Motor 1 Spin");
+        return run(this::dutyCycle1)
+                .withName("Motor 1 Spin");
     }
 
     public Command testMotor2Command() {
-        return run(this::dutyCycle2).withName("Motor 2 Spin");
+        return run(this::dutyCycle2)
+                .withName("Motor 2 Spin");
     }
 
     public Command testMotor3Command() {
-        return run(this::dutyCycle3).withName("Motor 3 Spin");
+        return run(this::dutyCycle3)
+                .withName("Motor 3 Spin");
     }
 
     public Command auto() {
-        return startRun(this::reset, this::autoWork);
+        return startRun(
+                this::reset,
+                this::autoWork);
     }
 
     public Command stop() {
-        return run(this::stopMotor).withName("Stop Shooter");
+        return run(this::stopMotor)
+                .withName("Stop Shooter");
+    }
+
+    public Command stopOnce() {
+        return runOnce(this::stopMotor)
+                .withName("Stop Shooter Once");
     }
 
     public Boolean atSpeed() {
-        return (m_servo1.atGoal() && m_servo2.atGoal()
-                && m_servo3.atGoal());
+        return (m_servo1.atGoal() && m_servo2.atGoal() && m_servo3.atGoal());
     }
 
     /////////////////////////////////////////////

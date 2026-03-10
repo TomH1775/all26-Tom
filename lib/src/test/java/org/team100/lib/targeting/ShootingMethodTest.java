@@ -13,6 +13,7 @@ import org.team100.lib.geometry.StateR2;
 import org.team100.lib.geometry.VelocitySE2;
 import org.team100.lib.optimization.NumericalJacobian100;
 import org.team100.lib.state.ModelSE2;
+import org.team100.lib.tuning.Mutable;
 import org.team100.lib.util.StrUtil;
 
 import edu.wpi.first.math.Matrix;
@@ -130,6 +131,7 @@ public class ShootingMethodTest {
     /** Similar to above but with drag. */
     @Test
     void testMotionless() {
+        Mutable.unpublishAll();
         Drag d = new Drag(0.5, 0.025, 0.1, 0.1, 0.1);
         RangeSolver rangeSolver = new RangeSolver(d, 0, 0.01, 0.001);
         double v = 7;
