@@ -91,7 +91,7 @@ public class SwerveModuleCollection implements Player {
                                 DriveRatio.MEDIUM,
                                 new CanId(2), // steer
                                 new RoboRioChannel(7), 
-                                0.106495,
+                                0.606495,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
                         WCPSwerveModule100.getKrakenDrive(rearRightLogger, supplyLimit, statorLimit,
@@ -99,7 +99,7 @@ public class SwerveModuleCollection implements Player {
                                 DriveRatio.MEDIUM,
                                 new CanId(21), // steer
                                 new RoboRioChannel(9),
-                                0.783205,
+                                0.283205,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE));
             case SWERVE_ONE:
