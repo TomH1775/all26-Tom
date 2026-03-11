@@ -46,11 +46,12 @@ class InterpreterFactory:
                 | Identity.JOELS_TEST
                 | Identity.RIGHTAMP
                 | Identity.SHOOTER
+                | Identity.CLIMB_LEFT
                 | Identity.SWERVE_RIGHT
                 | Identity.SWERVE_LEFT
             ):
                 return TagDetector(identity, cam, display, network)
-            case Identity.DEV2 | Identity.CORAL_RIGHT:
+            case Identity.DEV2:
                 return CombinedDetector(
                     identity,
                     cam,

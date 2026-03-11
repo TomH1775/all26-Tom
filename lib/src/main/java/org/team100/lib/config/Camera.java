@@ -43,10 +43,8 @@ public enum Camera {
     /**
      * Delta shooter
      */
-    SHOOTER("10000000a7a892c0",
-            new Transform3d(
-                    new Translation3d(-0.1265, 0.0682, 0.612),
-                    new Rotation3d(0, Math.toRadians(-25), Math.toRadians(-2)))),
+    SHOOTER("4230a96261f3ab90",
+            new Transform3d()),
 
     /**
      * Delta amp-placer
@@ -98,10 +96,8 @@ public enum Camera {
     /**
      * Coral reef right
      */
-    CORAL_RIGHT("82c4c3fe4f941e96",
-            new Transform3d(
-                    new Translation3d(-0.29, -0.22, 0.89),
-                    new Rotation3d(-0.14, -0.68, 0.23).unaryMinus().plus(new Rotation3d(0, 0, Math.PI)))),
+    CLIMB_LEFT("82c4c3fe4f941e96",
+            new Transform3d()),
 
     /**
      * For prototyping

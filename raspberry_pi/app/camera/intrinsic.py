@@ -68,7 +68,7 @@ class Intrinsic:
                         [0, 0, 1],
                     ]
                 )
-            case Identity.CORAL_RIGHT:
+            case Identity.CLIMB_LEFT:
                 self._mtx = np.array(
                     [
                         [938.0364397, 0.0, 674.7133631],

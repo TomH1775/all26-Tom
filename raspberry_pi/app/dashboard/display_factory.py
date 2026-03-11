@@ -12,7 +12,7 @@ class DisplayFactory:
         match identity:
             case (
                 Identity.CAMERA_FRONT
-                | Identity.CORAL_RIGHT
+                | Identity.CLIMB_LEFT
                 | Identity.DEV
                 | Identity.DEV2
                 | Identity.DIST_TEST
