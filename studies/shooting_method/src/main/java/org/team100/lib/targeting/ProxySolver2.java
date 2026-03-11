@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.function.DoubleFunction;
 
 import org.team100.frc2026.field.FieldConstants2026;
+import org.team100.frc2026.field.FieldConstants2026ForStudy;
 import org.team100.lib.geometry.StateR2;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.util.NamedChooser;
@@ -68,7 +69,7 @@ public class ProxySolver2 implements Solver {
     private void addShootingMethod(
             double muzzleVelocityM_S,
             double omegaRad_S) {
-        Drag dragModel = FieldConstants2026.FUEL_DRAG;
+        Drag dragModel = FieldConstants2026ForStudy.FUEL_DRAG;
         RangeSolver rangeSolver = new RangeSolver(
                 dragModel,
                 FieldConstants2026.HUB.getZ(),
