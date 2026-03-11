@@ -25,8 +25,8 @@ public class Intake extends SubsystemBase {
     private static final CanId CAN_ID_2 = new CanId(17);
     private static final double TOLERANCE_M_S = 1;
     private static final double GEAR_RATIO = 1;
-    private static final double WHEEL_DIAMETER_M = 0.025;
-
+    private static final double WHEEL_DIAMETER_M = 0.05;
+    // TODO: TUNE
     private static final double NORMAL_SPEED = 50;
 
     private final OutboardLinearVelocityServo m_servo1;
@@ -36,6 +36,7 @@ public class Intake extends SubsystemBase {
         LoggerFactory log = parent.type(this);
         LoggerFactory log1 = log.name("motor1");
         LoggerFactory log2 = log.name("motor2");
+        // TODO: TUNE
         VelocityProfileR1 profile = new CurrentLimitedExponentialVelocityProfileR1(
                 10, 10, 20, 30);
         VelocityReferenceR1 ref = new VelocityProfileReferenceR1(
@@ -45,9 +46,11 @@ public class Intake extends SubsystemBase {
         switch (Identity.instance) {
             case TEST_BOARD_B0, COMP_BOT -> {
                 double supplyLimit = 50;
+                // TODO: TUNE
                 double statorLimit = 50;
                 SimpleDynamics ff = new SimpleDynamics(log, 0.004, 0.002);
                 Friction friction = new Friction(log, 0.26, 0.26, 0.006, 0.5);
+                // TODO: TUNE
                 PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.01);
                 m1 = new KrakenX44Motor(
                         log1, CAN_ID_1, NeutralMode100.COAST, MotorPhase.FORWARD,

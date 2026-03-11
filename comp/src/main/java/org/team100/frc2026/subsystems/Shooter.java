@@ -29,6 +29,8 @@ public class Shooter extends SubsystemBase {
     private static final CanId CAN_ID_2 = new CanId(5);
     private static final CanId CAN_ID_3 = new CanId(14);
     private static final double TOLERANCE_M_S = 1;
+    // TODO: TUNE
+    // gear ratios are not all the same
     private static final double GEAR_RATIO = 1;
     private static final double WHEEL_DIAMETER_M = 0.075;
 
@@ -65,9 +67,12 @@ public class Shooter extends SubsystemBase {
         switch (Identity.instance) {
             case TEST_BOARD_B0, COMP_BOT -> {
                 double supplyLimit = 120;
+                // TODO: TUNE
                 double statorLimit = 60;
                 SimpleDynamics ff = new SimpleDynamics(log, 0.004, 0.002);
+                // TODO: TUNE
                 Friction friction = new Friction(log, 0.26, 0.26, 0.006, 0.5);
+                // TODO: TUNE
                 PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.01);
 
                 m1 = new KrakenX60Motor(
