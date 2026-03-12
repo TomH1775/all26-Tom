@@ -35,7 +35,7 @@ public class ShooterHood extends SubsystemBase {
     private static final double MIN_POSITION_RAD = 0;
     // TODO: TUNE
     private static final double MAX_POSITION_RAD = 1;
-    
+
     private final Supplier<OptionalDouble> m_angle;
     private final AngularPositionServo m_servo;
     private final Mutable m_tuningSetting;
@@ -58,10 +58,13 @@ public class ShooterHood extends SubsystemBase {
             case TEST_BOARD_B0, COMP_BOT -> {
                 double supplyLimit = 50;
                 double statorLimit = 20;
-                SimpleDynamics ff = new SimpleDynamics(log, 0.004, 0.002);
+                // SimpleDynamics ff = new SimpleDynamics(log, 0.004, 0.002);
+                SimpleDynamics ff = new SimpleDynamics(log, 0.00, 0.00);
+
                 Friction friction = new Friction(log, 0.26, 0.26, 0.006, 0.5);
                 // TODO: TUNE
-                PIDConstants pid = PIDConstants.makePositionPID(log, 1);
+                // PIDConstants pid = PIDConstants.makePositionPID(log, 1);
+                PIDConstants pid = PIDConstants.makePositionPID(log, 0);
 
                 motor = new KrakenX44Motor(
                         log, CAN_ID, NeutralMode100.COAST, MotorPhase.REVERSE,
