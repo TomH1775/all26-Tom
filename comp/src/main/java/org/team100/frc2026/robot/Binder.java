@@ -6,6 +6,10 @@ import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 import static org.team100.frc2026.util.TriggerUtil.onTrue;
 import static org.team100.frc2026.util.TriggerUtil.whileTrue;
 
+import org.team100.frc2026.auton.CenterFullSweepAuton;
+import org.team100.frc2026.auton.CenterHalfSweepAuton;
+import org.team100.frc2026.auton.RightBumpFullSweepAuton;
+import org.team100.frc2026.auton.RightBumpHalfSweepAuton;
 import org.team100.lib.controller.r1.AzimuthController;
 import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.controller.r1.FullStateFeedback;
@@ -208,6 +212,38 @@ public class Binder {
 
         ////////////////////////////////////////////////////
         ///
+        /// AUTON TESTING
+        ///
+        /// Auton test mode is with POV down.
+
+        whileTrue(() -> driver.povDown() && driver.a(),
+                new CenterFullSweepAuton(
+                        m_log,
+                        m_machinery.m_swerveKinodynamics,
+                        m_machinery.m_holonomicController,
+                        m_machinery).command());
+
+        whileTrue(() -> driver.povDown() && driver.b(),
+                new CenterHalfSweepAuton(
+                        m_log,
+                        m_machinery.m_swerveKinodynamics,
+                        m_machinery.m_holonomicController,
+                        m_machinery).command());
+        whileTrue(() -> driver.povDown() && driver.x(),
+                new RightBumpFullSweepAuton(
+                        m_log,
+                        m_machinery.m_swerveKinodynamics,
+                        m_machinery.m_holonomicController,
+                        m_machinery).command());
+        whileTrue(() -> driver.povDown() && driver.y(),
+                new RightBumpHalfSweepAuton(
+                        m_log,
+                        m_machinery.m_swerveKinodynamics,
+                        m_machinery.m_holonomicController,
+                        m_machinery).command());
+
+        ////////////////////////////////////////////////////
+        ///
         /// TEST
         ///
 
@@ -222,12 +258,7 @@ public class Binder {
                         m_machinery.m_intakeExtend.goToWobbleSlightlyInExtendedPosition().withTimeout(0.5),
                         m_machinery.m_intakeExtend.goToWobbleSlightlyOutRetractedPosition().withTimeout(0.5)));
 
-        whileTrue(() -> {
-            Rotation2d pov = driver.pov();
-            if (pov == null)
-                return false;
-            return pov.equals(new Rotation2d(0));
-        }, parallel(
+        whileTrue(driver::povUp, parallel(
                 m_machinery.m_shooterHood.tune(),
                 m_machinery.m_shooter.tune()));
 

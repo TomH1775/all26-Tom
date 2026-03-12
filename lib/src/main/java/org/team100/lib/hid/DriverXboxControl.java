@@ -52,6 +52,22 @@ public class DriverXboxControl {
         return ControlUtil.pov(m_controller::getPOV);
     }
 
+    /** POV switch pressed on the top */
+    public boolean povUp() {
+        Rotation2d pov = pov();
+        if (pov == null)
+            return false;
+        return pov.equals(Rotation2d.kZero);
+    }
+
+    /** POV switch pressed on the bottom */
+    public boolean povDown() {
+        Rotation2d pov = pov();
+        if (pov == null)
+            return false;
+        return pov.equals(Rotation2d.kPi);
+    }
+
     /** Button 7 */
     public boolean back() {
         return m_controller.getBackButton();
