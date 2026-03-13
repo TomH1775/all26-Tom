@@ -22,26 +22,19 @@ public class Targeter {
         // TODO: TUNE
         m_score = new ShooterTable(
                 List.of(
-                        new FiringParameters(0, 5, 1, 0.1),
-                        new FiringParameters(1.49, 5, 0.90, 0.1),
-                        new FiringParameters(2.07, 6, 0.78, 0.2),
-                        new FiringParameters(2.50, 7, 0.66, 0.3),
-                        new FiringParameters(3.02, 8, 0.59, 0.4),
-                        new FiringParameters(3.59, 9, 0.53, 0.5),
-                        new FiringParameters(4.10, 10, 0.48, 0.6),
-                        new FiringParameters(4.50, 11, 0.44, 0.7),
-                        new FiringParameters(16, 12, 0.5, 2)));
+
+                        new FiringParameters(1.65, 12, 0, 0.8),
+                        new FiringParameters(2.28, 14, 0, 0.96),
+                        new FiringParameters(2.99, 14, 0.15, 0.845),
+                        new FiringParameters(3.52, 15, 0.2, 0.912),
+                        new FiringParameters(4.3, 17, 0.35, 0.84),
+                        new FiringParameters(5.32, 19, 0.3, 1.03)));
+
         // TODO: TUNE
         m_lob = new ShooterTable(
                 List.of(
-                        new FiringParameters(0.0, 4, 0.3, 0.3),
-                        new FiringParameters(1.0, 5, 0.3, 0.3),
-                        new FiringParameters(2.0, 6, 0.3, 0.3),
-                        new FiringParameters(3.0, 7, 0.3, 0.3),
-                        new FiringParameters(4.0, 8, 0.3, 0.3),
-                        new FiringParameters(5.0, 9, 0.3, 0.3),
-                        new FiringParameters(6.0, 10, 0.3, 0.3),
-                        new FiringParameters(16, 12, 0.5, 2)));
+                        new FiringParameters(6, 17, 0.25, 1.268),
+                        new FiringParameters(16, 17, 0.25, 1.268)));
     }
 
     /**
