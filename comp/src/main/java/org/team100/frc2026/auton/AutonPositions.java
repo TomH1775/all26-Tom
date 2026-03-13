@@ -7,9 +7,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
  * Areas that might be useful for autons
  */
 public class AutonPositions {
-    public static final Pose2d ABOVE_BALL_FIELD = new Pose2d(7.75, 7, Rotation2d.kCW_90deg);
-    public static final Pose2d MIDDLE_BALL_FIELD = new Pose2d(7.75, 4, Rotation2d.kCW_90deg);
-    public static final Pose2d BELOW_BALL_FIELD = new Pose2d(7.75, 1, Rotation2d.kCW_90deg);
+    public static final Pose2d ABOVE_BALL_FIELD = new Pose2d(7.75, 7, Rotation2d.kZero);
+    public static final Pose2d MIDDLE_BALL_FIELD = new Pose2d(7.75, 4, Rotation2d.kZero);
+    public static final Pose2d BELOW_BALL_FIELD = new Pose2d(7.75, 1, Rotation2d.kZero);
 
     public static final Pose2d CLIMB_LEFT = new Pose2d(1.175, 4.25, new Rotation2d(-90 * (Math.PI / 180)));
     public static final Pose2d CLIMB_RIGHT = new Pose2d(1.175, 3.1, new Rotation2d(90 * (Math.PI / 180)));
