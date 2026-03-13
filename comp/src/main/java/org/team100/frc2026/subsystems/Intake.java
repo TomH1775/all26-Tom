@@ -27,7 +27,6 @@ public class Intake extends SubsystemBase {
     private static final double TOLERANCE_M_S = 1;
     private static final double GEAR_RATIO = 1;
     private static final double WHEEL_DIAMETER_M = 0.05;
-    // TODO: TUNE
     private final Mutable NORMAL_SPEED;
 
     private final OutboardLinearVelocityServo m_servo1;
@@ -37,6 +36,7 @@ public class Intake extends SubsystemBase {
         LoggerFactory log = parent.type(this);
         LoggerFactory log1 = log.name("motor1");
         LoggerFactory log2 = log.name("motor2");
+        // tuned 3/12/26
         NORMAL_SPEED = new Mutable(log, "Intake Speed", 7);
         VelocityProfileR1 profile = new CurrentLimitedExponentialVelocityProfileR1(
                 10, 10, 20, 30);
@@ -80,6 +80,16 @@ public class Intake extends SubsystemBase {
                 this::reset,
                 () -> setVelocityProfiled(NORMAL_SPEED.getAsDouble()))
                 .withName("Intake Normal Speed");
+    }
+
+    /**
+     * Roll backwards to clear jams.
+     */
+    public Command back() {
+        return startRun(
+                this::reset,
+                () -> setVelocity(-5))
+                .withName("Intake back");
     }
 
     /** Stop forever */

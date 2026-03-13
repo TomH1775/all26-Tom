@@ -2,7 +2,6 @@ package org.team100.frc2026.robot;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.repeatingSequence;
-import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 import static org.team100.frc2026.util.TriggerUtil.onTrue;
 import static org.team100.frc2026.util.TriggerUtil.whileTrue;
@@ -23,12 +22,9 @@ import org.team100.lib.subsystems.swerve.commands.manual.DriveMovingTargetLock;
 import edu.wpi.first.wpilibj.RobotState;
 
 /**
- * Binds buttons to commands. Also creates default commands.
- * 
- * See
- * https://docs.google.com/document/d/15HcburjCvwOEBL8ZtQdk-7iotF5qATGK3fO7c5HyWCk
+ * This is a version from pre-SVR testing
  */
-public class Binder {
+public class TestBinder {
     private static final LoggerFactory rootLogger = Logging.instance().rootLogger;
     @SuppressWarnings("unused")
     private static final LoggerFactory fieldLogger = Logging.instance().fieldLogger;
@@ -36,7 +32,7 @@ public class Binder {
     private final Machinery m_machinery;
     private final LoggerFactory m_log;
 
-    public Binder(Machinery machinery) {
+    public TestBinder(Machinery machinery) {
         m_machinery = machinery;
         m_log = rootLogger.name("Commands");
 
@@ -75,57 +71,80 @@ public class Binder {
         ///
         /// DISORIENT
         ///
-        /// Back: nudge the rotation towards zero.
-        /// Start: forget the current pose, listen to camera input.
 
-        onTrue(driver::back, m_machinery.zeroRotation());
-        onTrue(driver::start, m_machinery.disorient());
+        // Forget the current pose, listen to camera input.
+        onTrue(driver::back, m_machinery.disorient());
+        // Nudge the rotation towards zero.
+        onTrue(driver::start, m_machinery.zeroRotation());
+
+        ////////////////////////////////////////////////////
+        ///
+        /// TEST/DEV
+        ///
+        // This is for testing pose estimation accuracy and drivetrain positioning
+        // accuracy.
+        // HolonomicProfile profile = HolonomicProfileFactory.get(
+        // m_log, m_machinery.m_swerveKinodynamics, 1, 0.5, 1, 0.2);
+        // onTrue(driver::b,
+        // new DriveToPoseWithProfile(
+        // m_log, m_machinery.m_drive, m_machinery.m_holonomicController,
+        // profile, () -> new Pose2d(15.387, 3.501, new Rotation2d(0))));
+
+        ////////////////////////////////////////////////////
+        ///
+        /// CLIMBER
+        ///
+
+        // whileTrue(driver::x,
+        // m_machinery.m_ClimberExtension.setPosition()
+        // .andThen(m_machinery.m_Climber.setClimb1()));
+        // whileTrue(driver::a,
+        // sequence(
+        // m_machinery.m_ClimberExtension.setPosition().withTimeout(1),
+        // m_machinery.m_Climber.setClimb3().withTimeout(1)));
+
+        // whileTrue(driver::y,
+        // m_machinery.m_Climber.setClimb0()
+        // .andThen(m_machinery.m_ClimberExtension.setHomePosition()));
+
+        // These are from ClimberExtendTEST
+        // whileTrue(driver::x, m_machinery.m_ClimberExtension.setPosition());
+        // whileTrue(driver::y, m_machinery.m_ClimberExtension.setHomePosition());
+        // whileTrue(driver::rightTrigger,
+        // m_machinery.m_ClimberExtension.setPosition());
+        // whileTrue(driver::a, m_machinery.m_Climber.setClimb3());
+        // whileTrue(driver::b, m_machinery.m_Climber.setClimb0());
 
         ////////////////////////////////////////////////////
         ///
         /// INTAKE
         ///
-        /// Right trigger: extend, then hold extended and intake
-        /// Right bumper: retract
-        /// Both: roll backwards to clear jams (only when out)
-        /// "Y" wobble intake to help clear jams
 
-        whileTrue(() -> driver.rightBumper()
-                && !driver.rightTrigger(),
+        whileTrue(driver::rightBumper,
                 m_machinery.m_intakeExtend.goToRetractedPosition());
+        whileTrue(driver::rightTrigger,
+                m_machinery.m_intakeExtend.goToExtendedPosition()
+                        .andThen(m_machinery.m_intake.intake()));
 
-        whileTrue(() -> driver.rightTrigger()
-                && !driver.rightBumper(),
-                parallel(
-                        m_machinery.m_intakeExtend.goToExtendedPositionEndlessly(),
-                        sequence(
-                                waitUntil(m_machinery.m_intakeExtend::atGoal),
-                                m_machinery.m_intake.intake())));
-
-        whileTrue(() -> driver.rightTrigger()
-                && driver.rightBumper()
-                && m_machinery.m_intakeExtend.isOut(),
-                m_machinery.m_intake.back());
-
-        whileTrue(driver::y,
-                repeatingSequence(
-                        m_machinery.m_intakeExtend.goToWobbleSlightlyInExtendedPosition().withTimeout(0.5),
-                        m_machinery.m_intakeExtend.goToWobbleSlightlyOutRetractedPosition().withTimeout(0.5)));
+        // For testing
+        // whileTrue(driver::leftBumper,
+        // m_machinery.m_intakeExtender.goToExtendedPosition());
+        // whileTrue(driver::rightBumper,
+        // m_machinery.m_intakeExtender.goToRetractedPosition());
 
         ////////////////////////////////////////////////////
         ///
         /// AIM
         ///
-        /// Left bumper: rotate the robot to hit the target
 
-        FeedbackR1 thetaFeedback = new FullStateFeedback(
+        FeedbackR1 aggressiveFeedback = new FullStateFeedback(
                 m_log, 3, 0.1, true, 0.025, 0.25);
 
         // button 6
         AzimuthController aim = new AzimuthController(
                 m_log,
                 m_machinery.m_swerveKinodynamics::getMaxAngleSpeedRad_S,
-                thetaFeedback);
+                aggressiveFeedback);
         whileTrue(() -> driver.leftBumper(),
                 new DriveMovingTargetLock(
                         m_log,
@@ -142,13 +161,6 @@ public class Binder {
         ///
         /// SHOOT
         ///
-        /// Left trigger:
-        /// * run the drums
-        /// * set the hood
-        /// * run the conveyor
-        /// * feed when at speed.
-        /// "A" failsafe, run everything at a speed for 2.5m
-        /// "B" run the conveyor and feeder backwards
 
         whileTrue(driver::leftTrigger,
                 parallel(
@@ -156,21 +168,56 @@ public class Binder {
                         m_machinery.m_shooter.auto(),
                         m_machinery.m_conveyor.convey(),
                         repeatingSequence(
-                                waitUntil(m_machinery.m_shooter::atSpeed),
-                                m_machinery.m_feeder.normal()
+                                waitUntil(
+                                        m_machinery.m_shooter::atSpeed),
+                                m_machinery.m_feeder.testFeed()
                                         .onlyWhile(m_machinery.m_shooter::atSpeed))));
+
+        //////////////////
+        ///
+        /// SHOOTER TESTING
+        ///
+
+        // whileTrue(driver::x, m_machinery.m_shooter.shooterFullspeed());
+        // whileTrue(driver::x, m_machinery.m_shooter.testMotor1Command());
+        // whileTrue(driver::y, m_machinery.m_shooter.testMotor2Command());
+        // whileTrue(driver::a, m_machinery.m_shooter.testMotor3Command());
+        // whileTrue(driver::b, parallel(runShooter, runSerial, runSerialUpper));
+
+        // for friction and feedforward testing
+
+        // whileTrue(driver::a,
+        // m_machinery.m_intakeExtend.setVelocity(1));
+        // whileTrue(driver::a,
+        // m_machinery.m_intakeExtend.setPosition(3));
+        // whileTrue(driver::a,
+        // m_machinery.m_intake.setVelocity(5));
+        // whileTrue(driver::a,
+        // m_machinery.m_conveyor.setVelocity(2));
+        // whileTrue(driver::a,
+        // m_machinery.m_feeder.setVelocity(2));
+        // whileTrue(driver::a,
+        // m_machinery.m_shooter.setVelocity(15));
+        // whileTrue(driver::a,
+        // m_machinery.m_shooterHood.setVelocity(1));
+        // whileTrue(driver::a,
+        // m_machinery.m_shooterHood.setPosition(0.4));
+        // whileTrue(driver::b,
+        // m_machinery.m_shooterHood.setPosition(0));
 
         whileTrue(driver::a,
                 parallel(
-                        m_machinery.m_shooterHood.failsafe(),
-                        m_machinery.m_shooter.failsafe(),
-                        m_machinery.m_conveyor.convey(),
-                        m_machinery.m_feeder.normal()));
+                        m_machinery.m_conveyor.setVelocity(2),
+                        m_machinery.m_feeder.setVelocity(2)));
+        // whileTrue(driver::b,
+        // parallel(
+        // m_machinery.m_conveyor.testConveyorBack(),
+        // m_machinery.m_feeder.testFeedBack()));
+        whileTrue(driver::x,
+                m_machinery.m_shooter.testRun());
 
-        whileTrue(driver::b,
-                parallel(
-                        m_machinery.m_conveyor.back(),
-                        m_machinery.m_feeder.back()));
+        // whileTrue(driver::rightTrigger, parallel(runSerial, runSerialUpper,
+        // runShooter));
 
         ////////////////////////////////////////////////////
         ///
@@ -208,7 +255,21 @@ public class Binder {
         ///
         /// TEST
         ///
-        /// In test mode, "a" and "b" together runs prematch test.
+
+        // if (m_machinery.m_intakeExtend.atExtendedPosition()) {
+        // whileTrue(driver::y,
+        // Commands.repeatingSequence(runIntakeWobbleExtendOut.withTimeout(0.5)
+        // .andThen(runIntakeWobbleRetractOut).withTimeout(0.5)));
+        // };
+
+        whileTrue(driver::y,
+                repeatingSequence(
+                        m_machinery.m_intakeExtend.goToWobbleSlightlyInExtendedPosition().withTimeout(0.5),
+                        m_machinery.m_intakeExtend.goToWobbleSlightlyOutRetractedPosition().withTimeout(0.5)));
+
+        whileTrue(driver::povUp, parallel(
+                m_machinery.m_shooterHood.tune(),
+                m_machinery.m_shooter.tune()));
 
         Tester tester = new Tester(m_machinery);
         onTrue(() -> RobotState.isTest(), tester.prompt());

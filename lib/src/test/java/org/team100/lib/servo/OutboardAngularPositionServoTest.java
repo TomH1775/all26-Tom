@@ -1,7 +1,9 @@
 package org.team100.lib.servo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.config.Friction;
@@ -31,9 +33,54 @@ public class OutboardAngularPositionServoTest implements Timeless {
 
     private static final LoggerFactory log = new TestLoggerFactory(new TestPrimitiveLogger());
 
+    /** At goal should be false after initialization */
+    @Test
+    void testAtGoal() {
+        SimpleDynamics ff = new SimpleDynamics(log, 0.100, 0.100);
+        Friction friction = new Friction(log, 0.100, 0.100, 0.0, 0.1);
+        MockBareMotor motor = new MockBareMotor(ff, friction);
+        MockIncrementalBareEncoder encoder = new MockIncrementalBareEncoder();
+        MockRotaryPositionSensor sensor = new MockRotaryPositionSensor();
+
+        ProxyRotaryPositionSensor proxy = new ProxyRotaryPositionSensor(encoder, 1);
+        CombinedRotaryPositionSensor combinedEncoder = new CombinedRotaryPositionSensor(
+                log, sensor, proxy);
+
+        RotaryMechanism mech = new RotaryMechanism(
+                log, motor, combinedEncoder, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+
+        ProfileR1 profile = new TrapezoidProfileR1(log, 1, 1, 0.05);
+        ProfileReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.01, 0.01);
+        OutboardAngularPositionServo servo = new OutboardAngularPositionServo(
+                log, mech, ref);
+        // false upon construction
+        assertFalse(servo.atGoal());
+        // because there is no valid setpoint
+        assertFalse(servo.atSetpoint());
+        servo.reset();
+        // false after reset
+        assertFalse(servo.atGoal());
+        // because there is no valid setpoint
+        assertFalse(servo.atSetpoint());
+        // set the position which happens to be the measurement
+        servo.setPositionDirect(0, 0, 0);
+        // now we're at the goal
+        assertTrue(servo.atGoal());
+        // and the setpoint
+        assertTrue(servo.atSetpoint());
+        // a new command comes along and resets the servo
+        servo.reset();
+        // false again
+        assertFalse(servo.atGoal());
+        // false again
+        assertFalse(servo.atSetpoint());
+    }
+
+    /**
+     * What happens if you don't reset it?
+     */
     @Test
     void testNoReset() {
-        // what happens if you don't reset it?
         SimpleDynamics ff = new SimpleDynamics(log, 0.100, 0.100);
         Friction friction = new Friction(log, 0.100, 0.100, 0.0, 0.1);
         MockBareMotor motor = new MockBareMotor(ff, friction);

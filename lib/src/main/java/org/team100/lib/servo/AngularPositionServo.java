@@ -11,7 +11,9 @@ import org.team100.lib.state.ModelR1;
  */
 public interface AngularPositionServo extends Player {
     /**
-     * Zeros controller errors, sets setpoint and goal to current measurement.
+     * Zeros controller errors.
+     * Sets reference setpoint and goal to current measurement.
+     * Unsets the servo setpoint.
      *
      * It is ESSENTIAL TO CALL RESET in your INITIALIZE logic, so that the reference
      * starts with the current measurement. Otherwise, the reference will "remember"
@@ -98,6 +100,8 @@ public interface AngularPositionServo extends Player {
      * Profile is done, and we're on the setpoint.
      * 
      * Note this is affected by the setpoint update.
+     * 
+     * Should be false after reset.
      * 
      * It really makes the most sense to call this *before* updating the setpoint,
      * because the measurement comes from the recent-past Takt and the updated

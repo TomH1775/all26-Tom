@@ -27,7 +27,7 @@ public class Conveyor extends SubsystemBase {
     private static final double GEAR_RATIO = 3;
     private static final double WHEEL_DIAMETER_M = 0.035;
     // TODO: TUNE
-    private static final double NORMAL_SPEED = 0.5;
+    private static final double NORMAL_SPEED = 1.0;
 
     private final OutboardLinearVelocityServo m_servo1;
     private final OutboardLinearVelocityServo m_servo2;
@@ -87,6 +87,14 @@ public class Conveyor extends SubsystemBase {
                 this::reset,
                 () -> setVelocityProfiled(NORMAL_SPEED))
                 .withName("Convey");
+    }
+
+    /** Roll backwards to clear jams */
+    public Command back() {
+        return startRun(
+                this::reset,
+                () -> setVelocityProfiled(-5))
+                .withName("Conveyor back");
     }
 
     public Command testConveyor() {
