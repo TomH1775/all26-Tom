@@ -59,8 +59,9 @@ public class Shooter extends SubsystemBase {
         m_tuningSetting = new Mutable(log, "for tuning", 0);
         TEST_SPEED = new Mutable(log, "Shooter test speed", 15);
 
+        // tuned 3/12/26
         VelocityProfileR1 profile = new CurrentLimitedExponentialVelocityProfileR1(
-                10, 10, 20, 30);
+                20, 20, 40, 60);
         VelocityReferenceR1 ref = new VelocityProfileReferenceR1(
                 log, () -> profile, 1);
         final BareMotor m1;
@@ -69,15 +70,12 @@ public class Shooter extends SubsystemBase {
         switch (Identity.instance) {
             case TEST_BOARD_B0, COMP_BOT -> {
                 double supplyLimit = 120;
-                // TODO: TUNE
                 double statorLimit = 80;
-                // SimpleDynamics ff = new SimpleDynamics(log, 0.004, 0.002);
                 SimpleDynamics ff = new SimpleDynamics(log, 0.000, 0.000);
                 // friction test 3/12/262
                 Friction friction = new Friction(log, 0.3, 0.25, 0.0, 0.5);
-                // TODO: TUNE
-                // PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.01);
-                PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.0);
+                // tuned 3/12/26
+                PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.075);
 
                 m1 = new KrakenX60Motor(
                         log1, CAN_ID_1, NeutralMode100.COAST, MotorPhase.FORWARD,
@@ -181,9 +179,9 @@ public class Shooter extends SubsystemBase {
         return startRun(
                 this::reset,
                 () -> {
-                    m_servo1.setVelocityDirect(x);
-                    m_servo2.setVelocityDirect(x);
-                    m_servo3.setVelocityDirect(x);
+                    m_servo1.setVelocityProfiled(x);
+                    m_servo2.setVelocityProfiled(x);
+                    m_servo3.setVelocityProfiled(x);
                 })
                 .withName("set velocity");
     }

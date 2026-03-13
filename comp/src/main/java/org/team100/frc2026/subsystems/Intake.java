@@ -50,14 +50,12 @@ public class Intake extends SubsystemBase {
         switch (Identity.instance) {
             case TEST_BOARD_B0, COMP_BOT -> {
                 double supplyLimit = 50;
-                // TODO: TUNE
                 double statorLimit = 50;
                 SimpleDynamics ff = new SimpleDynamics(log, 0.0, 0.0);
-                // friction test 3/12/262
+                // friction test 3/12/26
                 Friction friction = new Friction(log, 0.5, 0.5, 0.0, 0.5);
-                // TODO: TUNE
-                // PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.01);
-                PIDConstants pid = PIDConstants.makeVelocityPID(log, 0);
+                // tuned 3/12/26
+                PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.08);
                 m1 = new KrakenX44Motor(
                         log1, CAN_ID_1, NeutralMode100.COAST, MotorPhase.FORWARD,
                         supplyLimit, statorLimit, ff, friction, pid);
@@ -110,8 +108,8 @@ public class Intake extends SubsystemBase {
         return startRun(
                 this::reset,
                 () -> {
-                    m_servo1.setVelocityDirect(x);
-                    m_servo2.setVelocityDirect(x);
+                    m_servo1.setVelocityProfiled(x);
+                    m_servo2.setVelocityProfiled(x);
                 })
                 .withName("set velocity");
     }

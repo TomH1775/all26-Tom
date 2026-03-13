@@ -50,7 +50,7 @@ public class ShooterHood extends SubsystemBase {
         m_tuningSetting = new Mutable(log, "for tuning", 0);
 
         // TODO: TUNE
-        TrapezoidProfileR1 profile = new TrapezoidProfileR1(log, 1, 2, 0.05);
+        TrapezoidProfileR1 profile = new TrapezoidProfileR1(log, 8, 16, 0.05);
         ReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.05, 0.05);
 
         final BareMotor motor;
@@ -58,13 +58,10 @@ public class ShooterHood extends SubsystemBase {
             case TEST_BOARD_B0, COMP_BOT -> {
                 double supplyLimit = 50;
                 double statorLimit = 50;
-                // SimpleDynamics ff = new SimpleDynamics(log, 0.004, 0.002);
                 SimpleDynamics ff = new SimpleDynamics(log, 0.00, 0.00);
-
                 Friction friction = new Friction(log, 0.350, 0.350, 0.0, 0.5);
-                // TODO: TUNE
-                // PIDConstants pid = PIDConstants.makePositionPID(log, 1);
-                PIDConstants pid = PIDConstants.makePositionPID(log, 0);
+                // tuned 3/12/26
+                PIDConstants pid = PIDConstants.makePositionPID(log, 1.0);
 
                 motor = new KrakenX44Motor(
                         log, CAN_ID, NeutralMode100.COAST, MotorPhase.REVERSE,
@@ -150,6 +147,15 @@ public class ShooterHood extends SubsystemBase {
                     m_servo.setVelocity(x);
                 })
                 .withName("set velocity");
+    }
+
+    public Command setPosition(double rad) {
+        return startRun(
+                this::reset,
+                () -> {
+                    m_servo.actuateWithProfile(rad, 0);
+                })
+                .withName("set position");
     }
 
     /////////////////////////////////////////

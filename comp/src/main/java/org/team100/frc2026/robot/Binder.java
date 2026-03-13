@@ -97,10 +97,10 @@ public class Binder {
         // accuracy.
         HolonomicProfile profile = HolonomicProfileFactory.get(
                 m_log, m_machinery.m_swerveKinodynamics, 1, 0.5, 1, 0.2);
-        onTrue(driver::b,
-                new DriveToPoseWithProfile(
-                        m_log, m_machinery.m_drive, m_machinery.m_holonomicController,
-                        profile, () -> new Pose2d(15.387, 3.501, new Rotation2d(0))));
+        // onTrue(driver::b,
+        // new DriveToPoseWithProfile(
+        // m_log, m_machinery.m_drive, m_machinery.m_holonomicController,
+        // profile, () -> new Pose2d(15.387, 3.501, new Rotation2d(0))));
 
         ////////////////////////////////////////////////////
         ///
@@ -201,24 +201,30 @@ public class Binder {
         // whileTrue(driver::a,
         // m_machinery.m_intakeExtend.setVelocity(1));
         // whileTrue(driver::a,
-        // m_machinery.m_intake.setVelocity(1));
+        // m_machinery.m_intakeExtend.setPosition(3));
         // whileTrue(driver::a,
-        // m_machinery.m_conveyor.setVelocity(1));
+        // m_machinery.m_intake.setVelocity(5));
         // whileTrue(driver::a,
-        // m_machinery.m_feeder.setVelocity(1));
+        // m_machinery.m_conveyor.setVelocity(2));
         // whileTrue(driver::a,
-        // m_machinery.m_shooter.setVelocity(1));
+        // m_machinery.m_feeder.setVelocity(2));
+        // whileTrue(driver::a,
+        // m_machinery.m_shooter.setVelocity(15));
         // whileTrue(driver::a,
         // m_machinery.m_shooterHood.setVelocity(1));
+        // whileTrue(driver::a,
+        // m_machinery.m_shooterHood.setPosition(0.4));
+        // whileTrue(driver::b,
+        // m_machinery.m_shooterHood.setPosition(0));
 
         // whileTrue(driver::a,
         // parallel(
         // m_machinery.m_conveyor.testConveyor(),
         // m_machinery.m_feeder.testFeed()));
-        whileTrue(driver::b,
-                parallel(
-                        m_machinery.m_conveyor.testConveyorBack(),
-                        m_machinery.m_feeder.testFeedBack()));
+        // whileTrue(driver::b,
+        // parallel(
+        // m_machinery.m_conveyor.testConveyorBack(),
+        // m_machinery.m_feeder.testFeedBack()));
         whileTrue(driver::x,
                 m_machinery.m_shooter.testRun());
 

@@ -39,7 +39,7 @@ public class Feeder extends SubsystemBase {
         LoggerFactory log1 = log.name("Feeder1");
         LoggerFactory log2 = log.name("Feeder2");
         m_Shooter = shooter;
-        VelocityProfileR1 profile = new AccelLimitedVelocityProfileR1(10);
+        VelocityProfileR1 profile = new AccelLimitedVelocityProfileR1(20);
         VelocityReferenceR1 ref = new VelocityProfileReferenceR1(
                 log, () -> profile, 1);
         final BareMotor m1;
@@ -47,15 +47,13 @@ public class Feeder extends SubsystemBase {
         switch (Identity.instance) {
             case TEST_BOARD_B0, COMP_BOT -> {
                 double supplyLimit = 120;
-                // TODO: TUNE
+                // tuned 3/12/26
                 double statorLimit = 60;
-                // SimpleDynamics dynamics = new SimpleDynamics(log, 0.004, 0.002);
                 SimpleDynamics dynamics = new SimpleDynamics(log, 0.00, 0.00);
-                // friction test 3/12/262
+                // friction test 3/12/26
                 Friction friction = new Friction(log, 0.9, 0.9, 0.0, 0.5);
-                // TODO: TUNE
-                // PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.01);
-                PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.0);
+                // tuned 3/12/26
+                PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.05);
 
                 m1 = new KrakenX44Motor(
                         log1, canID1, NeutralMode100.COAST, MotorPhase.FORWARD,
@@ -124,8 +122,8 @@ public class Feeder extends SubsystemBase {
         return startRun(
                 this::reset,
                 () -> {
-                    m_servo1.setVelocityDirect(x);
-                    m_servo2.setVelocityDirect(x);
+                    m_servo1.setVelocityProfiled(x);
+                    m_servo2.setVelocityProfiled(x);
                 })
                 .withName("set velocity");
     }

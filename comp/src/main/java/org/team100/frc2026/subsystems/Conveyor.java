@@ -47,15 +47,12 @@ public class Conveyor extends SubsystemBase {
         switch (Identity.instance) {
             case TEST_BOARD_B0, COMP_BOT -> {
                 double supplyLimit = 120;
-                // TODO: TUNE
                 double statorLimit = 60;
-                // SimpleDynamics dynamics = new SimpleDynamics(log, 0.004, 0.002);
                 SimpleDynamics dynamics = new SimpleDynamics(log, 0.00, 0.00);
                 // friction test 3/12/262
                 Friction friction = new Friction(log, 0.7, 0.7, 0.0, 0.5);
-                // TODO: TUNE
-                // PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.01);
-                PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.0);
+                // tune 3/12/26
+                PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.08);
 
                 m1 = new KrakenX44Motor(
                         log1, canID1, NeutralMode100.COAST, MotorPhase.REVERSE,
@@ -117,8 +114,8 @@ public class Conveyor extends SubsystemBase {
         return startRun(
                 this::reset,
                 () -> {
-                    m_servo1.setVelocityDirect(x);
-                    m_servo2.setVelocityDirect(x);
+                    m_servo1.setVelocityProfiled(x);
+                    m_servo2.setVelocityProfiled(x);
                 })
                 .withName("set velocity");
     }
