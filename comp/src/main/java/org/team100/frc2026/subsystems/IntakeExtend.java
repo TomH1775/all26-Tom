@@ -26,7 +26,7 @@ public class IntakeExtend extends SubsystemBase {
     private static final CanId CAN_ID = new CanId(16);
     private static final double gearRatio = 15.3;
     private static final double RETRACTED_POSITION = 0;
-    // TODO: TUNE
+    // seems fine, 3/12/26
     private static final double EXTENDED_POSITION = 3;
 
     private final AngularPositionServo m_servo;
@@ -65,6 +65,12 @@ public class IntakeExtend extends SubsystemBase {
         m_servo.periodic();
     }
 
+    /** Current position is out, or nearly so */
+    public boolean isOut() {
+        return MathUtil.isNear(
+                m_servo.getUnwrappedPositionRad(), EXTENDED_POSITION, 1);
+    }
+
     /**
      * Use a profile to go to the extended position.
      * Ends when complete.
@@ -75,6 +81,19 @@ public class IntakeExtend extends SubsystemBase {
                 () -> actuateWithProfile(EXTENDED_POSITION))
                 .until(m_servo::atGoal)
                 .withName("Intake Extend GoToExtendedPosition");
+    }
+
+    public Command goToExtendedPositionEndlessly() {
+        return startRun(
+                this::reset,
+                () -> actuateWithProfile(EXTENDED_POSITION))
+                .until(m_servo::atGoal)
+                .withName("Intake Extend GoToExtendedPosition");
+    }
+
+    /** Servo is at goal. False immediately after reset. */
+    public boolean atGoal() {
+        return m_servo.atGoal();
     }
 
     /**

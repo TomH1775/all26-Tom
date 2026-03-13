@@ -101,6 +101,7 @@ public class ProfileReferenceSE2 implements ReferenceSE2 {
         return next;
     }
 
+    /** Setpoint is near the goal. */
     @Override
     public boolean done() {
         m_log_done.log(() -> m_done);

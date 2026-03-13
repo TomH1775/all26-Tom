@@ -53,6 +53,7 @@ public class Math100 {
         return inRange(v, -maxMagnitude, maxMagnitude);
     }
 
+    /** Inclusive */
     public static boolean inRange(double v, double min, double max) {
         return v >= min && v <= max;
     }

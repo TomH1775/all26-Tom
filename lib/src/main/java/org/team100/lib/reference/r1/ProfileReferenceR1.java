@@ -74,6 +74,7 @@ public class ProfileReferenceR1 implements ReferenceR1 {
         return m_currentSetpoint;
     }
 
+    /** Setpoint is near the goal. */
     @Override
     public boolean profileDone() {
         // the only way to tell if an incremental profile is done
