@@ -89,6 +89,14 @@ public class Conveyor extends SubsystemBase {
                 .withName("Convey");
     }
 
+    /** Roll backwards to clear jams */
+    public Command back() {
+        return startRun(
+                this::reset,
+                () -> setVelocityProfiled(-5))
+                .withName("Conveyor back");
+    }
+
     public Command testConveyor() {
         return run(this::dutyCycleAll)
                 .withName("Conveyor Test");

@@ -82,6 +82,12 @@ public class ShooterHood extends SubsystemBase {
         m_servo.periodic();
     }
 
+    /** Fixed angle for around 2.5m */
+    public Command failsafe() {
+        return setPosition(0.1)
+                .withName("Hood failsafe");
+    }
+
     /** Use a profile to set the position according to the angle supplier. */
     public Command autoPosition() {
         return startRun(

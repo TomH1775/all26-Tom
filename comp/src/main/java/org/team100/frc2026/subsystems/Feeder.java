@@ -97,6 +97,13 @@ public class Feeder extends SubsystemBase {
                 .withName("Feed Normally");
     }
 
+    public Command back() {
+        return startRun(
+                this::reset,
+                this::servoBack)
+                .withName("Feed back");
+    }
+
     public Command testFeed() {
         return run(this::dutyCycleAll)
                 .withName("Test Feed");
@@ -151,6 +158,11 @@ public class Feeder extends SubsystemBase {
     private void feedNormally() {
         m_servo1.setVelocityProfiled(NORMAL_SPEED);
         m_servo2.setVelocityProfiled(NORMAL_SPEED);
+    }
+
+    private void servoBack() {
+        m_servo1.setVelocityProfiled(-5);
+        m_servo2.setVelocityProfiled(-5);
     }
 
     private void stopFeeding() {

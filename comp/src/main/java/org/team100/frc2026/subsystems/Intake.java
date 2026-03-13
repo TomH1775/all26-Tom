@@ -89,7 +89,7 @@ public class Intake extends SubsystemBase {
         return startRun(
                 this::reset,
                 () -> setVelocity(-5))
-                .withName("BACK");
+                .withName("Intake back");
     }
 
     /** Stop forever */

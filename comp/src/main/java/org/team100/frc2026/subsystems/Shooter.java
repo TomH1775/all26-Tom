@@ -32,7 +32,7 @@ public class Shooter extends SubsystemBase {
 
     private static final double GEAR_RATIO = 1;
     // barrel 1 has a different gear ratio
-    private static final double GEAR_RATIO_1 = 32.0/34.0;
+    private static final double GEAR_RATIO_1 = 32.0 / 34.0;
     private static final double WHEEL_DIAMETER_M = 0.075;
 
     /** Speed used in selftest. */
@@ -154,6 +154,13 @@ public class Shooter extends SubsystemBase {
                 .withName("Motor 3 Spin");
     }
 
+    /** Fixed speed for about 2.5m */
+    public Command failsafe() {
+        return setVelocity(14)
+                .withName("Shooter failsafe");
+    }
+
+    /** Run the drums at the supplied speed */
     public Command auto() {
         return startRun(
                 this::reset,
@@ -230,6 +237,7 @@ public class Shooter extends SubsystemBase {
         m_servo3.setDutyCycle(1);
     }
 
+    /** Run the drums at the speed supplied */
     private void autoWork() {
         m_speed.get().ifPresentOrElse(
                 this::setVelocityProfiled, this::stopMotor);
