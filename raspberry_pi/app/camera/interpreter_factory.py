@@ -47,6 +47,7 @@ class InterpreterFactory:
                 | Identity.RIGHTAMP
                 | Identity.SHOOTER
                 | Identity.CLIMB_LEFT
+                | Identity.CLIMB_RIGHT
                 | Identity.SWERVE_RIGHT
                 | Identity.SWERVE_LEFT
             ):

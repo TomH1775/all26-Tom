@@ -40,11 +40,6 @@ public enum Camera {
 
     C("10000000a7c673d9",
             new Transform3d(new Translation3d(0, 0, 1), new Rotation3d(0, -Math.toRadians(10), 0))),
-    /**
-     * Delta shooter
-     */
-    SHOOTER("4230a96261f3ab90",
-            new Transform3d()),
 
     /**
      * Delta amp-placer
@@ -94,9 +89,21 @@ public enum Camera {
                     new Rotation3d(0.07, 0.48, 0.20).unaryMinus().plus(new Rotation3d(0, 0, Math.PI)))),
 
     /**
-     * Coral reef right
+     * ALPHA Climber Camera Left
      */
     CLIMB_LEFT("82c4c3fe4f941e96",
+            new Transform3d()),
+            
+    /**
+     * ALPHA Climber Camera Left
+     */
+    CLIMB_RIGHT("364f07fb090a3bf7",
+            new Transform3d()),
+
+    /**
+     * ALPHA Shooter Camera
+     */
+    SHOOTER("e47055a1bcbcead0",
             new Transform3d()),
 
     /**

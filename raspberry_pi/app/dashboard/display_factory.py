@@ -13,6 +13,7 @@ class DisplayFactory:
             case (
                 Identity.CAMERA_FRONT
                 | Identity.CLIMB_LEFT
+                | Identity.CLIMB_RIGHT
                 | Identity.DEV
                 | Identity.DEV2
                 | Identity.DIST_TEST
