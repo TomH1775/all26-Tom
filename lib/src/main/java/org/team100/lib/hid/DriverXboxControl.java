@@ -83,7 +83,7 @@ public class DriverXboxControl {
         return m_controller.getLeftTriggerAxis() > 0.9;
     }
 
-    /** Right trigger (axis 3) is all the way in */
+    /** Right trigger (axis 3) is all the way in. */
     public boolean rightTrigger() {
         return m_controller.getRightTriggerAxis() > 0.9;
     }

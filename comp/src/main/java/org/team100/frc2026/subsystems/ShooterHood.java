@@ -49,7 +49,6 @@ public class ShooterHood extends SubsystemBase {
         m_angle = angle;
         m_tuningSetting = new Mutable(log, "for tuning", 0);
 
-        // TODO: TUNE
         TrapezoidProfileR1 profile = new TrapezoidProfileR1(log, 8, 16, 0.05);
         ReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.05, 0.05);
 

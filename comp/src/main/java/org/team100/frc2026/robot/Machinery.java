@@ -6,8 +6,6 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 import org.team100.frc2026.field.FieldConstants2026;
-import org.team100.frc2026.subsystems.Climber;
-import org.team100.frc2026.subsystems.ClimberExtension;
 import org.team100.frc2026.subsystems.Conveyor;
 import org.team100.frc2026.subsystems.Feeder;
 import org.team100.frc2026.subsystems.Intake;
@@ -92,8 +90,6 @@ public class Machinery {
     public final IntakeExtend m_intakeExtend;
     public final Conveyor m_conveyor;
     public final ShooterHood m_shooterHood;
-    public final ClimberExtension m_ClimberExtension;
-    public final Climber m_Climber;
     public final ControllerSE2 m_holonomicController;
     public final Feeder m_feeder;
 
@@ -197,14 +193,10 @@ public class Machinery {
 
         m_intake = new Intake(logger);
         m_intakeExtend = new IntakeExtend(logger);
-
         m_conveyor = new Conveyor(logger);
         m_shooter = new Shooter(logger, m_cachedSolution::speed);
         m_feeder = new Feeder(logger, m_shooter);
         m_shooterHood = new ShooterHood(logger, m_cachedSolution::elevation);
-
-        m_ClimberExtension = new ClimberExtension(logger);
-        m_Climber = new Climber(logger);
 
         ////////////////////////////////////////////////////////////
         ///

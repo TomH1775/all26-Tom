@@ -16,8 +16,6 @@ import org.team100.lib.controller.r1.FullStateFeedback;
 import org.team100.lib.hid.DriverXboxControl;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
-import org.team100.lib.profile.se2.HolonomicProfile;
-import org.team100.lib.profile.se2.HolonomicProfileFactory;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveFieldRelative;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveMovingTargetLock;
 
@@ -68,10 +66,6 @@ public class TestBinder {
                 m_machinery.m_feeder.stop());
         m_machinery.m_shooterHood.setDefaultCommand(
                 m_machinery.m_shooterHood.stop());
-        m_machinery.m_Climber.setDefaultCommand(
-                m_machinery.m_Climber.stop());
-        m_machinery.m_ClimberExtension.setDefaultCommand(
-                m_machinery.m_ClimberExtension.stop());
 
         ////////////////////////////////////////////////////
         ///
@@ -89,8 +83,8 @@ public class TestBinder {
         ///
         // This is for testing pose estimation accuracy and drivetrain positioning
         // accuracy.
-        HolonomicProfile profile = HolonomicProfileFactory.get(
-                m_log, m_machinery.m_swerveKinodynamics, 1, 0.5, 1, 0.2);
+        // HolonomicProfile profile = HolonomicProfileFactory.get(
+        // m_log, m_machinery.m_swerveKinodynamics, 1, 0.5, 1, 0.2);
         // onTrue(driver::b,
         // new DriveToPoseWithProfile(
         // m_log, m_machinery.m_drive, m_machinery.m_holonomicController,
