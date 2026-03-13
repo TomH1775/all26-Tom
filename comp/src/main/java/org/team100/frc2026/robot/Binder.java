@@ -78,7 +78,7 @@ public class Binder {
         ///
         /// Back: forget the current pose, listen to camera input.
         /// Start: nudge the rotation towards zero.
-        
+
         onTrue(driver::back, m_machinery.disorient());
         onTrue(driver::start, m_machinery.zeroRotation());
 
@@ -88,7 +88,7 @@ public class Binder {
         ///
         /// Right trigger: extend, then hold extended and intake
         /// Right bumper: retract
-        /// Both: roll backwards to clear jams
+        /// Both: roll backwards to clear jams (only when out)
 
         Command retract = m_machinery.m_intakeExtend.goToRetractedPosition();
         whileTrue(() -> driver.rightBumper() && !driver.rightTrigger(),
@@ -104,7 +104,7 @@ public class Binder {
                                 intake)));
 
         Command back = m_machinery.m_intake.back();
-        whileTrue(() -> driver.rightTrigger() && driver.rightBumper(),
+        whileTrue(() -> driver.rightTrigger() && driver.rightBumper() && m_machinery.m_intakeExtend.isOut(),
                 back);
 
         ////////////////////////////////////////////////////

@@ -65,6 +65,12 @@ public class IntakeExtend extends SubsystemBase {
         m_servo.periodic();
     }
 
+    /** Current position is out, or nearly so */
+    public boolean isOut() {
+        return MathUtil.isNear(
+                m_servo.getUnwrappedPositionRad(), EXTENDED_POSITION, 1);
+    }
+
     /**
      * Use a profile to go to the extended position.
      * Ends when complete.
