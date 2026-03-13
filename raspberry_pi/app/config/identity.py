@@ -46,19 +46,21 @@ class Identity(Enum):
     DEV2 = "10000000a7a892c0"
     RIGHTAMP = "10000000caeaae82"
     LEFTAMP = "100000004e0a1fb9"
-    GAME_PIECE = "1000000013c9c96c"
     DIST_TEST = "cf206cd348d20bdd"
-    SHOOTER = "4230a96261f3ab90"
 
     # Comp bot 2025
     FUNNEL = "1e5acbaa5a7f9d10"  # 30
 
-    DEV = "364f07fb090a3bf7"  # 31
-    SWERVE_LEFT = "8132c256f63bbb4e"  # 33
-    SWERVE_RIGHT = "47403d5eafe002a9"  # 34
+    # Comp bot 2026
+    CLIMB_LEFT = "82c4c3fe4f941e96"  # 34
+    CLIMB_RIGHT = "364f07fb090a3bf7"  #31 
+    SHOOTER = "e47055a1bcbcead0" #33
+    GAME_PIECE = "" #
 
-    # for testing
-    CLIMB_LEFT = "82c4c3fe4f941e96"  # rpi4 used for development
+    SWERVE_RIGHT = "47403d5eafe002a9"  # 34
+    SWERVE_LEFT = "8132c256feeee63bbb4e"  # 33
+
+    DEV = "test"
     FLIPPED = "flipme"  # example for per-identity config
     JOELS_TEST = "9b297e919a0634e6"
     UNKNOWN = "unknown"

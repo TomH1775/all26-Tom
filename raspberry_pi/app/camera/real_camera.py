@@ -153,8 +153,7 @@ class RealCamera(Camera):
         if identity in (
             Identity.FLIPPED,
             Identity.FUNNEL,
-            Identity.SWERVE_LEFT,
-            Identity.SWERVE_RIGHT,
+            Identity.CLIMB_RIGHT,
         ):
             camera_config["transform"] = libcamera.Transform(  # type: ignore
                 rotation=0, hflip=True, vflip=True, transpose=False
