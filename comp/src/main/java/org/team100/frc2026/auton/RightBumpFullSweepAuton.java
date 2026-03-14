@@ -74,7 +74,7 @@ public class RightBumpFullSweepAuton implements AnnotatedCommand {
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(startingPose,
                         new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(new Pose2d(7.75, 1, Rotation2d.kCCW_90deg),
+                new WaypointSE2(new Pose2d(7.75, 1, Rotation2d.k180deg),
                         new DirectionSE2(1, 0, 0), 1));
         return planner.restToRest(waypoints);
     }
@@ -83,7 +83,7 @@ public class RightBumpFullSweepAuton implements AnnotatedCommand {
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(startingPose,
                         new DirectionSE2(0, 1, 0), 1),
-                new WaypointSE2(new Pose2d(7.75, 7, Rotation2d.kCCW_90deg),
+                new WaypointSE2(new Pose2d(7.75, 7, Rotation2d.k180deg),
                         new DirectionSE2(0, 1, 0), 1));
         return planner.restToRest(waypoints);
     }
@@ -130,7 +130,8 @@ public class RightBumpFullSweepAuton implements AnnotatedCommand {
                 waitSeconds(1),
 
                 ScoreSetUp.until(ScoreSetUp::isDone),
-                machinery.m_shooter.shooterFullspeed().withTimeout(1),
+                machinery.m_shooterHood.autoPosition().withTimeout(0.5),
+                machinery.m_shooter.auto().withTimeout(1),
                 waitSeconds(2),
                 machinery.m_shooter.stop().withTimeout(1));
             }

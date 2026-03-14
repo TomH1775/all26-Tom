@@ -25,33 +25,33 @@ public class AllAutons {
         ControllerSE2 controller = machinery.m_holonomicController;
         m_autonChooser = new AutonChooser();
         LoggerFactory log = Logging.instance().rootLogger.name("Auton");
-        m_autonChooser.add(new DoNothing());
-        m_autonChooser.add(new RightTrenchLeave(
-                log,
-                machinery.m_swerveKinodynamics,
-                controller,
-                machinery));
-        m_autonChooser.add(new LeftSequenceExample(
-                log,
-                machinery.m_swerveKinodynamics,
-                controller,
-                machinery));
-        m_autonChooser.add(new AutonTest(
-                log,
-                machinery.m_swerveKinodynamics,
-                controller,
-                machinery));
-        m_autonChooser.add(new AutonTest2(
-                log,
-                machinery.m_swerveKinodynamics,
-                controller,
-                machinery));
+      //  m_autonChooser.add(new DoNothing());
+      //  m_autonChooser.add(new RightTrenchLeave(
+      //          log,
+      //          machinery.m_swerveKinodynamics,
+      //          controller,
+      //          machinery));
+      //  m_autonChooser.add(new LeftSequenceExample(
+      //          log,
+      //          machinery.m_swerveKinodynamics,
+      //          controller,
+      //          machinery));
+     //   m_autonChooser.add(new AutonTest(
+     //           log,
+     //           machinery.m_swerveKinodynamics,
+     //           controller,
+     //           machinery));
+     //   m_autonChooser.add(new AutonTest2(
+     //           log,
+     //           machinery.m_swerveKinodynamics,
+     //           controller,
+     //           machinery));
 
-        m_autonChooser.add(new Auton2(
-                log,
-                machinery.m_swerveKinodynamics,
-                controller,
-                machinery));
+      //  m_autonChooser.add(new Auton2(
+      //          log,
+      //          machinery.m_swerveKinodynamics,
+      //          controller,
+      //          machinery));
          m_autonChooser.add(new LeftBumpFullSweepAuton(
                 log,
                 machinery.m_swerveKinodynamics,
