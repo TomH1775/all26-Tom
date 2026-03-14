@@ -189,6 +189,7 @@ public class ShooterHood extends SubsystemBase {
     }
 
     /** Do not use a profile. */
+    @SuppressWarnings("unused")
     private void actuateDirect(double value) {
         m_servo.actuateDirect(value, 0);
     }

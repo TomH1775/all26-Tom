@@ -17,6 +17,7 @@ import org.team100.lib.reference.r1.VelocityReferenceR1;
 import org.team100.lib.servo.OutboardLinearVelocityServo;
 import org.team100.lib.util.CanId;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -79,7 +80,8 @@ public class Feeder extends SubsystemBase {
         m_servo2.periodic();
     }
 
-    public Command fullspeed() {
+    /** Feed 100% when shooter is at speed, 0% otherwise */
+    public Command bangbang() {
         return startRun(
                 this::reset,
                 this::feedWhenReady)
@@ -93,24 +95,35 @@ public class Feeder extends SubsystemBase {
     public Command normal() {
         return startRun(
                 this::reset,
-                this::feedNormally)
+                () -> setVelocityProfiled(NORMAL_SPEED))
                 .withName("Feed Normally");
+    }
+
+    /**
+     * Feed rate slowdown is proportional to shooter speed error outside the
+     * tolerance.
+     */
+    public Command proportional() {
+        return startRun(
+                this::reset,
+                () -> shootProportional())
+                .withName("Feed Proportional");
     }
 
     public Command back() {
         return startRun(
                 this::reset,
-                this::servoBack)
+                () -> setVelocityProfiled(-5))
                 .withName("Feed back");
     }
 
     public Command testFeed() {
-        return run(this::dutyCycleAll)
+        return run(() -> setDutyCycle(1))
                 .withName("Test Feed");
     }
 
     public Command testFeedBack() {
-        return run(this::dutyCycleAllBack)
+        return run(() -> setDutyCycle(-1))
                 .withName("Test Feed Back");
     }
 
@@ -147,36 +160,34 @@ public class Feeder extends SubsystemBase {
         m_servo2.stop();
     }
 
+    private void shootProportional() {
+        // Error (m/s), positive = too slow.
+        // Note this is quite noisy
+        double meanError = m_Shooter.meanError();
+        // Only care about slowness (positive)
+        double shooterSlowness = Math.max(0, meanError);
+        // if we're 1 m/s slow, feed at 100%
+        // if we're 2 m/s slow, feed at 0%
+        double feedFraction = MathUtil.clamp(2.0 - shooterSlowness, 0, 1);
+        double feedSpeed = NORMAL_SPEED * feedFraction;
+        setVelocityProfiled(feedSpeed);
+    }
+
     private void feedWhenReady() {
         if (m_Shooter.atSpeed()) {
-            feedNormally();
+            setVelocityProfiled(NORMAL_SPEED);
         } else {
-            stopFeeding();
+            setVelocityProfiled(0);
         }
     }
 
-    private void feedNormally() {
-        m_servo1.setVelocityProfiled(NORMAL_SPEED);
-        m_servo2.setVelocityProfiled(NORMAL_SPEED);
+    private void setVelocityProfiled(double x) {
+        m_servo1.setVelocityProfiled(x);
+        m_servo2.setVelocityProfiled(x);
     }
 
-    private void servoBack() {
-        m_servo1.setVelocityProfiled(-5);
-        m_servo2.setVelocityProfiled(-5);
-    }
-
-    private void stopFeeding() {
-        m_servo1.setVelocityProfiled(0);
-        m_servo2.setVelocityProfiled(0);
-    }
-
-    private void dutyCycleAll() {
-        m_servo1.setDutyCycle(1);
-        m_servo2.setDutyCycle(1);
-    }
-
-    private void dutyCycleAllBack() {
-        m_servo1.setDutyCycle(-1);
-        m_servo2.setDutyCycle(-1);
+    private void setDutyCycle(double x) {
+        m_servo1.setDutyCycle(x);
+        m_servo2.setDutyCycle(x);
     }
 }

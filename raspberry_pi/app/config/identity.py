@@ -39,9 +39,9 @@ class Identity(Enum):
     #
     # TODO: clean up the entries below
     #
-    
+
     #
-    # Comp bot 2024 
+    # Comp bot 2024
     #
     DEV2 = "10000000a7a892c0"
     RIGHTAMP = "10000000caeaae82"
@@ -53,9 +53,9 @@ class Identity(Enum):
 
     # Comp bot 2026
     CLIMB_LEFT = "82c4c3fe4f941e96"  # 34
-    CLIMB_RIGHT = "364f07fb090a3bf7"  #31 
-    SHOOTER = "e47055a1bcbcead0" #33
-    GAME_PIECE = "" #
+    CLIMB_RIGHT = "364f07fb090a3bf7"  # 31
+    SHOOTER = "e47055a1bcbcead0"  # 33
+    GAME_PIECE = "FILL THIS IN"  #
 
     SWERVE_RIGHT = "47403d5eafe002a9"  # 34
     SWERVE_LEFT = "8132c256feeee63bbb4e"  # 33

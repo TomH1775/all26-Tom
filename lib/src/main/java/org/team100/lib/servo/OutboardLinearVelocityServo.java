@@ -36,6 +36,7 @@ public class OutboardLinearVelocityServo implements LinearVelocityServo {
     private double m_prevT = 0;
 
     private Double m_goal;
+    /** Setpoints m/s and m/s^2 */
     private VelocityControlR1 m_nextSetpoint;
 
     public OutboardLinearVelocityServo(
@@ -145,6 +146,18 @@ public class OutboardLinearVelocityServo implements LinearVelocityServo {
         return m_mechanism.getVelocityM_S();
     }
 
+    /**
+     * Velocity error (m/s).
+     * Positive error = too slow, negative error = too fast.
+     */
+    public double error() {
+        if (m_nextSetpoint == null) {
+            // TODO: no setpoint should yield null
+            return 0;
+        }
+        return m_nextSetpoint.v() - m_mechanism.getVelocityM_S();
+    }
+
     @Override
     public boolean atGoal() {
         return atSetpoint() && profileDone();
@@ -170,7 +183,6 @@ public class OutboardLinearVelocityServo implements LinearVelocityServo {
 
     @Override
     public boolean atSetpoint() {
-        // Note x field for velocity.
         if (m_nextSetpoint == null)
             return false;
         double vErr = m_nextSetpoint.v() - m_mechanism.getVelocityM_S();
