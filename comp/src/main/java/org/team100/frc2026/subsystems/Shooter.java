@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
+    private static final boolean DEBUG = false;
     private static final CanId CAN_ID_1 = new CanId(4);
     private static final CanId CAN_ID_2 = new CanId(5);
     private static final CanId CAN_ID_3 = new CanId(14);
@@ -239,8 +240,15 @@ public class Shooter extends SubsystemBase {
 
     /** Run the drums at the speed supplied */
     private void autoWork() {
-        m_speed.get().ifPresentOrElse(
-                this::setVelocityProfiled, this::stopMotor);
+        OptionalDouble speed = m_speed.get();
+        if (speed.isPresent()) {
+            if (DEBUG)
+                System.out.printf("speed %f\n", speed.getAsDouble());
+            setVelocityProfiled(speed.getAsDouble());
+        } else {
+            stopMotor();
+        }
+
     }
 
 }

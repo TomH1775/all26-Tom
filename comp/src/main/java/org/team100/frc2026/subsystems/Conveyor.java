@@ -27,7 +27,7 @@ public class Conveyor extends SubsystemBase {
     private static final double GEAR_RATIO = 3;
     private static final double WHEEL_DIAMETER_M = 0.035;
     // TODO: TUNE
-    private static final double NORMAL_SPEED = 1.0;
+    private static final double NORMAL_SPEED = 5.0;
 
     private final OutboardLinearVelocityServo m_servo1;
     private final OutboardLinearVelocityServo m_servo2;
@@ -47,7 +47,7 @@ public class Conveyor extends SubsystemBase {
         switch (Identity.instance) {
             case TEST_BOARD_B0, COMP_BOT -> {
                 double supplyLimit = 120;
-                double statorLimit = 60;
+                double statorLimit = 80;
                 SimpleDynamics dynamics = new SimpleDynamics(log, 0.00, 0.00);
                 // friction test 3/12/262
                 Friction friction = new Friction(log, 0.7, 0.7, 0.0, 0.5);

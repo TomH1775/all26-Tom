@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Translation3d;
  * https://cad.onshape.com/documents/8a691e28680da30504859fce/w/c6aa636fb23edb3f1e272fb1/e/c043973ea96914e2eaa1e8fc
  */
 public class FieldConstants2026 {
+    private static final boolean DEBUG = false;
     /** Field width in meters */
     private static final double FIELD_WIDTH = 8.069;
     private static final double FIELD_LENGTH = 16.541;
@@ -92,10 +93,8 @@ public class FieldConstants2026 {
         if (isInAllianceZone(robotPosition)) {
             return Optional.of(FieldConstants2026.HUB.toTranslation2d());
         }
-        if (isInNeutralZone(robotPosition)) {
-            return Optional.of(new Translation2d(0, robotPosition.getY()));
-        }
-        return Optional.empty();
+        // always lob from everywhere else
+        return Optional.of(new Translation2d(2, robotPosition.getY()));
     }
 
     public static boolean isInAllianceZone(Translation2d robotPosition) {
@@ -113,8 +112,11 @@ public class FieldConstants2026 {
      */
     public static OptionalDouble RANGE(Translation2d robotPosition) {
         Optional<Translation2d> o = TARGET(robotPosition);
-        if (o.isEmpty())
+        if (o.isEmpty()) {
+            if (DEBUG)
+                System.out.println("no target in range");
             return OptionalDouble.empty();
+        }
         Translation2d targetPosition = o.get();
         return OptionalDouble.of(robotPosition.getDistance(targetPosition));
     }

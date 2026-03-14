@@ -59,10 +59,7 @@ public class Targeter {
         if (FieldConstants2026.isInAllianceZone(p)) {
             return m_score.forRange(rangeM);
         }
-        if (FieldConstants2026.isInNeutralZone(p)) {
-            return m_lob.forRange(rangeM);
-        }
-        return Optional.empty();
+        return m_lob.forRange(rangeM);
     }
 
 }

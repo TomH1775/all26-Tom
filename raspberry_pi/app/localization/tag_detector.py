@@ -62,15 +62,15 @@ class TagDetector(Interpreter):
         # 1.0: 13 FPS
         # 2.0: 40 FPS
         # 4.0: 60 FPS
-        config.quadDecimate = 4.0
+        # config.quadDecimate = 4.0
+        config.quadDecimate = 2.0
         config.refineEdges = True
 
         # stddev of the blur kernel in pixels: seems to help with small tags
         config.quadSigma = 0.0
 
         # Write calibration images to local storage.  Very slow.
-        if self._network.calibrate():
-            config.debug = True
+        config.debug = True
 
         self._at_detector.setConfig(config)
         qtp = self._at_detector.QuadThresholdParameters()

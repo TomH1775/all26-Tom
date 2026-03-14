@@ -7,10 +7,6 @@ import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 import static org.team100.frc2026.util.TriggerUtil.onTrue;
 import static org.team100.frc2026.util.TriggerUtil.whileTrue;
 
-import org.team100.frc2026.auton.CenterFullSweepAuton;
-import org.team100.frc2026.auton.CenterHalfSweepAuton;
-import org.team100.frc2026.auton.RightBumpFullSweepAuton;
-import org.team100.frc2026.auton.RightBumpHalfSweepAuton;
 import org.team100.lib.controller.r1.AzimuthController;
 import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.controller.r1.FullStateFeedback;
@@ -19,8 +15,6 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveFieldRelative;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveMovingTargetLock;
-
-import edu.wpi.first.wpilibj.RobotState;
 
 /**
  * Binds buttons to commands. Also creates default commands.
@@ -178,31 +172,31 @@ public class Binder {
         ///
         /// Auton test mode is with POV down.
 
-        whileTrue(() -> driver.povDown() && driver.a(),
-                new CenterFullSweepAuton(
-                        m_log,
-                        m_machinery.m_swerveKinodynamics,
-                        m_machinery.m_holonomicController,
-                        m_machinery).command());
+        // whileTrue(() -> driver.povDown() && driver.a(),
+        // new CenterFullSweepAuton(
+        // m_log,
+        // m_machinery.m_swerveKinodynamics,
+        // m_machinery.m_holonomicController,
+        // m_machinery).command());
 
-        whileTrue(() -> driver.povDown() && driver.b(),
-                new CenterHalfSweepAuton(
-                        m_log,
-                        m_machinery.m_swerveKinodynamics,
-                        m_machinery.m_holonomicController,
-                        m_machinery).command());
-        whileTrue(() -> driver.povDown() && driver.x(),
-                new RightBumpFullSweepAuton(
-                        m_log,
-                        m_machinery.m_swerveKinodynamics,
-                        m_machinery.m_holonomicController,
-                        m_machinery).command());
-        whileTrue(() -> driver.povDown() && driver.y(),
-                new RightBumpHalfSweepAuton(
-                        m_log,
-                        m_machinery.m_swerveKinodynamics,
-                        m_machinery.m_holonomicController,
-                        m_machinery).command());
+        // whileTrue(() -> driver.povDown() && driver.b(),
+        // new CenterHalfSweepAuton(
+        // m_log,
+        // m_machinery.m_swerveKinodynamics,
+        // m_machinery.m_holonomicController,
+        // m_machinery).command());
+        // whileTrue(() -> driver.povDown() && driver.x(),
+        // new RightBumpFullSweepAuton(
+        // m_log,
+        // m_machinery.m_swerveKinodynamics,
+        // m_machinery.m_holonomicController,
+        // m_machinery).command());
+        // whileTrue(() -> driver.povDown() && driver.y(),
+        // new RightBumpHalfSweepAuton(
+        // m_log,
+        // m_machinery.m_swerveKinodynamics,
+        // m_machinery.m_holonomicController,
+        // m_machinery).command());
 
         ////////////////////////////////////////////////////
         ///
@@ -210,10 +204,10 @@ public class Binder {
         ///
         /// In test mode, "a" and "b" together runs prematch test.
 
-        Tester tester = new Tester(m_machinery);
-        onTrue(() -> RobotState.isTest(), tester.prompt());
-        whileTrue(() -> (RobotState.isTest() && driver.a() && driver.b()),
-                tester.prematch());
+        // Tester tester = new Tester(m_machinery);
+        // onTrue(() -> RobotState.isTest(), tester.prompt());
+        // whileTrue(() -> (RobotState.isTest() && driver.a() && driver.b()),
+        // tester.prematch());
     }
 
     /** Keeps tests from conflicting. */

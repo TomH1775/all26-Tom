@@ -47,7 +47,11 @@ class Distortion:
             #
             case Identity.CLIMB_LEFT:
                 self._dist = np.array(
-                    [-0.3057497651, 0.1211648432, 0.0003595528879, -0.0002945429981]
+                    [-0.2944709861, 0.09625348382, 0.0002112286215, -0.0001536884092]
+                )
+            case Identity.CLIMB_RIGHT:
+                self._dist = np.array(
+                    [-0.2963480251, 0.1022134995, -2.639191492e-05, -0.0002157464781]
                 )
             case Identity.SHOOTER:
                 self._dist = np.array(
