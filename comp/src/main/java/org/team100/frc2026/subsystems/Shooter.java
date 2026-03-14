@@ -178,18 +178,27 @@ public class Shooter extends SubsystemBase {
                 .withName("Stop Shooter Once");
     }
 
+    /**
+     * Velocity error (m/s).
+     * Positive error = too slow, negative error = too fast.
+     * Note this is quite noisy.
+     */
+    public double meanError() {
+        return (m_servo1.error() + m_servo2.error() + m_servo3.error()) / 3;
+    }
+
     public Boolean atSpeed() {
         return (m_servo1.atGoal() && m_servo2.atGoal() && m_servo3.atGoal());
     }
 
     /** For testing friction only */
-    public Command setVelocity(double x) {
+    public Command setVelocity(double meters_sec) {
         return startRun(
                 this::reset,
                 () -> {
-                    m_servo1.setVelocityProfiled(x);
-                    m_servo2.setVelocityProfiled(x);
-                    m_servo3.setVelocityProfiled(x);
+                    m_servo1.setVelocityProfiled(meters_sec);
+                    m_servo2.setVelocityProfiled(meters_sec);
+                    m_servo3.setVelocityProfiled(meters_sec);
                 })
                 .withName("set velocity");
     }
@@ -208,6 +217,7 @@ public class Shooter extends SubsystemBase {
         m_servo3.stop();
     }
 
+    @SuppressWarnings("unused")
     private void setVelocityDirect(double setpointM_S) {
         m_servo1.setVelocityDirect(setpointM_S);
         m_servo2.setVelocityDirect(setpointM_S);

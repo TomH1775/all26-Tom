@@ -144,15 +144,32 @@ public class Binder {
         /// "A" failsafe, run everything at a speed for 2.5m
         /// "B" run the conveyor and feeder backwards
 
+        // PROPORTIONAL FEEDING
         whileTrue(driver::leftTrigger,
                 parallel(
                         m_machinery.m_shooterHood.autoPosition(),
                         m_machinery.m_shooter.auto(),
                         m_machinery.m_conveyor.convey(),
-                        repeatingSequence(
-                                waitUntil(m_machinery.m_shooter::atSpeed),
-                                m_machinery.m_feeder.normal()
-                                        .onlyWhile(m_machinery.m_shooter::atSpeed))));
+                        m_machinery.m_feeder.proportional()));
+
+        // BANG BANG FEEDING
+        // whileTrue(driver::leftTrigger,
+        // parallel(
+        // m_machinery.m_shooterHood.autoPosition(),
+        // m_machinery.m_shooter.auto(),
+        // m_machinery.m_conveyor.convey(),
+        // m_machinery.m_feeder.bangbang()));
+
+        // ORIGINAL: stops after slowdown, does not recover
+        // whileTrue(driver::leftTrigger,
+        // parallel(
+        // m_machinery.m_shooterHood.autoPosition(),
+        // m_machinery.m_shooter.auto(),
+        // m_machinery.m_conveyor.convey(),
+        // repeatingSequence(
+        // waitUntil(m_machinery.m_shooter::atSpeed),
+        // m_machinery.m_feeder.normal()
+        // .onlyWhile(m_machinery.m_shooter::atSpeed))));
 
         whileTrue(driver::a,
                 parallel(
