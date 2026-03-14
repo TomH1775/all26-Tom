@@ -70,7 +70,7 @@ class TagDetector(Interpreter):
         config.quadSigma = 0.0
 
         # Write calibration images to local storage.  Very slow.
-        config.debug = True
+        # config.debug = True
 
         self._at_detector.setConfig(config)
         qtp = self._at_detector.QuadThresholdParameters()
