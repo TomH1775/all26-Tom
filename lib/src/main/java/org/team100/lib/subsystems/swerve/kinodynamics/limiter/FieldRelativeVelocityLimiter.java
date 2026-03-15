@@ -18,7 +18,7 @@ public class FieldRelativeVelocityLimiter {
             LoggerFactory parent,
             BatterySagSpeedLimit limit) {
         LoggerFactory log = parent.type(this);
-        m_log_scale = log.doubleLogger(Level.TRACE, "scale");
+        m_log_scale = log.doubleLogger(Level.DEBUG, "scale");
         m_limits = limit;
     }
 

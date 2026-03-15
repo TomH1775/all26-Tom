@@ -30,7 +30,7 @@ public class BatterySagSpeedLimit {
             SwerveKinodynamics dynamics,
             DoubleSupplier voltage) {
         LoggerFactory log = parent.type(this);
-        m_log_scale = log.doubleLogger(Level.TRACE, "scale");
+        m_log_scale = log.doubleLogger(Level.DEBUG, "scale");
         m_dynamics = dynamics;
         // there's a supplier here so that the tests don't need to use the
         // RobotController HAL, which sometimes mysteriously fails.
