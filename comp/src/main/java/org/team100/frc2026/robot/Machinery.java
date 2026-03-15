@@ -65,9 +65,9 @@ public class Machinery {
     // essentially unlimited, so you'll need to run some other kind of limiter (e.g.
     // acceleration) to keep from browning out.
     // 3/14/26 lowered from 90 to 80
-    private static final double DRIVE_SUPPLY_LIMIT = 80;
+    private static final double DRIVE_SUPPLY_LIMIT = 60;
     // 3/14/26 lowered from 110 to 80
-    private static final double DRIVE_STATOR_LIMIT = 80;
+    private static final double DRIVE_STATOR_LIMIT = 90;
 
     private static final LoggerFactory logger = Logging.instance().rootLogger;
     private static final LoggerFactory fieldLogger = Logging.instance().fieldLogger;

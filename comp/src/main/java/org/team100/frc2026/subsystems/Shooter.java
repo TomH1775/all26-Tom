@@ -70,8 +70,8 @@ public class Shooter extends SubsystemBase {
         final BareMotor m3;
         switch (Identity.instance) {
             case TEST_BOARD_B0, COMP_BOT -> {
-                double supplyLimit = 120;
-                double statorLimit = 80;
+                double supplyLimit = 40;
+                double statorLimit = 60;
                 SimpleDynamics ff = new SimpleDynamics(log, 0.000, 0.000);
                 // friction test 3/12/262
                 Friction friction = new Friction(log, 0.3, 0.25, 0.0, 0.5);

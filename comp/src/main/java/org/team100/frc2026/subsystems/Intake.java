@@ -48,8 +48,8 @@ public class Intake extends SubsystemBase {
         final BareMotor m2;
         switch (Identity.instance) {
             case TEST_BOARD_B0, COMP_BOT -> {
-                double supplyLimit = 50;
-                double statorLimit = 80;
+                double supplyLimit = 30;
+                double statorLimit = 50;
                 SimpleDynamics ff = new SimpleDynamics(log, 0.0, 0.0);
                 // friction test 3/12/26
                 Friction friction = new Friction(log, 0.5, 0.5, 0.0, 0.5);
