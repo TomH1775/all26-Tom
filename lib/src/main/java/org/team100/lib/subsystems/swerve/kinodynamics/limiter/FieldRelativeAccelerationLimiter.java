@@ -37,7 +37,7 @@ public class FieldRelativeAccelerationLimiter {
             double cartesianScale,
             double alphaScale) {
         LoggerFactory log = parent.type(this);
-        m_log_scale = log.doubleLogger(Level.TRACE, "scale");
+        m_log_scale = log.doubleLogger(Level.DEBUG, "scale");
         m_log_accel = log.AccelerationSE2Logger(Level.TRACE, "accel");
         m_limits = limits;
         m_cartesianScale = cartesianScale;

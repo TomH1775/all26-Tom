@@ -35,20 +35,21 @@ public class SwerveKinodynamicsFactory {
                 // the comp bot uses the "fast" ratio and FOC falcons
                 // so should be a bit higher top speed and less acceleration.
                 // note these measurements were updated jun 24.
-                // 9/24/04, raised steering rate from 20 to 40, accel from 60 to 120.
+                // 9/24/24, raised steering rate from 20 to 40, accel from 60 to 120.
+                // 3/15/26, lowered vcg, fixed offset, rasied other limits
                 return new SwerveKinodynamics(
                         log,
-                        4.5, // max vel m/s
-                        10, // stall m/s/s
-                        5, // max accel m/s/s
-                        25, // max decel m/s/s
+                        5, // max vel m/s
+                        20, // stall m/s/s
+                        20, // max accel m/s/s
+                        50, // max decel m/s/s
                         40, // max module steering rate rad/s
                         120, // max module steering accel rad/s/s
-                        0.56515, // front track m
-                        0.56515, // back track m
-                        0.56515, // wheelbase m
-                        0.295275, // front offset m
-                        0.5); // vcg m NOTE VERY HIGH
+                        0.565, // front track m
+                        0.565, // back track m
+                        0.565, // wheelbase m
+                        0.283, // front offset m
+                        0.05); // vcg m
             case SWERVE_TWO:
                 return new SwerveKinodynamics(
                         log,
@@ -62,7 +63,7 @@ public class SwerveKinodynamicsFactory {
                         0.380, // track m
                         0.445, // wheelbase m
                         0.2225, // front offset m
-                        0.5); // vcg m HIGH LIKE COMP
+                        0.5); // vcg m
             case SWERVE_ONE:
                 return new SwerveKinodynamics(
                         log,
@@ -76,7 +77,7 @@ public class SwerveKinodynamicsFactory {
                         0.44, // back track m
                         0.462, // wheelbase m
                         0.31, // front offset m
-                        0.5); // vcg m HIGH LIKE COMP
+                        0.5); // vcg m 
             case BLANK:
                 // this is used for tests and simulation; the limits should be kept in sync
                 // with the comp config, so that the simulator provides realistic
@@ -85,17 +86,17 @@ public class SwerveKinodynamicsFactory {
                 // change it. :-(
                 return new SwerveKinodynamics(
                         log,
-                        3, // vel m/s
-                        10, // stall m/s/s
-                        5, // accel m/s/s
-                        25, // decel m/s/s
+                        5, // vel m/s
+                        20, // stall m/s/s
+                        20, // accel m/s/s
+                        50, // decel m/s/s
                         40, // steering rate rad/s
                         120, // steering accel rad/s/s
-                        0.5, // track m
-                        0.5, // track m
-                        0.5, // wheelbase m
-                        0.25, // front offset m
-                        0.1); // vcg m
+                        0.565, // track m
+                        0.565, // track m
+                        0.565, // wheelbase m
+                        0.283, // front offset m
+                        0.05); // vcg m
             case BETA_BOT:
                 // these numbers were extracted from module mode acceleration
                 // runs as shown in this spreadsheet

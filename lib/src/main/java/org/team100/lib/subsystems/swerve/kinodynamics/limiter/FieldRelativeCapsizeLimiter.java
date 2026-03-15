@@ -27,7 +27,7 @@ public class FieldRelativeCapsizeLimiter {
             LoggerFactory parent,
             SwerveKinodynamics m_limits) {
         LoggerFactory log = parent.type(this);
-        m_log_scale = log.doubleLogger(Level.TRACE, "scale");
+        m_log_scale = log.doubleLogger(Level.DEBUG, "scale");
         m_log_accel = log.AccelerationSE2Logger(Level.TRACE, "accel");
         m_log_prev = log.VelocitySE2Logger(Level.TRACE, "prev");
         m_log_target = log.VelocitySE2Logger(Level.TRACE, "target");

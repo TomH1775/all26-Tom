@@ -31,7 +31,7 @@ public class SwerveLimiter {
 
     public SwerveLimiter(LoggerFactory parent, SwerveKinodynamics dynamics, DoubleSupplier voltage) {
         LoggerFactory log = parent.type(this);
-        m_log_norm = log.doubleLogger(Level.TRACE, "norm");
+        m_log_norm = log.doubleLogger(Level.DEBUG, "norm");
         m_log_normIn = log.doubleLogger(Level.TRACE, "norm in");
         m_log_next = log.VelocitySE2Logger(Level.TRACE, "next");
 
@@ -39,11 +39,9 @@ public class SwerveLimiter {
         m_velocityLimiter = new FieldRelativeVelocityLimiter(log, limit);
         m_capsizeLimiter = new FieldRelativeCapsizeLimiter(log, dynamics);
 
-        // Use the absolute maximum acceleration.
+        // Use the absolute maximums.
         final double cartesianScale = 1.0;
-        // Use much less than the maximum rotational acceleration.
-        // Rotating fast can be upsetting.
-        final double alphaScale = 0.2;
+        final double alphaScale = 1.0;
         m_accelerationLimiter = new FieldRelativeAccelerationLimiter(log, dynamics, cartesianScale, alphaScale);
     }
 
