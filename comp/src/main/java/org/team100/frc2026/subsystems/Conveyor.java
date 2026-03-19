@@ -80,12 +80,13 @@ public class Conveyor extends SubsystemBase {
 
     /**
      * Use a profile to spin up the conveyor to the normal speed.
-     * Never ends.
+     * Never ends, but stops the motor when interrupted.
      */
     public Command convey() {
         return startRun(
                 this::reset,
                 () -> setVelocityProfiled(NORMAL_SPEED))
+                .finallyDo(this::stopMotor)
                 .withName("Convey");
     }
 

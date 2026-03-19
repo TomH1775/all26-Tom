@@ -7,6 +7,7 @@ import org.team100.lib.geometry.GlobalVelocityR2;
 import org.team100.lib.geometry.StateR2;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.targeting.TimeOfFlightRecursion.Looper.LoopSolution;
+import org.team100.lib.util.StrUtil;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -73,8 +74,10 @@ public class TimeOfFlightRecursion implements Solver {
             // ball TOF to get there?
             Optional<FiringParameters> oParams = m_rangeToParams.apply(rangeAtTOF);
             if (oParams.isEmpty()) {
-                if (DEBUG)
-                    System.out.printf("No soltion for range %f\n", rangeAtTOF);
+                if (DEBUG) {
+                    System.out.printf("No solution for range %f\n", rangeAtTOF);
+                    complain(m_vT, m_T0);
+                }
                 return Optional.empty();
             }
             FiringParameters params = oParams.get();
@@ -88,6 +91,11 @@ public class TimeOfFlightRecursion implements Solver {
         }
     }
 
+    private static void complain(GlobalVelocityR2 vT, Translation2d T0) {
+        System.out.printf("vT (%f, %f) T0 (%f, %f)\n",
+                vT.x(), vT.y(), T0.getX(), T0.getY());
+    }
+
     @Override
     public Optional<Solution> solve(ModelSE2 state, StateR2 target) {
         final Translation2d robotPosition = state.translation();
@@ -95,6 +103,11 @@ public class TimeOfFlightRecursion implements Solver {
 
         // Target relative to robot
         Translation2d T0 = target.position().minus(robotPosition);
+        if (DEBUG) {
+            System.out.printf("robot %s target %s\n",
+                    StrUtil.transStr(robotPosition),
+                    StrUtil.transStr(target.position()));
+        }
         double rangeM = T0.getNorm();
         // Target velocity relative to robot
         GlobalVelocityR2 vT = target.velocity().minus(robotVelocity);
@@ -117,8 +130,9 @@ public class TimeOfFlightRecursion implements Solver {
                 // this method fails, even if the end point might
                 // be valid.
                 // TODO: use better initial guesses to avoid that.
-                if (DEBUG)
+                if (DEBUG) {
                     System.out.printf("No solution for target TOF %f\n", targetTOF);
+                }
                 return Optional.empty();
             }
             LoopSolution soln = oSoln.get();

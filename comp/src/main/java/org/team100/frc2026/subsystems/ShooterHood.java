@@ -88,11 +88,15 @@ public class ShooterHood extends SubsystemBase {
                 .withName("Hood failsafe");
     }
 
-    /** Use a profile to set the position according to the angle supplier. */
+    /**
+     * Use a profile to set the position according to the angle supplier.
+     * Never ends, but stops the motor when interrupted.
+     */
     public Command autoPosition() {
         return startRun(
                 this::reset,
                 this::autoPositionWork)
+                .finallyDo(this::stopServo)
                 .withName("Hood Auto Position");
     }
 

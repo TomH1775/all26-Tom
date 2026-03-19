@@ -1,7 +1,9 @@
 package org.team100.lib.state;
 
 import org.team100.lib.geometry.AccelerationSE2;
+import org.team100.lib.geometry.DirectionSE2;
 import org.team100.lib.geometry.VelocitySE2;
+import org.team100.lib.geometry.WaypointSE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.trajectory.TrajectorySE2Point;
 import org.team100.lib.trajectory.path.PathSE2Point;
@@ -137,18 +139,22 @@ public class ControlSE2 {
     public static ControlSE2 fromMovingPathSE2Point(
             PathSE2Point point, double velocityM_s, double accelM_s_s) {
 
-        double xx = point.waypoint().pose().getTranslation().getX();
-        double yx = point.waypoint().pose().getTranslation().getY();
-        double thetax = point.waypoint().pose().getRotation().getRadians();
+        WaypointSE2 waypoint = point.waypoint();
+        Pose2d pose = waypoint.pose();
+        DirectionSE2 direction = waypoint.course();
 
-        Rotation2d course = point.waypoint().course().toRotation();
+        double xx = pose.getTranslation().getX();
+        double yx = pose.getTranslation().getY();
+        double thetax = pose.getRotation().getRadians();
+
+        Rotation2d course = direction.toRotation();
         double xv = course.getCos() * velocityM_s;
         double yv = course.getSin() * velocityM_s;
-        double thetav = point.waypoint().course().headingRate() * velocityM_s;
+        double thetav = direction.headingRate() * velocityM_s;
 
         double xa = course.getCos() * accelM_s_s;
         double ya = course.getSin() * accelM_s_s;
-        double thetaa = point.waypoint().course().headingRate() * accelM_s_s;
+        double thetaa = direction.headingRate() * accelM_s_s;
 
         // centripetal accel = v^2/r = v^2 * curvature
         // this works because the acceleration vector is always normal

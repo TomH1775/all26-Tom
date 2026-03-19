@@ -33,6 +33,12 @@ public class CapsizeAccelerationConstraint implements TimingConstraint {
         m_maxDecel = -limits.getMaxDriveDecelerationM_S2();
     }
 
+    /**
+     * @param parent
+     * @param centripetal
+     * @param decel       Used when we're going too fast, to try to slow down. If
+     *                    this is active, there's something wrong.
+     */
     public CapsizeAccelerationConstraint(LoggerFactory parent, double centripetal, double decel) {
         LoggerFactory log = parent.type(this);
         m_scale = new Mutable(log, "scale", 1);

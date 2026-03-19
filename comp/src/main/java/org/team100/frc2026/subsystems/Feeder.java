@@ -101,12 +101,13 @@ public class Feeder extends SubsystemBase {
 
     /**
      * Feed rate slowdown is proportional to shooter speed error outside the
-     * tolerance.
+     * tolerance.  Never ends, but stops the motor when interrupted.
      */
     public Command proportional() {
         return startRun(
                 this::reset,
                 () -> shootProportional())
+                .finallyDo(this::stopMotor)
                 .withName("Feed Proportional");
     }
 

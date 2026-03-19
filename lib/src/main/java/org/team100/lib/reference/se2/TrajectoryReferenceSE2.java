@@ -11,6 +11,7 @@ import org.team100.lib.logging.LoggerFactory.ModelSE2Logger;
 import org.team100.lib.state.ControlSE2;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.trajectory.TrajectorySE2Entry;
+import org.team100.lib.trajectory.TrajectorySE2Point;
 import org.team100.lib.trajectory.TrajectorySE2;
 
 /** Produces references based on a trajectory. */
@@ -82,7 +83,10 @@ public class TrajectoryReferenceSE2 implements ReferenceSE2 {
 
     private ControlSE2 sample(double t) {
         TrajectorySE2Entry sample = m_trajectory.sample(t);
+        TrajectorySE2Point point = sample.point();
         return ControlSE2.fromMovingPathSE2Point(
-                sample.point().point(), sample.point().velocity(), sample.point().accel());
+                point.point(),
+                point.velocity(),
+                point.accel());
     }
 }

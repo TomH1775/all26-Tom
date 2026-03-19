@@ -83,12 +83,16 @@ public class IntakeExtend extends SubsystemBase {
                 .withName("Intake Extend GoToExtendedPosition");
     }
 
+    /**
+     * Use a profile to go to the extended position.
+     * Never ends, but stops the motor when interrupted.
+     */
     public Command goToExtendedPositionEndlessly() {
         return startRun(
                 this::reset,
                 () -> actuateWithProfile(EXTENDED_POSITION))
-                .until(m_servo::atGoal)
-                .withName("Intake Extend GoToExtendedPosition");
+                .finallyDo(this::stopServo)
+                .withName("Intake Extend GoToExtendedPositionEndlessly");
     }
 
     /** Servo is at goal. False immediately after reset. */

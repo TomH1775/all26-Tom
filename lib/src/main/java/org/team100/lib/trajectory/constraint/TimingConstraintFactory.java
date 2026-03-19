@@ -56,7 +56,14 @@ public class TimingConstraintFactory {
         return scaled(log, 1.0, 1.0, 1.0, 1.0);
     }
 
-    private List<TimingConstraint> scaled(
+    /**
+     * @param log
+     * @param vScale           cartesian velocity scale
+     * @param aScale           cartesian acceleration scale
+     * @param centripetalScale centripetal acceleration scale
+     * @param yawRateScale     rotation velocity scale
+     */
+    public List<TimingConstraint> scaled(
             LoggerFactory log,
             double vScale,
             double aScale,

@@ -49,7 +49,7 @@ public class SwerveKinodynamicsFactory {
                         0.565, // back track m
                         0.565, // wheelbase m
                         0.283, // front offset m
-                        0.05); // vcg m
+                        0.15); // vcg m
             case SWERVE_TWO:
                 return new SwerveKinodynamics(
                         log,
@@ -96,7 +96,7 @@ public class SwerveKinodynamicsFactory {
                         0.565, // track m
                         0.565, // wheelbase m
                         0.283, // front offset m
-                        0.05); // vcg m
+                        0.15); // vcg m
             case BETA_BOT:
                 // these numbers were extracted from module mode acceleration
                 // runs as shown in this spreadsheet

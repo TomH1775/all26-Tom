@@ -163,7 +163,14 @@ public class SplineSE2 implements ISplineSE2 {
         double dheading = dheading(s);
         if (DEBUG)
             System.out.printf("%f %f %f\n", dx, dy, dheading);
-        return new DirectionSE2(dx, dy, dheading);
+        try {
+            return new DirectionSE2(dx, dy, dheading);
+        } catch (IllegalArgumentException ex) {
+            throw new IllegalArgumentException(
+                    String.format("bad direction for s=%f, dx=%f, dy=%f, dheading=%f",
+                            s, dx, dy, dheading),
+                    ex);
+        }
     }
 
     /** Magnitude of translational part of dp/ds */

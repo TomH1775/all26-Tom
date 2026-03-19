@@ -75,12 +75,13 @@ public class Intake extends SubsystemBase {
 
     /**
      * Use a profile to spin up the roller to the normal speed.
-     * Never ends.
+     * Never ends, but stops the motor when interrupted.
      */
     public Command intake() {
         return startRun(
                 this::reset,
                 () -> setVelocityProfiled(NORMAL_SPEED.getAsDouble()))
+                .finallyDo(this::stopMotor)
                 .withName("Intake Normal Speed");
     }
 

@@ -16,8 +16,20 @@ public class ConstantConstraint implements TimingConstraint {
         m_maxAccel = new Mutable(log, "maxA", maxA);
     }
 
-    public ConstantConstraint(LoggerFactory log, double vScale, double aScale, SwerveKinodynamics limits) {
-        this(log, vScale * limits.getMaxDriveVelocityM_S(), aScale * limits.getMaxDriveAccelerationM_S2());
+    /**
+     * @param log
+     * @param vScale cartesian velocity scale
+     * @param aScale cartesian acceleration scale
+     * @param limits absolute maxima
+     */
+    public ConstantConstraint(
+            LoggerFactory log,
+            double vScale,
+            double aScale,
+            SwerveKinodynamics limits) {
+        this(log,
+                vScale * limits.getMaxDriveVelocityM_S(),
+                aScale * limits.getMaxDriveAccelerationM_S2());
     }
 
     @Override
@@ -29,7 +41,7 @@ public class ConstantConstraint implements TimingConstraint {
     public double maxAccel(PathSE2Point point, double velocityM_S) {
         return m_maxAccel.getAsDouble();
     }
-    
+
     @Override
     public double maxDecel(PathSE2Point point, double velocity) {
         return -m_maxAccel.getAsDouble();

@@ -36,7 +36,13 @@ public class Targeter {
                         new FiringParameters(4.30, 17.00, 0.35, 0.845),
                         // this is close to the maximum range possible (in the corner) so it's ok for it
                         // to be the edge value.
-                        new FiringParameters(5.32, 19.00, 0.30, 1.032)));
+                        new FiringParameters(5.32, 19.00, 0.30, 1.032),
+                        // whoops, when moving fast, longer range is required
+                        // so just guess.
+                        // TODO: measure this
+                        new FiringParameters(7, 21.00, 0.30, 1.4)
+                //
+                ));
 
         // from 3/12/26
         m_lob = new ShooterTable(

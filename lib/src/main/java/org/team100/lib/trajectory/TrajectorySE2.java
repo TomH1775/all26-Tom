@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.team100.lib.geometry.WaypointSE2;
-import org.team100.lib.trajectory.constraint.TimingConstraint;
 import org.team100.lib.trajectory.path.PathSE2Point;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -17,21 +16,16 @@ import edu.wpi.first.math.geometry.Pose2d;
  */
 public class TrajectorySE2 {
     private final List<TrajectorySE2Entry> m_points;
-    /** Constraints used for this trajectory, for resampling */
-    // private final List<TimingConstraint> m_constraints;
     private final double m_duration;
 
     public TrajectorySE2() {
         m_points = new ArrayList<>();
-        // m_constraints = new ArrayList<>();
         m_duration = 0;
     }
 
     /** First timestamp must be zero. */
-    public TrajectorySE2(
-            List<TrajectorySE2Entry> points, List<TimingConstraint> constraints) {
+    public TrajectorySE2(List<TrajectorySE2Entry> points) {
         m_points = points;
-        // m_constraints = constraints;
         m_duration = m_points.get(m_points.size() - 1).point().time();
     }
 

@@ -3,6 +3,7 @@ package org.team100.lib.trajectory.path;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.team100.lib.geometry.DirectionSE2;
 import org.team100.lib.geometry.Metrics;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -36,14 +37,17 @@ public class PathSE2 {
         }
         m_distances[0] = 0.0;
         m_points.add(states.get(0));
-        for (int i0 = 0; i0 < n-1; ++i0) {
+        for (int i0 = 0; i0 < n - 1; ++i0) {
             int i1 = i0 + 1;
             m_points.add(states.get(i1));
-            Pose2d p0 = getEntry(i0).point().waypoint().pose();
-            Pose2d p1 = getEntry(i1).point().waypoint().pose();
-            double dist = Metrics.translationalDistance(p0, p1);
-            m_distances[i1] = m_distances[i0] + dist;
+            m_distances[i1] = m_distances[i0] + getDist(i0, i1);
         }
+    }
+
+    private double getDist(int i0, int i1) {
+        Pose2d p0 = getEntry(i0).point().waypoint().pose();
+        Pose2d p1 = getEntry(i1).point().waypoint().pose();
+        return Metrics.translationalDistance(p0, p1);
     }
 
     public int length() {
@@ -98,9 +102,7 @@ public class PathSE2 {
             // walk through the points to bracket the desired distance
             int i1 = i0 + 1;
             PathSE2Entry e0 = getEntry(i0);
-            PathSE2Point p0 = e0.point();
             PathSE2Entry e1 = getEntry(i1);
-            PathSE2Point p1 = e1.point();
             double d0 = m_distances[i0];
             double d1 = m_distances[i1];
             double d = d1 - d0;
@@ -108,19 +110,28 @@ public class PathSE2 {
                 // Found the bracket.
                 double s = (distance - d0) / d;
                 PathSE2Entry lerp = PathUtil.interpolate(e0, e1, s);
-                // disallow corners
-                Twist2d t0 = p0.waypoint().course().minus(lerp.point().waypoint().course());
-                double l0 = Metrics.l2Norm(t0);
-                Twist2d t1 = p1.waypoint().course().minus(lerp.point().waypoint().course());
-                double l1 = Metrics.l2Norm(t1);
-                if (Math.max(l0, l1) > INTERPOLATION_LIMIT)
-                    System.out.printf(
-                            "WARNING!  Interpolated value too far away, p0=%s, p1=%s, t0=%s t1=%s.  This usually indicates a sharp corner in the path, which is not allowed.",
-                            p0, p1, t0, t1);
+                checkLerp(e0, e1, lerp);
                 return lerp.point();
             }
         }
         return null;
+    }
+
+    /**
+     * Complaint about corners.
+     */
+    private void checkLerp(PathSE2Entry e0, PathSE2Entry e1, PathSE2Entry lerp) {
+        PathSE2Point p0 = e0.point();
+        PathSE2Point p1 = e1.point();
+        DirectionSE2 lerpCourse = lerp.point().waypoint().course();
+        Twist2d t0 = p0.waypoint().course().minus(lerpCourse);
+        Twist2d t1 = p1.waypoint().course().minus(lerpCourse);
+        double l0 = Metrics.l2Norm(t0);
+        double l1 = Metrics.l2Norm(t1);
+        if (Math.max(l0, l1) > INTERPOLATION_LIMIT)
+            System.out.printf(
+                    "WARNING!  Interpolated value too far away, p0=%s, p1=%s, t0=%s t1=%s.  This usually indicates a sharp corner in the path, which is not allowed.",
+                    p0, p1, t0, t1);
     }
 
 }

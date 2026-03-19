@@ -38,7 +38,7 @@ public class TrajectorySE2Factory {
         double[] accels = accels(distances, velocities);
         double[] runningTime = runningTime(distances, velocities, accels);
         List<TrajectorySE2Entry> timedStates = timedStates(path, velocities, accels, runningTime);
-        return new TrajectorySE2(timedStates, m_constraints);
+        return new TrajectorySE2(timedStates);
     }
 
     /////////////////////////////////////////////////////////////////////////////////////

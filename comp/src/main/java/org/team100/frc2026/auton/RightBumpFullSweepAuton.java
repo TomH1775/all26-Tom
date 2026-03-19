@@ -2,14 +2,12 @@ package org.team100.frc2026.auton;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
-import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
 import org.team100.frc2026.robot.Machinery;
-import org.team100.frc2026.subsystems.IntakeExtend;
 import org.team100.lib.config.AnnotatedCommand;
 import org.team100.lib.controller.se2.ControllerSE2;
 import org.team100.lib.geometry.DirectionSE2;
@@ -24,8 +22,6 @@ import org.team100.lib.trajectory.constraint.TimingConstraint;
 import org.team100.lib.trajectory.constraint.TimingConstraintFactory;
 import org.team100.lib.trajectory.constraint.VelocityLimitRegionConstraint;
 import org.team100.lib.trajectory.path.PathSE2Factory;
-
-import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -83,7 +79,7 @@ public class RightBumpFullSweepAuton implements AnnotatedCommand {
                 new WaypointSE2(startingPose,
                         new DirectionSE2(1, 0, 0), 1),
                 new WaypointSE2(new Pose2d(7.75, 2, Rotation2d.k180deg),
-                        new DirectionSE2(0, 1, 0), 1),   
+                        new DirectionSE2(0, 1, 0), 1),
                 new WaypointSE2(new Pose2d(7.75, 7, Rotation2d.k180deg),
                         new DirectionSE2(0, 1, 0), 1));
         return planner.restToRest(waypoints);
@@ -94,14 +90,13 @@ public class RightBumpFullSweepAuton implements AnnotatedCommand {
         DriveWithTrajectoryFunction IntakeSetUp = new DriveWithTrajectoryFunction(
                 log, machinery.m_drive, controller,
                 machinery.m_trajectoryViz, this::t1);
-    
+
         // Intake, score
         return sequence(
                 parallel(IntakeSetUp,
-                machinery.m_intakeExtend.goToExtendedPosition()
-                .andThen
-                (machinery.m_intake.intake()))
-                .until(IntakeSetUp::isDone));
+                        machinery.m_intakeExtend.goToExtendedPosition()
+                                .andThen(machinery.m_intake.intake()))
+                        .until(IntakeSetUp::isDone));
     }
 
     @Override

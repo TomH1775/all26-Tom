@@ -70,7 +70,13 @@ public class PathSE2Factory {
             ISplineSE2 spline = splines.get(i);
             if (DEBUG)
                 System.out.printf("SPLINE:\n%d\n%s\n", i, spline);
-            addEndpointOrBisect(spline, result, 0, 1);
+            try {
+                addEndpointOrBisect(spline, result, 0, 1);
+            } catch (IllegalArgumentException ex) {
+                throw new IllegalArgumentException(
+                        String.format("bad direction for i=%d", i),
+                        ex);
+            }
         }
         return new PathSE2(result);
     }

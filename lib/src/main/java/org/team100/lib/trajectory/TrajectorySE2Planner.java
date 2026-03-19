@@ -67,7 +67,7 @@ public class TrajectorySE2Planner {
             // this should never actually happen.
             System.out.println("WARNING: Bad trajectory input!!");
             // print the stack trace if you want to know who is calling
-            // e.printStackTrace();
+            e.printStackTrace();
             return new TrajectorySE2();
         }
     }

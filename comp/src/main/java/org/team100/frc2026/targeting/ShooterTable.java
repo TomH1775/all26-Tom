@@ -14,6 +14,8 @@ import org.team100.lib.util.Relation;
  * Interpolates shooting parameters, given range in meters.
  */
 public class ShooterTable {
+    private static final boolean DEBUG = false;
+
     private final Relation<FiringParameters> m_table;
     private final DoubleFunction<Double> m_rangeToSpeed;
     private final DoubleFunction<Double> m_rangeToElevation;
@@ -70,6 +72,14 @@ public class ShooterTable {
      * close)
      */
     public Optional<FiringParameters> forRange(double rangeM) {
-        return OptUtil.emptyIfNull(m_rangeMap.get(rangeM));
+        FiringParameters v = m_rangeMap.get(rangeM);
+        if (v == null) {
+            if (DEBUG) {
+                System.out.printf("no result for range %f min %f max %f\n",
+                        rangeM, m_rangeMap.firstKey(), m_rangeMap.lastKey());
+            }
+            return Optional.empty();
+        }
+        return Optional.of(v);
     }
 }

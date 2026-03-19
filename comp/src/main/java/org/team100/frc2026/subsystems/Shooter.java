@@ -161,11 +161,16 @@ public class Shooter extends SubsystemBase {
                 .withName("Shooter failsafe");
     }
 
-    /** Run the drums at the supplied speed */
+    /**
+     * Run the drums at the supplied speed.
+     * Never ends, but stops the motors when interrupted.
+     */
     public Command auto() {
         return startRun(
                 this::reset,
-                this::autoWork);
+                this::autoWork)
+                .finallyDo(this::stopMotor)
+                .withName("Shoot Auto");
     }
 
     public Command stop() {
