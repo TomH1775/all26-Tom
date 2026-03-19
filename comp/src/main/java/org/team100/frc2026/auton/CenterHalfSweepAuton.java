@@ -72,7 +72,7 @@ public class CenterHalfSweepAuton implements AnnotatedCommand {
 
     @Override
     public String name() {
-        return "Half Sweep Center Auton";
+        return "Half Sweep from Center";
     }
 
     TrajectorySE2 t1(Pose2d startingPose) {

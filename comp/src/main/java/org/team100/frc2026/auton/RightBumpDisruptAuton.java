@@ -78,15 +78,8 @@ public class RightBumpDisruptAuton implements AnnotatedCommand {
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(startingPose,
                         new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(new Pose2d(7.75, 1, Rotation2d.k180deg),
-                        new DirectionSE2(1, 0, 0), 1));
-        return planner.restToRest(waypoints);
-    }
-
-    TrajectorySE2 t2(Pose2d startingPose) {
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(startingPose,
-                        new DirectionSE2(0, 1, 0), 1),
+                new WaypointSE2(new Pose2d(7.75, 2, Rotation2d.k180deg),
+                        new DirectionSE2(0, 1, 0), 1),   
                 new WaypointSE2(new Pose2d(7.75, 7, Rotation2d.k180deg),
                         new DirectionSE2(0, 1, 0), 1));
         return planner.restToRest(waypoints);
@@ -107,9 +100,6 @@ public class RightBumpDisruptAuton implements AnnotatedCommand {
         DriveWithTrajectoryFunction IntakeSetUp = new DriveWithTrajectoryFunction(
                 log, machinery.m_drive, controller,
                 machinery.m_trajectoryViz, this::t1);
-        DriveWithTrajectoryFunction IntakeBalls = new DriveWithTrajectoryFunction(
-                log, machinery.m_drive, controller,
-                machinery.m_trajectoryViz, this::t2);
         // DriveWithTrajectoryFunction ScoreSetUp = new DriveWithTrajectoryFunction(
         // log, machinery.m_drive, controller,
         // machinery.m_trajectoryViz, this::t3);
@@ -117,7 +107,6 @@ public class RightBumpDisruptAuton implements AnnotatedCommand {
         // Intake, score
         return sequence(
                 IntakeSetUp.until(IntakeSetUp::isDone).withTimeout(4),
-                IntakeBalls.until(IntakeBalls::isDone),
 
                 waitSeconds(1));
 
@@ -141,7 +130,7 @@ public class RightBumpDisruptAuton implements AnnotatedCommand {
 
     @Override
     public List<Function<Pose2d, TrajectorySE2>> trajectoryFns() {
-        return List.of(this::t1, this::t2);
+        return List.of(this::t1);
     }
 
 }

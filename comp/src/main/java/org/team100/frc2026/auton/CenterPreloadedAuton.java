@@ -72,7 +72,7 @@ public class CenterPreloadedAuton implements AnnotatedCommand {
 
     @Override
     public String name() {
-        return "Preloaded Center Auton";
+        return "Shoot from Center";
     }
 
     TrajectorySE2 t1(Pose2d startingPose) {

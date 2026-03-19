@@ -72,7 +72,7 @@ public class LeftBumpHalfSweepAuton implements AnnotatedCommand {
 
     @Override
     public String name() {
-        return "Half Sweep Left Bump Auton";
+        return "Half Sweep from Left Bump";
     }
 
     TrajectorySE2 t1(Pose2d startingPose) {

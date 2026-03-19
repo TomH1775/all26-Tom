@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import org.team100.frc2026.robot.Machinery;
+import org.team100.frc2026.subsystems.IntakeExtend;
 import org.team100.lib.config.AnnotatedCommand;
 import org.team100.lib.controller.se2.ControllerSE2;
 import org.team100.lib.geometry.DirectionSE2;
@@ -23,6 +24,8 @@ import org.team100.lib.trajectory.constraint.TimingConstraint;
 import org.team100.lib.trajectory.constraint.TimingConstraintFactory;
 import org.team100.lib.trajectory.constraint.VelocityLimitRegionConstraint;
 import org.team100.lib.trajectory.path.PathSE2Factory;
+
+import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -72,35 +75,17 @@ public class RightBumpFullSweepAuton implements AnnotatedCommand {
 
     @Override
     public String name() {
-        return "Full Sweep Right Bump Auton";
+        return "Full Sweep from Right Bump";
     }
 
     TrajectorySE2 t1(Pose2d startingPose) {
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(startingPose,
                         new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(new Pose2d(7.75, 1, Rotation2d.k180deg),
-                        new DirectionSE2(1, 0, 0), 1));
-        return planner.restToRest(waypoints);
-    }
-
-    TrajectorySE2 t2(Pose2d startingPose) {
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(startingPose,
-                        new DirectionSE2(0, 1, 0), 1),
+                new WaypointSE2(new Pose2d(7.75, 2, Rotation2d.k180deg),
+                        new DirectionSE2(0, 1, 0), 1),   
                 new WaypointSE2(new Pose2d(7.75, 7, Rotation2d.k180deg),
                         new DirectionSE2(0, 1, 0), 1));
-        return planner.restToRest(waypoints);
-    }
-
-    TrajectorySE2 t3(Pose2d startingPose) {
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(startingPose,
-                        new DirectionSE2(0, -1, 0), 1),
-                new WaypointSE2(StartingPositions.RIGHT_BUMP,
-                        new DirectionSE2(-1, 0, 0), 1),
-                new WaypointSE2(AutonPositions.SHOOT_RIGHT,
-                        new DirectionSE2(-1, 0, 0), 1));
         return planner.restToRest(waypoints);
     }
 
@@ -109,41 +94,14 @@ public class RightBumpFullSweepAuton implements AnnotatedCommand {
         DriveWithTrajectoryFunction IntakeSetUp = new DriveWithTrajectoryFunction(
                 log, machinery.m_drive, controller,
                 machinery.m_trajectoryViz, this::t1);
-        DriveWithTrajectoryFunction IntakeBalls = new DriveWithTrajectoryFunction(
-                log, machinery.m_drive, controller,
-                machinery.m_trajectoryViz, this::t2);
-        DriveWithTrajectoryFunction ScoreSetUp = new DriveWithTrajectoryFunction(
-                log, machinery.m_drive, controller,
-                machinery.m_trajectoryViz, this::t3);
-
+    
         // Intake, score
         return sequence(
-                parallel(
-                        IntakeSetUp.until(IntakeSetUp::isDone).withTimeout(4),
-                        // Assumed that the intake shouldn't deploy over the bump
-                        waitSeconds(1).andThen(machinery.m_intakeExtend.goToExtendedPosition())),
-                waitSeconds(1),
-
-                parallel(
-                        IntakeBalls,
-                        machinery.m_intake.intake()).until(IntakeBalls::isDone),
-                // Without telling it to, the intake would only stop spinning
-                // at the end of the auton. Without the timeout, the robot
-                // would not continue the rest of the auton
-                machinery.m_intake.stop().withTimeout(1),
-                waitSeconds(1),
-
-                ScoreSetUp.until(ScoreSetUp::isDone),
-                parallel(
-                        machinery.m_conveyor.convey(),
-                        machinery.m_feeder.proportional(),
-                        machinery.m_shooterHood.autoPosition(),
-                        machinery.m_shooter.auto()),
-                // .withTimeout(1),
-                // machinery.m_shooterHood.autoPosition().withTimeout(0.5),
-                // machinery.m_shooter.auto().withTimeout(1),
-                waitSeconds(5),
-                machinery.m_shooter.stop().withTimeout(1));
+                parallel(IntakeSetUp,
+                machinery.m_intakeExtend.goToExtendedPosition()
+                .andThen
+                (machinery.m_intake.intake()))
+                .until(IntakeSetUp::isDone));
     }
 
     @Override
@@ -153,6 +111,7 @@ public class RightBumpFullSweepAuton implements AnnotatedCommand {
 
     @Override
     public List<Function<Pose2d, TrajectorySE2>> trajectoryFns() {
-        return List.of(this::t1, this::t2, this::t3);
+        return List.of(this::t1);
     }
+
 }
