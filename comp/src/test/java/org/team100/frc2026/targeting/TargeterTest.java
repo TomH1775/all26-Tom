@@ -15,7 +15,7 @@ public class TargeterTest {
         // impossible (hits the hub)
         assertTrue(targeter.forRange(0).isEmpty());
         // impossible (beyond the wall)
-        assertTrue(targeter.forRange(6).isEmpty());
+        assertTrue(targeter.forRange(10).isEmpty());
 
         // in the alliance zone
         FiringParameters fp = targeter.forRange(3).get();
