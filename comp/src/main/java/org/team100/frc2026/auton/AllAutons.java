@@ -99,6 +99,11 @@ public class AllAutons {
                 controller,
                 machinery.m_solver,
                 machinery));
+        m_autonChooser.add(new ScallopLobAuton(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery));
     }
 
     public Command get() {
