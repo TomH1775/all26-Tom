@@ -79,87 +79,36 @@ public class RightBumpHalfSweepAuton implements AnnotatedCommand {
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(startingPose,
                         new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(new Pose2d(7.75, 1, Rotation2d.k180deg),
-                        new DirectionSE2(1, 0, 0), 1));
-        return planner.restToRest(waypoints);
-    }
-
-    TrajectorySE2 t2(Pose2d startingPose) {
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(startingPose,
+                new WaypointSE2(new Pose2d(7.75, 2, Rotation2d.k180deg),
                         new DirectionSE2(0, 1, 0), 1),
                 new WaypointSE2(new Pose2d(7.75, 4, Rotation2d.k180deg),
-                        new DirectionSE2(0, 1, 0), 1));
-        return planner.restToRest(waypoints);
-    }
-
-    TrajectorySE2 t3(Pose2d startingPose) {
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(startingPose,
-                        new DirectionSE2(-1, -1, 0), 1),
+                        new DirectionSE2(-1, 0, 0), 1), 
                 new WaypointSE2(StartingPositions.RIGHT_BUMP,
                         new DirectionSE2(-1, 0, 0), 1),
                 new WaypointSE2(AutonPositions.SHOOT_RIGHT,
-                        new DirectionSE2(-1, 0, 0), 1));
+                        new DirectionSE2(0, 1, 0), 1));
         return planner.restToRest(waypoints);
     }
-
-    // TrajectorySE2 t4(Pose2d startingPose) {
-    // List<WaypointSE2> waypoints = List.of(
-    // new WaypointSE2(startingPose,
-    // new DirectionSE2(-1, -1, 0), 1),
-    // new WaypointSE2(AutonPositions.CLIMB_RIGHT,
-    // new DirectionSE2(-1, -1, 0), 1));
-    // return planner.restToRest(waypoints);
-    // }
 
     @Override
     public Command command() {
         DriveWithTrajectoryFunction IntakeSetUp = new DriveWithTrajectoryFunction(
                 log, machinery.m_drive, controller,
                 machinery.m_trajectoryViz, this::t1);
-        DriveWithTrajectoryFunction IntakeBalls = new DriveWithTrajectoryFunction(
-                log, machinery.m_drive, controller,
-                machinery.m_trajectoryViz, this::t2);
-        DriveWithTrajectoryFunction ScoreSetUp = new DriveWithTrajectoryFunction(
-                log, machinery.m_drive, controller,
-                machinery.m_trajectoryViz, this::t3);
-        // DriveWithTrajectoryFunction ClimbSetUp = new DriveWithTrajectoryFunction(
-        // log, machinery.m_drive, controller,
-        // machinery.m_trajectoryViz, this::t4);
 
-        // Intake, score, climb.
+        // Intake, score
         return sequence(
-                parallel(
-                        IntakeSetUp.until(IntakeSetUp::isDone).withTimeout(4),
-                        // Assumed that the intake shouldn't deploy over the bump
-                        waitSeconds(1).andThen(machinery.m_intakeExtend.goToExtendedPosition())),
-                waitSeconds(1),
-
-                parallel(
-                        IntakeBalls,
-                        machinery.m_intake.intake()).until(IntakeBalls::isDone),
-                // Without telling it to, the intake would only stop spinning
-                // at the end of the auton. Without the timeout, the robot
-                // would not continue the rest of the auton
-                machinery.m_intake.stop().withTimeout(1),
-                waitSeconds(1),
-
-                ScoreSetUp.until(ScoreSetUp::isDone),
-                parallel(
+                parallel(IntakeSetUp,
+                        machinery.m_intakeExtend.goToExtendedPosition()
+                                .andThen(machinery.m_intake.intake().withTimeout(3)))
+                        .until(IntakeSetUp::isDone),
+                    parallel(
                         machinery.m_conveyor.convey(),
                         machinery.m_feeder.proportional(),
                         machinery.m_shooterHood.autoPosition(),
-                        machinery.m_shooter.auto()),
-                // .withTimeout(1),
-                // machinery.m_shooterHood.autoPosition().withTimeout(0.5),
-                // machinery.m_shooter.auto().withTimeout(1),
-                waitSeconds(5),
-                machinery.m_shooter.stop().withTimeout(1));
+                        machinery.m_shooter.auto())
+                    );
     }
-
-    // ClimbSetUp.until(ClimbSetUp::isDone));
-    // }
 
     @Override
     public Pose2d start() {
@@ -168,7 +117,7 @@ public class RightBumpHalfSweepAuton implements AnnotatedCommand {
 
     @Override
     public List<Function<Pose2d, TrajectorySE2>> trajectoryFns() {
-        return List.of(this::t1, this::t2, this::t3);
+        return List.of(this::t1);
     }
 
 }
