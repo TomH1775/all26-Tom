@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import org.team100.frc2026.field.FieldConstants2026;
 import org.team100.frc2026.robot.Machinery;
 import org.team100.lib.config.AnnotatedCommand;
 import org.team100.lib.controller.se2.ControllerSE2;
@@ -80,35 +81,12 @@ public class LeftBumpHalfSweepAuton implements AnnotatedCommand {
                 new WaypointSE2(startingPose,
                         new DirectionSE2(1, 0, 0), 1),
                 new WaypointSE2(AutonPositions.ABOVE_BALL_FIELD,
-                        new DirectionSE2(1, 1, 0), 1));
-        return planner.restToRest(waypoints);
-    }
-
-    TrajectorySE2 t2(Pose2d startingPose) {
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(startingPose,
-                        new DirectionSE2(0, -1, 0), 1),
+                        new DirectionSE2(1, 1, 0), 1),
                 new WaypointSE2(AutonPositions.MIDDLE_BALL_FIELD,
-                        new DirectionSE2(0, -1, 0), 1));
-        return planner.restToRest(waypoints);
-    }
-
-    TrajectorySE2 t3(Pose2d startingPose) {
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(startingPose,
-                        new DirectionSE2(-1, 1, 0), 1),
+                        new DirectionSE2(0, -1, 0), 1),
                 new WaypointSE2(StartingPositions.LEFT_BUMP,
                         new DirectionSE2(-1, 0, 0), 1),
                 new WaypointSE2(AutonPositions.SHOOT_LEFT,
-                        new DirectionSE2(-1, -1, 0), 1));
-        return planner.restToRest(waypoints);
-    }
-
-    TrajectorySE2 t4(Pose2d startingPose) {
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(startingPose,
-                        new DirectionSE2(-1, -1, 0), 1),
-                new WaypointSE2(AutonPositions.CLIMB_LEFT,
                         new DirectionSE2(-1, -1, 0), 1));
         return planner.restToRest(waypoints);
     }
@@ -118,50 +96,29 @@ public class LeftBumpHalfSweepAuton implements AnnotatedCommand {
         DriveWithTrajectoryFunction IntakeSetUp = new DriveWithTrajectoryFunction(
                 log.name("IntakeSetUp"), machinery.m_drive, controller,
                 machinery.m_trajectoryViz, this::t1);
-        DriveWithTrajectoryFunction IntakeBalls = new DriveWithTrajectoryFunction(
-                log.name("IntakeBalls"), machinery.m_drive, controller,
-                machinery.m_trajectoryViz, this::t2);
-        DriveWithTrajectoryFunction ScoreSetUp = new DriveWithTrajectoryFunction(
-                log.name("scoreSetup"), machinery.m_drive, controller,
-                machinery.m_trajectoryViz, this::t3);
-        // DriveWithTrajectoryFunction ClimbSetUp = new DriveWithTrajectoryFunction(
-        // log.name("ClimbSetup"), machinery.m_drive, controller,
-        // machinery.m_trajectoryViz, this::t4);
 
-        // Intake, score, climb.
+        // Intake, score
         return sequence(
-                Commands.print("foo"),
                 parallel(
-                        IntakeSetUp.until(IntakeSetUp::isDone).withTimeout(4),
+                        IntakeSetUp.until(IntakeSetUp::isDone).withTimeout(8),
                         // Assumed that the intake shouldn't deploy over the bump
-                        waitSeconds(1).andThen(machinery.m_intakeExtend.goToExtendedPosition())),
-                Commands.print("foo2"),
-                waitSeconds(1),
-                Commands.print("foo3"),
-                parallel(
-                        IntakeBalls,
-                        machinery.m_intake.intake()).until(IntakeBalls::isDone),
-                Commands.print("foo4"),
-                // Without telling it to, the intake would only stop spinning
-                // at the end of the auton. Without the timeout, the robot
-                // would not continue the rest of the auton
-                machinery.m_intake.stop().withTimeout(1),
-                Commands.print("foo5"),
-                waitSeconds(1),
-                ScoreSetUp.until(ScoreSetUp::isDone),
-                parallel(
-                        machinery.m_conveyor.convey(),
-                        machinery.m_feeder.proportional(),
-                        machinery.m_shooterHood.autoPosition(),
-                        machinery.m_shooter.auto()),
-                // .withTimeout(1),
-                // machinery.m_shooterHood.autoPosition().withTimeout(0.5),
-                // machinery.m_shooter.auto().withTimeout(1),
-                waitSeconds(5),
+                        sequence(
+                        Commands.waitUntil(() -> FieldConstants2026
+                                        .isInNeutralZone(machinery.m_drive.getState().translation())),
+                            (machinery.m_intakeExtend.goToExtendedPosition()
+                            .andThen(machinery.m_intake.intake())).withTimeout(3),
+        
+                        Commands.waitUntil(() -> FieldConstants2026
+                                        .isInAllianceZone(machinery.m_drive.getState().translation())),
+                            parallel(
+                                machinery.m_intake.stop(),
+                                machinery.m_intakeExtend.goToRetractedPosition(),
 
-                machinery.m_shooter.stop().withTimeout(1)
-
-        // ClimbSetUp.until(ClimbSetUp::isDone)
+                                machinery.m_conveyor.convey(),
+                                machinery.m_feeder.proportional(),
+                                machinery.m_shooterHood.autoPosition(),
+                                machinery.m_shooter.auto())
+                                ))
         );
     }
 
@@ -172,7 +129,7 @@ public class LeftBumpHalfSweepAuton implements AnnotatedCommand {
 
     @Override
     public List<Function<Pose2d, TrajectorySE2>> trajectoryFns() {
-        return List.of(this::t1, this::t2, this::t3, this::t4);
+        return List.of(this::t1);
     }
 
 }

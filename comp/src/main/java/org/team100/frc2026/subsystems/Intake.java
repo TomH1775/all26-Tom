@@ -26,7 +26,7 @@ public class Intake extends SubsystemBase {
     private static final CanId CAN_ID_1 = new CanId(15);
     private static final CanId CAN_ID_2 = new CanId(17);
     private static final double TOLERANCE_M_S = 1;
-    private static final double GEAR_RATIO = 1;
+    private static final double GEAR_RATIO = 52.0833333333;
     private static final double WHEEL_DIAMETER_M = 0.05;
     private final Mutable NORMAL_SPEED;
 
@@ -59,7 +59,7 @@ public class Intake extends SubsystemBase {
                         log1, CAN_ID_1, NeutralMode100.COAST, MotorPhase.FORWARD,
                         CurrentLimits.INTAKE_SUPPLY, CurrentLimits.INTAKE_STATOR, ff, friction, pid);
                 m2 = new KrakenX44Motor(
-                        log2, CAN_ID_2, NeutralMode100.COAST, MotorPhase.FORWARD,
+                        log2, CAN_ID_2, NeutralMode100.COAST, MotorPhase.REVERSE,
                         CurrentLimits.INTAKE_SUPPLY, CurrentLimits.INTAKE_STATOR, ff, friction, pid);
             }
             default -> {
