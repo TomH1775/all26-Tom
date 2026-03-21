@@ -126,4 +126,10 @@ public class MockBareMotor implements BareMotor, IncrementalBareEncoder {
     public void play(double freq) {
     }
 
+    @Override
+    public double getSupplyCurrent() {
+        // no current measurement
+        return 0;
+    }
+
 }

@@ -123,4 +123,10 @@ public class BareMotorController100 implements BareMotor {
     @Override
     public void play(double freq) {
     }
+
+    @Override
+    public double getSupplyCurrent() {
+        // no current measurement
+        return 0;
+    }
 }

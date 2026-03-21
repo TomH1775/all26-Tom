@@ -180,6 +180,12 @@ public class SimulatedBareMotor implements BareMotor {
         return getVelocityRad_S() / 10.0;
     }
 
+    @Override
+    public double getSupplyCurrent() {
+        // no current measurement
+        return 0;
+    }
+
     public double getUnwrappedPositionRad() {
         double pos = m_stateCache.get().x();
         if (Double.isNaN(pos))

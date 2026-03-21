@@ -117,4 +117,17 @@ public class BareMotorGroup implements BareMotor {
         return v;
     }
 
+    private double sum(ToDoubleFunction<BareMotor> f) {
+        double v = 0;
+        for (BareMotor m : m_motors) {
+            v += f.applyAsDouble(m);
+        }
+        return v;
+    }
+
+    @Override
+    public double getSupplyCurrent() {
+        return sum(BareMotor::getSupplyCurrent);
+    }
+
 }

@@ -130,6 +130,11 @@ public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsy
         m_stateCache.reset();
     }
 
+    /** Makes an X, stopped. */
+    public void defense() {
+        m_swerveLocal.defense();
+    }
+
     ///////////////////////////////////////////////////////////////
     //
     // Observers
@@ -252,6 +257,10 @@ public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsy
         return run(() -> {
             m_swerveLocal.play(freq);
         });
+    }
+
+    public Command defend() {
+        return run(this::defense);
     }
 
     /////////////////////////////////////////////////////////////////
