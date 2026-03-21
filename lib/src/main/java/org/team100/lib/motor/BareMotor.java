@@ -1,5 +1,6 @@
 package org.team100.lib.motor;
 
+import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.music.Player;
 import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
 
@@ -8,7 +9,7 @@ import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
  * mechanism. Accordingly, the units are always rotational, and there should be
  * no gear ratios in any implementation.
  */
-public interface BareMotor extends Player {
+public interface BareMotor extends Player, TotalCurrentLog.Reporter {
 
     /**
      * Some motors allow torque limiting through current limiting.

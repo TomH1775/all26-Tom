@@ -79,6 +79,12 @@ public class Binder {
 
         ////////////////////////////////////////////////////
         ///
+        /// DEFENSE X POSITION
+        ///
+        whileTrue(driver::povDown, m_machinery.m_drive.defend());
+
+        ////////////////////////////////////////////////////
+        ///
         /// INTAKE
         ///
         /// Right trigger: extend, then hold extended and intake

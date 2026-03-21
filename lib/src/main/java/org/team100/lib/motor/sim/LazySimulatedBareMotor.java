@@ -138,6 +138,11 @@ public class LazySimulatedBareMotor implements BareMotor {
         m_delegate.play(freq);
     }
 
+    @Override
+    public double getSupplyCurrent() {
+        return m_delegate.getSupplyCurrent();
+    }
+
     private double getTime() {
         return Takt.get() - m_startTime;
     }

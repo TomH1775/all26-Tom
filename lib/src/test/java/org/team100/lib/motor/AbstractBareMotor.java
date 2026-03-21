@@ -81,4 +81,10 @@ public class AbstractBareMotor implements BareMotor {
     public void periodic() {
     }
 
+    @Override
+    public double getSupplyCurrent() {
+        // no current measurement
+        return 0;
+    }
+
 };
