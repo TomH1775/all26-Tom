@@ -1,6 +1,7 @@
 package org.team100.lib.subsystems.swerve;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
@@ -10,8 +11,10 @@ import org.team100.lib.music.Player;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.module.SwerveModuleCollection;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
+import org.team100.lib.subsystems.swerve.module.state.SwerveModuleState100;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleStates;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 /**
@@ -22,6 +25,12 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
  * SwerveDriveSubsystem, and by tests.
  */
 public class SwerveLocal implements Player {
+    private static final SwerveModuleStates statesX = new SwerveModuleStates(
+            new SwerveModuleState100(0, Optional.of(new Rotation2d(Math.PI / 4))),
+            new SwerveModuleState100(0, Optional.of(new Rotation2d(-1 * Math.PI / 4))),
+            new SwerveModuleState100(0, Optional.of(new Rotation2d(3 * Math.PI / 4))),
+            new SwerveModuleState100(0, Optional.of(new Rotation2d(-3 * Math.PI / 4))));
+
     private final SwerveKinodynamics m_swerveKinodynamics;
     private final SwerveModuleCollection m_modules;
 
@@ -78,6 +87,13 @@ public class SwerveLocal implements Player {
      */
     void setRawModuleStates(SwerveModuleStates targetModuleStates) {
         m_modules.setRawDesiredStates(targetModuleStates);
+    }
+
+    /**
+     * Sets the wheels to make an "X" pattern.
+     */
+    void defense() {
+        setRawModuleStates(statesX);
     }
 
     ////////////////////////////////////////////////////////////////////
