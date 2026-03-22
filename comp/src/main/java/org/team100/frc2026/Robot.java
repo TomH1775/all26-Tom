@@ -56,6 +56,8 @@ public class Robot extends TimedRobot100 {
 
         // Log what the scheduler is doing. Use "withName()".
         SmartDashboard.putData(CommandScheduler.getInstance());
+        // Set the period to forever, to make the watchdog shut up.
+        CommandScheduler.getInstance().setPeriod(100);
 
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
         sync = new Sync(inst);

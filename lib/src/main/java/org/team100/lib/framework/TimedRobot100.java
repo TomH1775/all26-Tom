@@ -13,13 +13,12 @@ import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.hal.NotifierJNI;
-import edu.wpi.first.wpilibj.IterativeRobotBase;
 
 /**
  * Copy of {@link edu.wpi.first.wpilibj.TimedRobot} in an effort to improve
  * instrumentation.
  */
-public class TimedRobot100 extends IterativeRobotBase {
+public class TimedRobot100 extends IterativeRobotBase100 {
 
     static class Callback implements Comparable<Callback> {
         public Runnable func;
@@ -210,5 +209,4 @@ public class TimedRobot100 extends IterativeRobotBase {
     public void addPeriodic(Runnable callback, double periodSeconds, double offsetSeconds, String name) {
         m_callbacks.add(new Callback(m_robotLogger, callback, m_startTime, periodSeconds, offsetSeconds, name));
     }
-
 }
