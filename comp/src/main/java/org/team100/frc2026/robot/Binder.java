@@ -57,7 +57,7 @@ public class Binder {
         m_machinery.m_intake.setDefaultCommand(
                 m_machinery.m_intake.stop());
         m_machinery.m_intakeExtend.setDefaultCommand(
-                m_machinery.m_intakeExtend.goToRetractedPosition());
+                m_machinery.m_intakeExtend.stop());
         m_machinery.m_conveyor.setDefaultCommand(
                 m_machinery.m_conveyor.stop());
         m_machinery.m_shooter.setDefaultCommand(
@@ -92,23 +92,29 @@ public class Binder {
         /// "X": roll backwards to clear jams (only when out)
         /// "Y": wobble intake to help clear jams
 
-        whileTrue(driver::rightBumper,
-                m_machinery.m_intakeExtend.goToRetractedPosition());
+     //   whileTrue(driver::rightBumper,
+     //           m_machinery.m_intakeExtend.goToRetractedPosition());
 
-        whileTrue(driver::rightTrigger,
-                parallel(
-                        m_machinery.m_intakeExtend.goToExtendedPositionEndlessly(),
-                        sequence(
-                                waitUntil(m_machinery.m_intakeExtend::atGoal),
-                                m_machinery.m_intake.intake())));
+       // whileTrue(driver::rightTrigger,
+       //         parallel(
+       //                 m_machinery.m_intakeExtend.goToExtendedPositionEndlessly(),
+       //                 sequence(
+       //                         waitUntil(m_machinery.m_intakeExtend::atGoal),
+       //                         m_machinery.m_intake.intake())));
 
         whileTrue(driver::x,
-                m_machinery.m_intake.back());
+                m_machinery.m_intake.intake());
+        
+        whileTrue(driver::a,
+            m_machinery.m_intakeExtend.goToExtendedPositionEndlessly());
+        whileTrue(driver::b,
+            m_machinery.m_intakeExtend.goToRetractedPosition());
+        
 
-        whileTrue(driver::y,
-                repeatingSequence(
-                        m_machinery.m_intakeExtend.goToWobbleSlightlyInExtendedPosition().withTimeout(0.5),
-                        m_machinery.m_intakeExtend.goToWobbleSlightlyOutRetractedPosition().withTimeout(0.5)));
+        //whileTrue(driver::y,
+        //        repeatingSequence(
+        //                m_machinery.m_intakeExtend.goToWobbleSlightlyInExtendedPosition().withTimeout(0.5),
+        //                m_machinery.m_intakeExtend.goToWobbleSlightlyOutRetractedPosition().withTimeout(0.5)));
 
         ////////////////////////////////////////////////////
         ///
@@ -175,17 +181,17 @@ public class Binder {
         // m_machinery.m_feeder.normal()
         // .onlyWhile(m_machinery.m_shooter::atSpeed))));
 
-        whileTrue(driver::a,
-                parallel(
-                        m_machinery.m_shooterHood.failsafe(),
-                        m_machinery.m_shooter.failsafe(),
-                        m_machinery.m_conveyor.convey(),
-                        m_machinery.m_feeder.normal()));
+        //whileTrue(driver::a,
+           //     parallel(
+           //             m_machinery.m_shooterHood.failsafe(),
+           //             m_machinery.m_shooter.failsafe(),
+           //             m_machinery.m_conveyor.convey(),
+           //             m_machinery.m_feeder.normal()));
 
-        whileTrue(driver::b,
-                parallel(
-                        m_machinery.m_conveyor.back(),
-                        m_machinery.m_feeder.back()));
+       // whileTrue(driver::b,
+       //         parallel(
+       //                 m_machinery.m_conveyor.back(),
+       //                 m_machinery.m_feeder.back()));
 
         ////////////////////////////////////////////////////
         ///

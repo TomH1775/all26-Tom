@@ -56,7 +56,7 @@ public class ShooterHood extends SubsystemBase {
 
         final BareMotor motor;
         switch (Identity.instance) {
-            case TEST_BOARD_B0, COMP_BOT -> {
+            case TEST_BOARD_B0 -> {
 
                 SimpleDynamics ff = new SimpleDynamics(log, 0.00, 0.00);
                 Friction friction = new Friction(log, 0.350, 0.350, 0.0, 0.5);

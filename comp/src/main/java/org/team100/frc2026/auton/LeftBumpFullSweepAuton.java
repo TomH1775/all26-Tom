@@ -25,6 +25,7 @@ import org.team100.lib.trajectory.constraint.VelocityLimitRegionConstraint;
 import org.team100.lib.trajectory.path.PathSE2Factory;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
@@ -78,27 +79,15 @@ public class LeftBumpFullSweepAuton implements AnnotatedCommand {
     TrajectorySE2 t1(Pose2d startingPose) {
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(startingPose,
-                        new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(AutonPositions.ABOVE_BALL_FIELD,
-                        new DirectionSE2(1, 1, 0), 1));
-        return planner.restToRest(waypoints);
-    }
-
-    TrajectorySE2 t2(Pose2d startingPose) {
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(startingPose,
+                        new DirectionSE2(1, -0.2, 0), 1),
+                new WaypointSE2(new Pose2d(7.75, 7, new Rotation2d(90 * (Math.PI / 180))),
+                        new DirectionSE2(0.1, -1, 0), 1),
+                new WaypointSE2(new Pose2d(7.75, 1, new Rotation2d(90 * (Math.PI / 180))),
                         new DirectionSE2(0, -1, 0), 1),
-                new WaypointSE2(AutonPositions.BELOW_BALL_FIELD,
-                        new DirectionSE2(0, -1, 0), 1));
-        return planner.restToRest(waypoints);
-    }
-
-    TrajectorySE2 t3(Pose2d startingPose) {
-        List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(startingPose,
+                new WaypointSE2(new Pose2d(7, 4, new Rotation2d(270 * (Math.PI / 180))),
                         new DirectionSE2(0, 1, 0), 1),
                 new WaypointSE2(StartingPositions.LEFT_BUMP,
-                        new DirectionSE2(-1, -0.1, 0), 1),
+                        new DirectionSE2(-1, 0, 0), 1),
                 new WaypointSE2(AutonPositions.SHOOT_LEFT,
                         new DirectionSE2(-1, -1, 0), 1));
         return planner.restToRest(waypoints);
@@ -109,36 +98,30 @@ public class LeftBumpFullSweepAuton implements AnnotatedCommand {
         DriveWithTrajectoryFunction IntakeSetUp = new DriveWithTrajectoryFunction(
                 log.name("IntakeSetUp"), machinery.m_drive, controller,
                 machinery.m_trajectoryViz, this::t1);
-        DriveWithTrajectoryFunction IntakeBalls = new DriveWithTrajectoryFunction(
-                log.name("IntakeBalls"), machinery.m_drive, controller,
-                machinery.m_trajectoryViz, this::t2);
-        DriveWithTrajectoryFunction ScoreSetUp = new DriveWithTrajectoryFunction(
-                log.name("scoreSetup"), machinery.m_drive, controller,
-                machinery.m_trajectoryViz, this::t3);
 
+        // Intake, score
         return sequence(
                 parallel(
-                        IntakeSetUp.until(IntakeSetUp::isDone),
+                        IntakeSetUp.until(IntakeSetUp::isDone).withTimeout(8),
+                        // Assumed that the intake shouldn't deploy over the bump
                         sequence(
-                                Commands.waitUntil(() -> FieldConstants2026
+                        Commands.waitUntil(() -> FieldConstants2026
                                         .isInNeutralZone(machinery.m_drive.getState().translation())),
-                                machinery.m_intakeExtend.goToExtendedPositionEndlessly()
-                                        .until(machinery.m_intakeExtend::atGoal))),
-                parallel(
-                        IntakeBalls,
-                        machinery.m_intake.intake()).until(IntakeBalls::isDone),
-                parallel(
-                        machinery.m_intake.stopOnce(),
-                        machinery.m_intakeExtend.goToRetractedPosition(),
-                        sequence(
-                                ScoreSetUp.until(ScoreSetUp::isDone),
-                                parallel(
-                                        machinery.m_conveyor.convey(),
-                                        machinery.m_feeder.proportional(),
-                                        machinery.m_shooterHood.autoPosition(),
-                                        machinery.m_shooter.auto())
-                                        .withTimeout(5),
-                                machinery.m_shooter.stopOnce())));
+                            (machinery.m_intakeExtend.goToExtendedPosition()
+                            .andThen(machinery.m_intake.intake())).withTimeout(4),
+        
+                        Commands.waitUntil(() -> FieldConstants2026
+                                        .isInAllianceZone(machinery.m_drive.getState().translation())),
+                            parallel(
+                                machinery.m_intake.stop(),
+                                machinery.m_intakeExtend.goToRetractedPosition(),
+
+                                machinery.m_conveyor.convey(),
+                                machinery.m_feeder.proportional(),
+                                machinery.m_shooterHood.autoPosition(),
+                                machinery.m_shooter.auto())
+                                ))
+        );
     }
 
     @Override
@@ -148,7 +131,7 @@ public class LeftBumpFullSweepAuton implements AnnotatedCommand {
 
     @Override
     public List<Function<Pose2d, TrajectorySE2>> trajectoryFns() {
-        return List.of(this::t1, this::t2, this::t3);
+        return List.of(this::t1);
     }
 
 }

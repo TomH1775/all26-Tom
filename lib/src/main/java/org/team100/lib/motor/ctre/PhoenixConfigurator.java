@@ -65,12 +65,13 @@ public class PhoenixConfigurator {
 
     }
 
-    public static void crash(Supplier<StatusCode> s) {
+    public void crash(Supplier<StatusCode> s) {
         StatusCode statusCode = s.get();
         if (statusCode.isError()) {
             if (ACTUALLY_CRASH)
                 throw new IllegalStateException(statusCode.toString());
             System.out.println("WARNING: ******************************************************");
+            System.out.printf("WARNING: ****** Motor ID %d\n", m_motor.getDeviceID());
             System.out.println("WARNING: ****** MOTOR CONFIG HAS FAILED MOTOR IS NOT SET CORRECTLY ******");
             System.out.println("WARNING: " + statusCode.toString());
         }

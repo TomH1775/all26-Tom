@@ -120,8 +120,8 @@ public class Cache {
         if (!signals.isEmpty()) {
             StatusCode result = BaseStatusSignal.refreshAll(signals.toArray(new BaseStatusSignal[0]));
             if (result != StatusCode.OK) {
-                System.out.printf("WARNING: RefreshAll failed: %s: %s\n",
-                        result.toString(), result.getDescription());
+          //      System.out.printf("WARNING: RefreshAll failed: %s: %s\n",
+           //             result.toString(), result.getDescription());
             }
         }
         for (ObjectCache<?> r : caches) {

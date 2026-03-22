@@ -4,7 +4,7 @@ public class CurrentLimits {
     public static final double INTAKE_STATOR = 50;
     public static final double INTAKE_SUPPLY = 30;
 
-    public static final double INTAKE_EXTEND_STATOR = 50;
+    public static final double INTAKE_EXTEND_STATOR = 40;
     public static final double INTAKE_EXTEND_SUPPLY = 30;
 
     public static final double CONVEYOR_STATOR = 50;

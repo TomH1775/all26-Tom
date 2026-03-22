@@ -25,21 +25,21 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /** Intake must be retracted at startup. */
 public class IntakeExtend extends SubsystemBase {
-    private static final CanId CAN_ID = new CanId(16);
-    private static final double gearRatio = 15.3;
+    private static final CanId CAN_ID = new CanId(4);
+    private static final double gearRatio = 52;
     private static final double RETRACTED_POSITION = 0;
     // seems fine, 3/12/26
-    private static final double EXTENDED_POSITION = 3;
+    private static final double EXTENDED_POSITION = 2.568002;
 
     private final AngularPositionServo m_servo;
 
     public IntakeExtend(LoggerFactory parent, TotalCurrentLog currentLog) {
         LoggerFactory log = parent.type(this);
-        TrapezoidProfileR1 profile = new TrapezoidProfileR1(log, 16, 32, 0.1);
+        TrapezoidProfileR1 profile = new TrapezoidProfileR1(log, 8, 16, 0.1);
         ReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.1, 0.05);
         final BareMotor motor;
         switch (Identity.instance) {
-            case COMP_BOT -> {
+            case TEST_BOARD_B0, COMP_BOT -> {
 
                 SimpleDynamics ff = new SimpleDynamics(log, 0.0, 0.0);
                 // friction test 3/12/26

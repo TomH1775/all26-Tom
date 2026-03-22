@@ -48,7 +48,7 @@ public class Feeder extends SubsystemBase {
         final BareMotor m1;
         final BareMotor m2;
         switch (Identity.instance) {
-            case TEST_BOARD_B0, COMP_BOT -> {
+            case TEST_BOARD_B0 -> {
 
                 SimpleDynamics dynamics = new SimpleDynamics(log, 0.00, 0.00);
                 // friction test 3/12/26

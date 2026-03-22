@@ -78,7 +78,7 @@ public class SwerveModuleCollection implements Player {
                                 DriveRatio.MEDIUM,
                                 new CanId(3), // steer
                                 new RoboRioChannel(8),
-                                0.108695,
+                                0.109162,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
                         WCPSwerveModule100.getKrakenDrive(
@@ -87,16 +87,17 @@ public class SwerveModuleCollection implements Player {
                                 DriveRatio.MEDIUM,
                                 new CanId(18), // steer
                                 new RoboRioChannel(6),
-                                0.363170,
+                                0.361342,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
+
                         WCPSwerveModule100.getKrakenDrive(
                                 rearLeftLogger, currentLog, supplyLimit, statorLimit,
-                                new CanId(0), // drive
+                                new CanId(8), // drive
                                 DriveRatio.MEDIUM,
-                                new CanId(2), // steer
+                                new CanId(7), // steer
                                 new RoboRioChannel(7),
-                                0.606495,
+                                0.611814,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
                         WCPSwerveModule100.getKrakenDrive(
@@ -105,7 +106,7 @@ public class SwerveModuleCollection implements Player {
                                 DriveRatio.MEDIUM,
                                 new CanId(21), // steer
                                 new RoboRioChannel(9),
-                                0.283205,
+                                0.279052,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE));
             case SWERVE_ONE:
