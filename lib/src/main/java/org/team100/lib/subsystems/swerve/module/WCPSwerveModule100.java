@@ -2,6 +2,7 @@ package org.team100.lib.subsystems.swerve.module;
 
 import java.util.function.Supplier;
 
+import org.team100.frc2026.robot.CurrentLimits;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.config.SimpleDynamics;
@@ -34,12 +35,7 @@ import org.team100.lib.util.RoboRioChannel;
 public class WCPSwerveModule100 extends SwerveModule100 {
     private static final double STEERING_POSITION_TOLERANCE_RAD = 0.05;
     private static final double STEERING_VELOCITY_TOLERANCE_RAD_S = 0.05;
-    // https://github.com/frc1678/C2024-Public/blob/17e78272e65a6ce4f87c00a3514c79f787439ca1/src/main/java/com/team1678/frc2024/Constants.java#L212
-    // 2/26/25 Joel increased the steering limits *a lot*, they were 10/20, now
-    // 60/80, which may mean it's more imporant now to avoid twitching and
-    // oscillating.
-    private static final double STEERING_SUPPLY_LIMIT = 20;
-    private static final double STEERING_STATOR_LIMIT = 30;
+
     /**
      * WCP calls this "rotation ratio" here, we use the "flipped belt" which is the
      * fastest steering ratio.
@@ -237,8 +233,8 @@ public class WCPSwerveModule100 extends SwerveModule100 {
                 turningMotorCanId,
                 neutral,
                 motorPhase,
-                STEERING_SUPPLY_LIMIT,
-                STEERING_STATOR_LIMIT,
+                CurrentLimits.STEERING_SUPPLY,
+                CurrentLimits.STEERING_STATOR,
                 ff,
                 friction,
                 pid);
@@ -291,8 +287,8 @@ public class WCPSwerveModule100 extends SwerveModule100 {
                 turningMotorCanId,
                 neutral,
                 motorPhase,
-                STEERING_SUPPLY_LIMIT,
-                STEERING_STATOR_LIMIT,
+                CurrentLimits.STEERING_SUPPLY,
+                CurrentLimits.STEERING_STATOR,
                 ff,
                 friction,
                 pid);
