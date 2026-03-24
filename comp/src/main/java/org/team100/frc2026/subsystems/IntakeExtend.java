@@ -39,7 +39,7 @@ public class IntakeExtend extends SubsystemBase {
         ReferenceR1 ref = new ProfileReferenceR1(log, () -> profile, 0.1, 0.05);
         final BareMotor motor;
         switch (Identity.instance) {
-            case TEST_BOARD_B0, COMP_BOT -> {
+            case TEST_BOARD_B0 -> {
 
                 SimpleDynamics ff = new SimpleDynamics(log, 0.0, 0.0);
                 // friction test 3/12/26

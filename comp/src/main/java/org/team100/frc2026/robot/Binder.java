@@ -109,6 +109,7 @@ public class Binder {
             m_machinery.m_intakeExtend.goToExtendedPositionEndlessly());
         whileTrue(driver::b,
             m_machinery.m_intakeExtend.goToRetractedPosition());
+        whileTrue(driver::y, m_machinery.m_shooter.testShooterFullspeed());
         
 
         //whileTrue(driver::y,

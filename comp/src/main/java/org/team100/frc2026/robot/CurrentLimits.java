@@ -17,7 +17,7 @@ public class CurrentLimits {
     public static final CurrentLimit INTAKE_EXTEND = new CurrentLimit(40, 30);
     public static final CurrentLimit CONVEYOR = new CurrentLimit(50, 30);
     public static final CurrentLimit FEEDER = new CurrentLimit(50, 30);
-    public static final CurrentLimit SHOOTER = new CurrentLimit(60, 40);
+    public static final CurrentLimit SHOOTER = new CurrentLimit(40, 80);
     public static final CurrentLimit SHOOTER_HOOD = new CurrentLimit(50, 30);
     public static final CurrentLimit DRIVE = new CurrentLimit(90, 60);
     public static final CurrentLimit STEERING = new CurrentLimit(20, 30);

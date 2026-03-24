@@ -13,7 +13,8 @@ import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
-import org.team100.lib.motor.ctre.KrakenX44Motor;
+//import org.team100.lib.motor.ctre.KrakenX44Motor;
+import org.team100.lib.motor.rev.NeoVortexCANSparkMotor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
 import org.team100.lib.profile.r1.TrapezoidProfileR1;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
@@ -63,7 +64,7 @@ public class ShooterHood extends SubsystemBase {
                 // tuned 3/12/26
                 PIDConstants pid = PIDConstants.makePositionPID(log, 1.0);
 
-                motor = new KrakenX44Motor(
+                motor = new NeoVortexCANSparkMotor(
                         log, currentLog, CAN_ID, NeutralMode100.COAST, MotorPhase.REVERSE,
                         CurrentLimits.SHOOTER_HOOD, ff, friction, pid);
 
