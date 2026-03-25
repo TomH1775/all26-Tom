@@ -33,11 +33,8 @@ public class Shooter extends SubsystemBase {
     private static final CanId CAN_ID_1 = new CanId(2);
     private static final CanId CAN_ID_2 = new CanId(5);
     private static final CanId CAN_ID_3 = new CanId(14);
-
-    // TODO: find the actuall CanId for the fourth motor
-    //private static final CanId CAN_ID_4 = new CanId(9);
+    private static final CanId CAN_ID_4 = new CanId(9);
     private static final double TOLERANCE_M_S = 1;
-
     private static final double GEAR_RATIO = 1;
     private static final double WHEEL_DIAMETER_M = .115;
 
@@ -49,7 +46,7 @@ public class Shooter extends SubsystemBase {
     private final OutboardLinearVelocityServo m_servo1;
     private final OutboardLinearVelocityServo m_servo2;
     private final OutboardLinearVelocityServo m_servo3;
-   // private final OutboardLinearVelocityServo m_servo4;
+    private final OutboardLinearVelocityServo m_servo4;
     private final Mutable m_tuningSetting;
     private final Mutable TEST_SPEED;
 
@@ -62,7 +59,7 @@ public class Shooter extends SubsystemBase {
         LoggerFactory log1 = log.name("Shooter1");
         LoggerFactory log2 = log.name("Shooter2");
         LoggerFactory log3 = log.name("Shooter3");
-        //LoggerFactory log4 = log.name("Shooter4");
+        LoggerFactory log4 = log.name("Shooter4");
         m_speed = speed;
         m_tuningSetting = new Mutable(log, "for tuning", 0);
         TEST_SPEED = new Mutable(log, "Shooter test speed", 15);
@@ -75,7 +72,7 @@ public class Shooter extends SubsystemBase {
         final BareMotor m1;
         final BareMotor m2;
         final BareMotor m3;
-        //final BareMotor m4;
+        final BareMotor m4;
         switch (Identity.instance) {
             case TEST_BOARD_B0, COMP_BOT -> {
 
@@ -94,16 +91,16 @@ public class Shooter extends SubsystemBase {
                 m3 = new NeoVortexCANSparkMotor(
                         log3, currentLog, CAN_ID_3, NeutralMode100.COAST, MotorPhase.FORWARD,
                         CurrentLimits.SHOOTER, ff, friction, pid);
-                // m4 = new NeoVortexCANSparkMotor(
-                //         log4, currentLog, CAN_ID_4, NeutralMode100.COAST, MotorPhase.REVERSE,
-                //         CurrentLimits.SHOOTER, ff, friction, pid);
+                m4 = new NeoVortexCANSparkMotor(
+                        log4, currentLog, CAN_ID_4, NeutralMode100.COAST, MotorPhase.REVERSE,
+                        CurrentLimits.SHOOTER, ff, friction, pid);
 
             }
             default -> {
                 m1 = new SimulatedBareMotor(log1, 600);
                 m2 = new SimulatedBareMotor(log2, 600);
                 m3 = new SimulatedBareMotor(log3, 600);
-               // m4 = new SimulatedBareMotor(log4, 600);
+                m4 = new SimulatedBareMotor(log4, 600);
             }
         }
         // note different gear ratio
@@ -113,8 +110,8 @@ public class Shooter extends SubsystemBase {
                 log2, m2, ref, GEAR_RATIO, WHEEL_DIAMETER_M, TOLERANCE_M_S);
         m_servo3 = OutboardLinearVelocityServo.make(
                 log3, m3, ref, GEAR_RATIO, WHEEL_DIAMETER_M, TOLERANCE_M_S);
-    //    // m_servo4 = OutboardLinearVelocityServo.make(
-    //             log4, m4, ref, GEAR_RATIO, WHEEL_DIAMETER_M, TOLERANCE_M_S);
+        m_servo4 = OutboardLinearVelocityServo.make(
+                log4, m4, ref, GEAR_RATIO, WHEEL_DIAMETER_M, TOLERANCE_M_S);
     }
 
     @Override
@@ -122,7 +119,7 @@ public class Shooter extends SubsystemBase {
         m_servo1.periodic();
         m_servo2.periodic();
         m_servo3.periodic();
-       // m_servo4.periodic();
+        m_servo4.periodic();
     }
 
     public Command tune() {
@@ -170,10 +167,10 @@ public class Shooter extends SubsystemBase {
                 .withName("Motor 3 Spin");
     }
 
-    // public Command testMotor4Command() {
-    //     return run(this::dutyCycle4)
-    //             .withName("Motor 4 Spin");
-    // }
+    public Command testMotor4Command() {
+        return run(this::dutyCycle4)
+                .withName("Motor 4 Spin");
+    }
 
     /** Fixed speed for about 2.5m */
     public Command failsafe() {
@@ -224,7 +221,7 @@ public class Shooter extends SubsystemBase {
                     m_servo1.setVelocityProfiled(meters_sec);
                     m_servo2.setVelocityProfiled(meters_sec);
                     m_servo3.setVelocityProfiled(meters_sec);
-                   // m_servo4.setVelocityProfiled(meters_sec);
+                    m_servo4.setVelocityProfiled(meters_sec);
                 })
                 .withName("set velocity");
     }
@@ -235,14 +232,14 @@ public class Shooter extends SubsystemBase {
         m_servo1.reset();
         m_servo2.reset();
         m_servo3.reset();
-       // m_servo4.reset();
+        m_servo4.reset();
     }
 
     private void stopMotor() {
         m_servo1.stop();
         m_servo2.stop();
         m_servo3.stop();
-      //  m_servo4.stop();
+        m_servo4.stop();
     }
 
     @SuppressWarnings("unused")
@@ -250,21 +247,21 @@ public class Shooter extends SubsystemBase {
         m_servo1.setVelocityDirect(setpointM_S);
         m_servo2.setVelocityDirect(setpointM_S);
         m_servo3.setVelocityDirect(setpointM_S);
-       // m_servo4.setVelocityDirect(setpointM_S);
+        m_servo4.setVelocityDirect(setpointM_S);
     }
 
     private void setVelocityProfiled(double goalM_S) {
         m_servo1.setVelocityProfiled(goalM_S);
         m_servo2.setVelocityProfiled(goalM_S);
         m_servo3.setVelocityProfiled(goalM_S);
-      //  m_servo4.setVelocityProfiled(goalM_S);
+        m_servo4.setVelocityProfiled(goalM_S);
     }
 
     private void dutyCycleAll() {
         m_servo1.setDutyCycle(1);
         m_servo2.setDutyCycle(1);
         m_servo3.setDutyCycle(1);
-      //  m_servo4.setDutyCycle(1);
+        m_servo4.setDutyCycle(1);
     }
 
     private void dutyCycle1() {
@@ -279,9 +276,9 @@ public class Shooter extends SubsystemBase {
         m_servo3.setDutyCycle(1);
     }
 
-    // private void dutyCycle4() {
-    //   //  m_servo4.setDutyCycle(1);
-    // }
+    private void dutyCycle4() {
+        m_servo4.setDutyCycle(1);
+    }
 
     /** Run the drums at the speed supplied */
     private void autoWork() {
