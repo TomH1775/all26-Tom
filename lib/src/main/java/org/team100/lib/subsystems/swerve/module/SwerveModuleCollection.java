@@ -118,7 +118,7 @@ public class SwerveModuleCollection implements Player {
                                 DriveRatio.FAST,
                                 new CanId(32), // steer
                                 new RoboRioChannel(6),
-                                0.160218,
+                                0.936189,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
                         WCPSwerveModule100.getFalconDrive(
@@ -127,7 +127,7 @@ public class SwerveModuleCollection implements Player {
                                 DriveRatio.FAST,
                                 new CanId(30), // steer
                                 new RoboRioChannel(8),
-                                0.876519,
+                                0.875511,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
                         WCPSwerveModule100.getFalconDrive(
@@ -136,7 +136,7 @@ public class SwerveModuleCollection implements Player {
                                 DriveRatio.FAST,
                                 new CanId(31), // steer
                                 new RoboRioChannel(7),
-                                0.406423,
+                                0.409354,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
                         WCPSwerveModule100.getFalconDrive(
@@ -145,7 +145,7 @@ public class SwerveModuleCollection implements Player {
                                 DriveRatio.FAST,
                                 new CanId(33), // steer
                                 new RoboRioChannel(9),
-                                0.032502,
+                                0.029534,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE));
             case BETA_BOT:
