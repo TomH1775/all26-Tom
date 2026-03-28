@@ -32,13 +32,13 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class TrenchScallopLobAutonRight implements AnnotatedCommand {
+public class TrenchScallopLobAutonRightFull implements AnnotatedCommand {
     private final LoggerFactory log;
     private final ControllerSE2 controller;
     private final Machinery machinery;
     private final TrajectorySE2Planner planner;
 
-    public TrenchScallopLobAutonRight(
+    public TrenchScallopLobAutonRightFull(
             LoggerFactory parent,
             SwerveKinodynamics kinodynamics,
             ControllerSE2 controller,
@@ -50,14 +50,14 @@ public class TrenchScallopLobAutonRight implements AnnotatedCommand {
         double bumpV = 2; // cartesian velocity over the bump
         List<TimingConstraint> new_constraints = new ArrayList<>(List.of(
                 // high velocity, moderate accel
-                new ConstantConstraint(log, 5, 20),
+                new ConstantConstraint(log, 8, 10),
                 // absolute maxima
-                new SwerveDriveDynamicsConstraint(log, kinodynamics, 1, 1),
+                // new SwerveDriveDynamicsConstraint(log, kinodynamics, 1, 1),
                 // high yaw limits
-                new YawRateConstraint(log, 10, 20),
+                // new YawRateConstraint(log, 15, 20),
                 // moderate capsize limits. Note we're not actually concerned about capsize
                 // here, we just want to limit tire tread shear
-                new CapsizeAccelerationConstraint(log, 5, 20),
+                new CapsizeAccelerationConstraint(log, 8, 10),
                 new VelocityLimitRegionConstraint(log, BumpZones.BLUE_BUMP_LEFT, bumpV),
                 new VelocityLimitRegionConstraint(log, BumpZones.BLUE_BUMP_RIGHT, bumpV),
                 new VelocityLimitRegionConstraint(log, BumpZones.RED_BUMP_LEFT, bumpV),
@@ -74,7 +74,7 @@ public class TrenchScallopLobAutonRight implements AnnotatedCommand {
 
     @Override
     public String name() {
-        return "TrenchScallopLobRight";
+        return "TrenchScallopLobRightFull";
     }
 
     @Override
@@ -117,24 +117,28 @@ public class TrenchScallopLobAutonRight implements AnnotatedCommand {
                 // new WaypointSE2(new Pose2d(8.3, 5, new Rotation2d(180 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
 
                 // new WaypointSE2(new Pose2d(7, 5.5, new Rotation2d(180 * (Math.PI / 180))), new DirectionSE2(-1, 0, 0), 1), 
-                new WaypointSE2(startingPose, new DirectionSE2(1, 0, 0), 1),
+                new WaypointSE2(startingPose, new DirectionSE2(1, -0.3, 0), 1),
 
-                new WaypointSE2(new Pose2d(7, 1.5, new Rotation2d(195 * (Math.PI / 180))), new DirectionSE2(1, 1.5, 0), 1),
+                new WaypointSE2(new Pose2d(7, 1.5, new Rotation2d(195 * (Math.PI / 180))), new DirectionSE2(1, 0.5, 0), 1),
 
-                new WaypointSE2(new Pose2d(9, 1.7, new Rotation2d(195 * (Math.PI / 180))), new DirectionSE2(1, 0.5, 0), 1),
-                new WaypointSE2(new Pose2d(7, 1.8, new Rotation2d(195 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
+                new WaypointSE2(new Pose2d(9, 2, new Rotation2d(195 * (Math.PI / 180))), new DirectionSE2(1, 0.5, 0), 1),
+                new WaypointSE2(new Pose2d(7, 2.1, new Rotation2d(195 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
                 
-                new WaypointSE2(new Pose2d(9, 2.2, new Rotation2d(205 * (Math.PI / 180))), new DirectionSE2(1, 0.5, 0), 1),
+                new WaypointSE2(new Pose2d(9, 3.2, new Rotation2d(205 * (Math.PI / 180))), new DirectionSE2(1, 0.5, 0), 1),
 
-                new WaypointSE2(new Pose2d(7, 2.3, new Rotation2d(205 * (Math.PI / 180))), new DirectionSE2(1, 0.5, 0), 1),
-                new WaypointSE2(new Pose2d(9, 2.7, new Rotation2d(205 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
+                new WaypointSE2(new Pose2d(7, 3.3, new Rotation2d(205 * (Math.PI / 180))), new DirectionSE2(1, 0.5, 0), 1),
+                new WaypointSE2(new Pose2d(9, 3.9, new Rotation2d(205 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
             
-                new WaypointSE2(new Pose2d(7, 2.8, new Rotation2d(210 * (Math.PI / 180))), new DirectionSE2(1, 0.5, 0), 1),
+                new WaypointSE2(new Pose2d(7, 4, new Rotation2d(210 * (Math.PI / 180))), new DirectionSE2(1, 0.5, 0), 1),
 
-                new WaypointSE2(new Pose2d(9, 3.2, new Rotation2d(210 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(new Pose2d(7, 3.3, new Rotation2d(210 * (Math.PI / 180))), new DirectionSE2(1, 0.5, 0), 1),
+                new WaypointSE2(new Pose2d(9, 5.2, new Rotation2d(170 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
+                new WaypointSE2(new Pose2d(7, 6, new Rotation2d(170 * (Math.PI / 180))), new DirectionSE2(1, 0.5, 0), 1),
 
-                new WaypointSE2(new Pose2d(9, 3.7, new Rotation2d(210 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1)
+                new WaypointSE2(new Pose2d(9, 5.8, new Rotation2d(170 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
+                new WaypointSE2(new Pose2d(7, 6.6, new Rotation2d(170 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
+                new WaypointSE2(new Pose2d(9, 6, new Rotation2d(170 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1)
+
+
 
         //
         );

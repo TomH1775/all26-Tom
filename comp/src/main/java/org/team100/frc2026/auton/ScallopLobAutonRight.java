@@ -122,7 +122,7 @@ public class ScallopLobAutonRight implements AnnotatedCommand {
                 // new WaypointSE2(new Pose2d(6.5, 4, new Rotation2d(210 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
                 // new WaypointSE2(new Pose2d(7.8, 4, new Rotation2d(210 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1)
                 
-                new WaypointSE2(new Pose2d(8, 2, new Rotation2d(195 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
+                new WaypointSE2(new Pose2d(8, 2, new Rotation2d(5 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
                 new WaypointSE2(new Pose2d(7, 2.3, new Rotation2d(195 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
                 
                 new WaypointSE2(new Pose2d(7, 2.7, new Rotation2d(205 * (Math.PI / 180))), new DirectionSE2(1, 1, 0), 1),
