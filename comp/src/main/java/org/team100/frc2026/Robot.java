@@ -18,6 +18,8 @@ import org.team100.lib.logging.RobotLog;
 import org.team100.lib.network.Sync;
 import org.team100.lib.util.Banner;
 
+import com.revrobotics.util.StatusLogger;
+
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
@@ -46,7 +48,7 @@ public class Robot extends TimedRobot100 {
 
         // This is for setting up LaserCAN devices.
         // CanBridge.runTCP();
-
+        StatusLogger.disableAutoLogging();
         System.out.printf("WPILib Version: %s\n", WPILibVersion.Version);
         System.out.printf("RoboRIO serial number: %s\n", RobotController.getSerialNumber());
         System.out.printf("Identity: %s\n", Identity.instance.name());

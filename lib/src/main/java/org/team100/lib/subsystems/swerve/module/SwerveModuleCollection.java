@@ -87,7 +87,7 @@ public class SwerveModuleCollection implements Player {
                                 new CanId(22), // drive
                                 DriveRatio.MEDIUM,
                                 new CanId(18), // steer
-                                new RoboRioChannel(6),
+                                  new RoboRioChannel(6),
                                 0.361342,
                                 kinodynamics,
                                 EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
