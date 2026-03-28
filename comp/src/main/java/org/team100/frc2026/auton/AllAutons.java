@@ -130,6 +130,11 @@ public class AllAutons {
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
+         m_autonChooser.add(new TrenchScallopLobAutonRight(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery));
         // m_autonChooser.add(new RightBumpAnnoyingAuton(
         // log,
         // machinery.m_swerveKinodynamics,
