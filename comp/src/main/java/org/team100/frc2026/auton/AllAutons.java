@@ -52,79 +52,89 @@ public class AllAutons {
         // log,
         // machinery.m_swerveKinodynamics,
         // controller,
-        // machinery));
-        m_autonChooser.add(new LeftBumpPreloadedAuton(
-                log,
-                machinery.m_swerveKinodynamics,
-                controller,
-                machinery));
-        m_autonChooser.add(new LeftBumpFullSweepAuton(
-                log,
-                machinery.m_swerveKinodynamics,
-                controller,
-                machinery));
-        m_autonChooser.add(new LeftBumpHalfSweepAuton(
-                log,
-                machinery.m_swerveKinodynamics,
-                controller,
-                machinery));
-        m_autonChooser.add(new LeftLobAuton(
-                log,
-                machinery.m_swerveKinodynamics,
-                controller,
-                machinery));
-        m_autonChooser.add(new CenterPreloadedAuton(
-                log,
-                machinery.m_swerveKinodynamics,
-                controller,
-                machinery));
-        m_autonChooser.add(new CenterFullSweepAuton(
-                log,
-                machinery.m_swerveKinodynamics,
-                controller,
-                machinery));
-        m_autonChooser.add(new CenterHalfSweepAuton(
-                log,
-                machinery.m_swerveKinodynamics,
-                controller,
-                machinery));
+        // // machinery));
+        // m_autonChooser.add(new LeftBumpPreloadedAuton(
+        //         log,
+        //         machinery.m_swerveKinodynamics,
+        //         controller,
+        //         machinery));
+        // m_autonChooser.add(new LeftBumpFullSweepAuton(
+        //         log,
+        //         machinery.m_swerveKinodynamics,
+        //         controller,
+        //         machinery));
+        // m_autonChooser.add(new LeftBumpHalfSweepAuton(
+        //         log,
+        //         machinery.m_swerveKinodynamics,
+        //         controller,
+        //         machinery));
+        // m_autonChooser.add(new LeftLobAuton(
+        //         log,
+        //         machinery.m_swerveKinodynamics,
+        //         controller,
+        //         machinery));
+        // m_autonChooser.add(new CenterPreloadedAuton(
+        //         log,
+        //         machinery.m_swerveKinodynamics,
+        //         controller,
+        //         machinery));
+        // m_autonChooser.add(new CenterFullSweepAuton(
+        //         log,
+        //         machinery.m_swerveKinodynamics,
+        //         controller,
+        //         machinery));
+        // m_autonChooser.add(new CenterHalfSweepAuton(
+        //         log,
+        //         machinery.m_swerveKinodynamics,
+        //         controller,
+        //         machinery));
         
-        m_autonChooser.add(new RightBumpPreloadedAuton(
-                log,
-                machinery.m_swerveKinodynamics,
-                controller,
-                machinery));
-        m_autonChooser.add(new RightBumpFullSweepAuton(
-                log,
-                machinery.m_swerveKinodynamics,
-                controller,
-                machinery));
-        m_autonChooser.add(new RightBumpHalfSweepAuton(
-                log,
-                machinery.m_swerveKinodynamics,
-                controller,
-                machinery));
-        m_autonChooser.add(new RightBumpDisruptAuton(
-                log,
-                machinery.m_swerveKinodynamics,
-                controller,
-                machinery));
-        m_autonChooser.add(new DoubleCircleAuton(
-                log,
-                machinery.m_swerveKinodynamics,
-                controller,
-                machinery.m_solver,
-                machinery));
+        // m_autonChooser.add(new RightBumpPreloadedAuton(
+        //         log,
+        //         machinery.m_swerveKinodynamics,
+        //         controller,
+        //         machinery));
+        // m_autonChooser.add(new RightBumpFullSweepAuton(
+        //         log,
+        //         machinery.m_swerveKinodynamics,
+        //         controller,
+        //         machinery));
+        // m_autonChooser.add(new RightBumpHalfSweepAuton(
+        //         log,
+        //         machinery.m_swerveKinodynamics,
+        //         controller,
+        //         machinery));
+        // m_autonChooser.add(new RightBumpDisruptAuton(
+        //         log,
+        //         machinery.m_swerveKinodynamics,
+        //         controller,
+        //         machinery));
+        // m_autonChooser.add(new DoubleCircleAuton(
+        //         log,
+        //         machinery.m_swerveKinodynamics,
+        //         controller,
+        //         machinery.m_solver,
+        //         machinery));
         m_autonChooser.add(new ScallopLobAuton(
                 log,
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
-        m_autonChooser.add(new RightBumpAnnoyingAuton(
-        log,
-        machinery.m_swerveKinodynamics,
-        controller,
-        machinery));
+        m_autonChooser.add(new ScallopLobAutonRight(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery));
+        m_autonChooser.add(new ScallopLobAutonLeft(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery));
+        // m_autonChooser.add(new RightBumpAnnoyingAuton(
+        // log,
+        // machinery.m_swerveKinodynamics,
+        // controller,
+        // machinery));
     }
 
     public Command get() {
