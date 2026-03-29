@@ -68,24 +68,24 @@ public class AutonAlerts {
             m_noStartingPosition.setText(START_MISSING);
             start(false);
         } else {
-            if (RobotBase.isReal()
-                    || Experiments.instance.enabled(Experiment.TestAutonAlert)) {
-                // for a real robot, we complain if we're far from the correct place.
-                Pose2d pose = m_robotPose.get();
-                DeltaSE2 delta = DeltaSE2.delta(start, pose);
-                if (delta.l2Norm() < 0.2) {
-                    // good enough
-                    start(true);
-                } else {
-                    m_noStartingPosition.setText(
-                            String.format("Starting position error %s", delta));
-                    start(false);
-                }
-            } else {
-                // in simulation we force the position so it's always ok
-                m_poseSetter.accept(start);
-                start(true);
-            }
+            // if (RobotBase.isReal()
+            // || Experiments.instance.enabled(Experiment.TestAutonAlert)) {
+            // // for a real robot, we complain if we're far from the correct place.
+            // Pose2d pose = m_robotPose.get();
+            // DeltaSE2 delta = DeltaSE2.delta(start, pose);
+            // if (delta.l2Norm() < 0.2) {
+            // // good enough
+            // start(true);
+            // } else {
+            // m_noStartingPosition.setText(
+            // String.format("Starting position error %s", delta));
+            // start(false);
+            // }
+            // } else {
+            // in simulation we force the position so it's always ok
+            m_poseSetter.accept(start);
+            start(true);
+            // }
         }
     }
 
