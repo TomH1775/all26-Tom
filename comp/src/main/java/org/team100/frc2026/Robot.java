@@ -6,6 +6,7 @@ import org.team100.frc2026.robot.Machinery;
 import org.team100.frc2026.robot.Prewarmer;
 import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.Takt;
+import org.team100.lib.config.AnnotatedCommand;
 import org.team100.lib.config.Identity;
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
@@ -13,13 +14,14 @@ import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.indicator.Alerts;
 import org.team100.lib.indicator.AutonAlerts;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.Logging; 
+import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.RobotLog;
 import org.team100.lib.network.Sync;
 import org.team100.lib.util.Banner;
 
 import com.revrobotics.util.StatusLogger;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
@@ -115,7 +117,14 @@ public class Robot extends TimedRobot100 {
 
     @Override
     public void autonomousInit() {
-        Command auton = m_allAutons.get();
+        AnnotatedCommand ac = m_allAutons.getAnnotated();
+        if (ac == null)
+            return;
+        Pose2d start = ac.start();
+        if (start != null) {
+            m_machinery.resetPose(start);
+        }
+        Command auton = ac.command();
         if (auton == null)
             return;
         CommandScheduler.getInstance().schedule(auton);
@@ -166,6 +175,7 @@ public class Robot extends TimedRobot100 {
 
     @Override
     public void disabledInit() {
+
     }
 
     @Override
