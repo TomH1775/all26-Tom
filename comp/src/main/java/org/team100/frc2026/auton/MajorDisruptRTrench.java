@@ -32,13 +32,13 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class MajorDisruptLTrench implements AnnotatedCommand {
+public class MajorDisruptRTrench implements AnnotatedCommand {
     private final LoggerFactory log;
     private final ControllerSE2 controller;
     private final Machinery machinery;
     private final TrajectorySE2Planner planner;
 
-    public MajorDisruptLTrench(
+    public MajorDisruptRTrench(
             LoggerFactory parent,
             SwerveKinodynamics kinodynamics,
             ControllerSE2 controller,
@@ -69,12 +69,12 @@ public class MajorDisruptLTrench implements AnnotatedCommand {
 
     @Override
     public Pose2d start() {
-        return StartingPositions.LEFT_TRENCH;
+        return StartingPositions.RIGHT_TRENCH;
     }
 
     @Override
     public String name() {
-        return "MajorDisruptLTrench";
+        return "MajorDisruptRTrench";
     }
 
     @Override
@@ -109,8 +109,8 @@ public class MajorDisruptLTrench implements AnnotatedCommand {
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(startingPose, new DirectionSE2(1, 0, 0), 1),
 
-                new WaypointSE2(new Pose2d(8, 7, new Rotation2d(180 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(new Pose2d(8.1,1, new Rotation2d(180 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1)
+                new WaypointSE2(new Pose2d(8, 0.6, new Rotation2d(180 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
+                new WaypointSE2(new Pose2d(8.1,7, new Rotation2d(180 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1)
 
 
         //
