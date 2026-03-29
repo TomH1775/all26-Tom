@@ -50,14 +50,14 @@ public class ScallopLobAutonLeft implements AnnotatedCommand {
         double bumpV = 2; // cartesian velocity over the bump
         List<TimingConstraint> new_constraints = new ArrayList<>(List.of(
                 // high velocity, moderate accel
-                new ConstantConstraint(log, 5, 20),
+                new ConstantConstraint(log, 8, 20),
                 // absolute maxima
-                new SwerveDriveDynamicsConstraint(log, kinodynamics, 1, 1),
+                // new SwerveDriveDynamicsConstraint(log, kinodynamics, 1, 1),
                 // high yaw limits
-                new YawRateConstraint(log, 10, 20),
+                // new YawRateConstraint(log, 10, 20),
                 // moderate capsize limits. Note we're not actually concerned about capsize
                 // here, we just want to limit tire tread shear
-                new CapsizeAccelerationConstraint(log, 5, 20),
+                new CapsizeAccelerationConstraint(log, 8, 20),
                 new VelocityLimitRegionConstraint(log, BumpZones.BLUE_BUMP_LEFT, bumpV),
                 new VelocityLimitRegionConstraint(log, BumpZones.BLUE_BUMP_RIGHT, bumpV),
                 new VelocityLimitRegionConstraint(log, BumpZones.RED_BUMP_LEFT, bumpV),
