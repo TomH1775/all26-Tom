@@ -170,11 +170,26 @@ public class AllAutons {
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
-        //  m_autonChooser.add(new MajorDisruptLeftBAuton(
-        //         log,
-        //         machinery.m_swerveKinodynamics,
-        //         controller,
-        //         machinery));
+         m_autonChooser.add(new MiddleDefenseLBump(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery));
+         m_autonChooser.add(new MiddleDefenseLBump(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery));
+         m_autonChooser.add(new MiddleDefenseRTrench(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery));
+          m_autonChooser.add(new MiddleDefenseLTrench(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery));
     }
 
     public Command get() {
