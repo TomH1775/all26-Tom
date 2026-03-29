@@ -118,6 +118,7 @@ public class  SideDefenseLTrench  implements AnnotatedCommand {
 
                 new WaypointSE2(new Pose2d(8.3,1, new Rotation2d(-120 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1)
 
+                
 
         //
         );

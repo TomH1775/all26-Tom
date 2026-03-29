@@ -170,12 +170,7 @@ public class AllAutons {
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
-         m_autonChooser.add(new MiddleDefenseLBump(
-                log,
-                machinery.m_swerveKinodynamics,
-                controller,
-                machinery));
-         m_autonChooser.add(new MiddleDefenseLBump(
+         m_autonChooser.add(new MiddleDefenseLBump2(
                 log,
                 machinery.m_swerveKinodynamics,
                 controller,
@@ -186,6 +181,11 @@ public class AllAutons {
                 controller,
                 machinery));
           m_autonChooser.add(new MiddleDefenseLTrench(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery));
+        m_autonChooser.add(new SideDefenseLTrench(
                 log,
                 machinery.m_swerveKinodynamics,
                 controller,
