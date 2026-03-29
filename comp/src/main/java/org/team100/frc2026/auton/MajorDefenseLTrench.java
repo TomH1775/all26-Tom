@@ -112,11 +112,11 @@ public class  MajorDefenseLTrench  implements AnnotatedCommand {
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(startingPose, new DirectionSE2(1, 0, 0), 1),
 
-                new WaypointSE2(new Pose2d(8.5, 6.75, new Rotation2d(60 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(new Pose2d(8.5, 5.75, new Rotation2d(240 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
+                new WaypointSE2(new Pose2d(8.5, 6.75, new Rotation2d(30 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
+                new WaypointSE2(new Pose2d(8.5, 5.75, new Rotation2d(80 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
                 new WaypointSE2(new Pose2d(8.4,4, new Rotation2d(60* (Math.PI / 180))), new DirectionSE2(1, 0, -0.5), 1),
 
-                new WaypointSE2(new Pose2d(8.3,1, new Rotation2d(-120 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1)
+                new WaypointSE2(new Pose2d(8.3,1, new Rotation2d(60 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1)
 
                 
 
