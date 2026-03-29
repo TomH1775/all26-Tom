@@ -2,6 +2,7 @@ package org.team100.lib.config;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.team100.lib.util.NamedChooser;
 
@@ -30,6 +31,10 @@ public class AutonChooser {
 
     public AnnotatedCommand get() {
         return m_chooser.getSelected();
+    }
+
+    public void onChange(Consumer<AnnotatedCommand> listener) {
+        m_chooser.onChange(listener);
     }
 
     public void close() {

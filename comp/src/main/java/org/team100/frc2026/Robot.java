@@ -77,7 +77,7 @@ public class Robot extends TimedRobot100 {
         LoggerFactory fieldLogger = Logging.instance().fieldLogger;
         m_autonAlerts = new AutonAlerts(
                 fieldLogger,
-                m_allAutons::getAnnotated,
+                m_allAutons,
                 m_alerts,
                 m_machinery.m_drive::getPose,
                 m_machinery::resetPose);
