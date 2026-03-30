@@ -130,8 +130,6 @@ public class LeftBumpFullSweepAuton implements AnnotatedCommand {
                             parallel(
                                 machinery.m_intake.stop(),
                           //      machinery.m_intakeExtend.goToRetractedPosition(),
-
-                               
                                 machinery.m_shooter.auto())
                                 .withTimeout(4)
                                 )),

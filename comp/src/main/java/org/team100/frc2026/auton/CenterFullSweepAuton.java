@@ -118,9 +118,7 @@ public class CenterFullSweepAuton implements AnnotatedCommand {
                                         .isInAllianceZone(machinery.m_drive.getState().translation())),
                             parallel(
                                 machinery.m_intake.stop(),
-                                machinery.m_intakeExtend.goToRetractedPosition(),
-
-                               
+                                machinery.m_intakeExtend.goToRetractedPosition(),                         
                                 machinery.m_shooter.auto())
                                 ))
         );

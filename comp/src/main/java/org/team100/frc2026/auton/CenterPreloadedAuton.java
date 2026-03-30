@@ -94,9 +94,7 @@ public class CenterPreloadedAuton implements AnnotatedCommand {
         return sequence(
                 parallel(
                         ScoreSetUp.until(ScoreSetUp::isDone).withTimeout(3.5),
-        
                         machinery.m_shooter.auto()),
-
                 waitSeconds(5),
                 machinery.m_shooter.stop().withTimeout(1));
     }
