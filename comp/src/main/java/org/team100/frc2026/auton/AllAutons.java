@@ -187,7 +187,12 @@ public class AllAutons {
                 machinery.m_swerveKinodynamics,
                 controller,
                 machinery));
-        m_autonChooser.add(new SideDefenseLTrench(
+        m_autonChooser.add(new MajorDefenseLTrench(
+                log,
+                machinery.m_swerveKinodynamics,
+                controller,
+                machinery));
+        m_autonChooser.add(new MajorDefenseRTrench(
                 log,
                 machinery.m_swerveKinodynamics,
                 controller,
