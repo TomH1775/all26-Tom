@@ -85,17 +85,18 @@ public class MiddleDefenseLTrench implements AnnotatedCommand {
                 this::t1);
 
         return parallel(
-                fn,
-                // extend when in neutral zone
-                toggle(
-                        this::inNeutralZone,
-                        machinery.m_intakeExtend.goToExtendedPositionEndlessly(),
-                        machinery.m_intakeExtend.goToRetractedPosition()),
-                // roll when extended
-                toggle(
-                        this::intakeExtended,
-                        parallel(machinery.m_intake.intake(), machinery.m_shooter.shooterFullspeed()),
-                        machinery.m_intake.stop()));
+                fn
+                // // extend when in neutral zone
+                // toggle(
+                //         this::inNeutralZone,
+                //         machinery.m_intakeExtend.goToExtendedPositionEndlessly(),
+                //         machinery.m_intakeExtend.goToRetractedPosition()),
+                // // roll when extended
+                // toggle(
+                //         this::intakeExtended,
+                //        parallel( machinery.m_intake.intake(), machinery.m_shooter.shooterFullspeed()),
+                //         machinery.m_intake.stop())
+                    );
     }
 
     @Override
