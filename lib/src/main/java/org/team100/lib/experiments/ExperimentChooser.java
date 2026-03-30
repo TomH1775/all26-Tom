@@ -2,17 +2,17 @@ package org.team100.lib.experiments;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BooleanSupplier;
 
 import org.team100.lib.util.NamedChooser;
 
-public class ExperimentChooser extends NamedChooser<BooleanSupplier> {
+public class ExperimentChooser extends NamedChooser<Boolean> {
     private static final Map<String, ExperimentChooser> choosers = new ConcurrentHashMap<>();
 
     private ExperimentChooser(String name) {
         super(name);
     }
 
+    /** Keeps a reference to the created chooser. */
     public static ExperimentChooser get(String name) {
         if (choosers.containsKey(name)) {
             return choosers.get(name);

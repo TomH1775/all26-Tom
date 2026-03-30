@@ -2,7 +2,6 @@ package org.team100.frc2026.auton;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
-import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +81,7 @@ public class RightBumpHalfSweepAuton implements AnnotatedCommand {
                 new WaypointSE2(new Pose2d(7.75, 2, Rotation2d.kCW_90deg),
                         new DirectionSE2(0, 1, 0), 1),
                 new WaypointSE2(new Pose2d(7.75, 4, Rotation2d.kCW_90deg),
-                        new DirectionSE2(-1, -1, 0), 1), 
+                        new DirectionSE2(-1, -1, 0), 1),
                 new WaypointSE2(new Pose2d(5.2, 2.5, new Rotation2d(0 * (Math.PI / 180))),
                         new DirectionSE2(-1, 0, 0), 1),
                 new WaypointSE2(StartingPositions.RIGHT_BUMP,
@@ -104,9 +103,8 @@ public class RightBumpHalfSweepAuton implements AnnotatedCommand {
                         machinery.m_intakeExtend.goToExtendedPosition()
                                 .andThen(machinery.m_intake.intake().withTimeout(3)))
                         .until(IntakeSetUp::isDone),
-                    parallel(
-                        machinery.m_shooter.auto())
-                    );
+                parallel(
+                        machinery.m_shooter.auto()));
     }
 
     @Override

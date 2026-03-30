@@ -1,7 +1,5 @@
 package org.team100.frc2026.robot;
 
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 import static org.team100.frc2026.util.TriggerUtil.onTrue;
 import static org.team100.frc2026.util.TriggerUtil.whileTrue;
 
@@ -15,7 +13,6 @@ import org.team100.lib.subsystems.swerve.commands.manual.DriveFieldRelative;
 import org.team100.lib.subsystems.swerve.commands.manual.DriveMovingTargetLock;
 
 import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj2.command.Commands;
 
 /**
  * Control bindings for the Interlink DX. Also default commands.
@@ -103,11 +100,11 @@ public class InterlinkBinder {
         /// SHOOT
         ///
         // whileTrue(driver::i,
-        //         parallel(
-        //                 m_machinery.m_shooter.shooterFullspeed(),
-        //                 Commands.repeatingSequence(
-        //                         waitUntil(m_machinery.m_shooter::atSpeed)
-        //                                 .onlyWhile(m_machinery.m_shooter::atSpeed))));
+        // parallel(
+        // m_machinery.m_shooter.shooterFullspeed(),
+        // Commands.repeatingSequence(
+        // waitUntil(m_machinery.m_shooter::atSpeed)
+        // .onlyWhile(m_machinery.m_shooter::atSpeed))));
 
         ////////////////////////////////////////////////////
         ///

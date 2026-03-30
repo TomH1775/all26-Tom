@@ -6,12 +6,9 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 import org.team100.frc2026.field.FieldConstants2026;
-import org.team100.frc2026.subsystems.Conveyor;
-import org.team100.frc2026.subsystems.Feeder;
 import org.team100.frc2026.subsystems.Intake;
 import org.team100.frc2026.subsystems.IntakeExtend;
 import org.team100.frc2026.subsystems.Shooter;
-import org.team100.frc2026.subsystems.ShooterHood;
 import org.team100.frc2026.targeting.Targeter;
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.controller.se2.ControllerFactorySE2;
@@ -89,7 +86,6 @@ public class Machinery {
     public final Intake m_intake;
     public final IntakeExtend m_intakeExtend;
     public final ControllerSE2 m_holonomicController;
-
 
     public Machinery(TotalCurrentLog currentLog) {
 

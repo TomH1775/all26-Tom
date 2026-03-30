@@ -2,7 +2,6 @@ package org.team100.frc2026.auton;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.repeatingSequence;
-import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 
 import java.util.ArrayList;
 import java.util.List;

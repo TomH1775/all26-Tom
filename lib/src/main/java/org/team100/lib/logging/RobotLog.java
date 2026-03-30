@@ -2,7 +2,6 @@ package org.team100.lib.logging;
 
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
-import org.team100.lib.logging.TotalCurrentLog;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;

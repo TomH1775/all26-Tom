@@ -22,18 +22,15 @@ import org.team100.lib.trajectory.TrajectorySE2Factory;
 import org.team100.lib.trajectory.TrajectorySE2Planner;
 import org.team100.lib.trajectory.constraint.CapsizeAccelerationConstraint;
 import org.team100.lib.trajectory.constraint.ConstantConstraint;
-import org.team100.lib.trajectory.constraint.SwerveDriveDynamicsConstraint;
 import org.team100.lib.trajectory.constraint.TimingConstraint;
 import org.team100.lib.trajectory.constraint.VelocityLimitRegionConstraint;
-import org.team100.lib.trajectory.constraint.YawRateConstraint;
 import org.team100.lib.trajectory.path.PathSE2Factory;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 
-
-public class  MajorDefenseRTrench  implements AnnotatedCommand {
+public class MajorDefenseRTrench implements AnnotatedCommand {
     private final LoggerFactory log;
     private final ControllerSE2 controller;
     private final Machinery machinery;
@@ -97,7 +94,7 @@ public class  MajorDefenseRTrench  implements AnnotatedCommand {
                 // roll when extended
                 toggle(
                         this::intakeExtended,
-                       parallel( machinery.m_intake.intake(), machinery.m_shooter.shooterFullspeed()),
+                        parallel(machinery.m_intake.intake(), machinery.m_shooter.shooterFullspeed()),
                         machinery.m_intake.stop()));
     }
 
@@ -106,17 +103,18 @@ public class  MajorDefenseRTrench  implements AnnotatedCommand {
         return List.of(this::t1);
     }
 
-     TrajectorySE2 t1(Pose2d startingPose) {
+    TrajectorySE2 t1(Pose2d startingPose) {
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(startingPose, new DirectionSE2(1, 0, 0), 1),
 
-                new WaypointSE2(new Pose2d(8.5, 0.75, new Rotation2d(30 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(new Pose2d(8.5, 1.75, new Rotation2d(240-90 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(new Pose2d(8.4, 4 , new Rotation2d(-30 * (Math.PI / 180))), new DirectionSE2(1, 0, -0.5), 1),
+                new WaypointSE2(new Pose2d(8.5, 0.75, new Rotation2d(30 * (Math.PI / 180))), new DirectionSE2(1, 0, 0),
+                        1),
+                new WaypointSE2(new Pose2d(8.5, 1.75, new Rotation2d(240 - 90 * (Math.PI / 180))),
+                        new DirectionSE2(1, 0, 0), 1),
+                new WaypointSE2(new Pose2d(8.4, 4, new Rotation2d(-30 * (Math.PI / 180))), new DirectionSE2(1, 0, -0.5),
+                        1),
 
                 new WaypointSE2(new Pose2d(8.3, 7, new Rotation2d(60 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1)
-
-                
 
         //
         );

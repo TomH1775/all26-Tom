@@ -4,7 +4,6 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BooleanSupplier;
 
 import org.team100.lib.config.Identity;
 
@@ -31,7 +30,7 @@ public class Experiments {
     /** These experiments are enabled on every robot type. */
     private final Set<Experiment> globalExperiments = Set.of(
             Experiment.HeedVision);
-            // Experiment.UseSwerveLimiter);
+    // Experiment.UseSwerveLimiter);
 
     /** These experiments are enabled on specific robot types. */
     private final Map<Identity, Set<Experiment>> experimentsByIdentity = Map.of(
@@ -42,7 +41,7 @@ public class Experiments {
     private final Set<Experiment> m_experiments;
 
     /** Starts with the config above, but can be overridden. */
-    private final Map<Experiment, SendableChooser<BooleanSupplier>> m_overrides;
+    private final Map<Experiment, Boolean> m_overrides;
 
     private final Map<Experiment, Boolean> m_testOverrides;
 
@@ -52,15 +51,17 @@ public class Experiments {
         m_overrides = new EnumMap<>(Experiment.class);
         m_testOverrides = new EnumMap<>(Experiment.class);
         for (Experiment e : Experiment.values()) {
-            SendableChooser<BooleanSupplier> override = ExperimentChooser.get(e.name());
+            SendableChooser<Boolean> override = ExperimentChooser.get(e.name());
             if (m_experiments.contains(e)) {
-                override.setDefaultOption(on(e), () -> true);
-                override.addOption(off(e), () -> false);
+                override.setDefaultOption(on(e), true);
+                m_overrides.put(e, true);
+                override.addOption(off(e), false);
             } else {
-                override.addOption(on(e), () -> true);
-                override.setDefaultOption(off(e), () -> false);
+                override.addOption(on(e), true);
+                override.setDefaultOption(off(e), false);
+                m_overrides.put(e, false);
             }
-            m_overrides.put(e, override);
+            override.onChange(selected -> m_overrides.put(e, selected));
             SmartDashboard.putData(override);
         }
     }
@@ -83,7 +84,7 @@ public class Experiments {
         if (m_testOverrides.containsKey(experiment)) {
             return m_testOverrides.get(experiment);
         }
-        return m_overrides.get(experiment).getSelected().getAsBoolean();
+        return m_overrides.get(experiment);
     }
 
     ////////////////////////////////////////

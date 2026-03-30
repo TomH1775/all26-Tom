@@ -22,10 +22,8 @@ import org.team100.lib.trajectory.TrajectorySE2Factory;
 import org.team100.lib.trajectory.TrajectorySE2Planner;
 import org.team100.lib.trajectory.constraint.CapsizeAccelerationConstraint;
 import org.team100.lib.trajectory.constraint.ConstantConstraint;
-import org.team100.lib.trajectory.constraint.SwerveDriveDynamicsConstraint;
 import org.team100.lib.trajectory.constraint.TimingConstraint;
 import org.team100.lib.trajectory.constraint.VelocityLimitRegionConstraint;
-import org.team100.lib.trajectory.constraint.YawRateConstraint;
 import org.team100.lib.trajectory.path.PathSE2Factory;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -96,7 +94,7 @@ public class MiddleDefenseLBump implements AnnotatedCommand {
                 // roll when extended
                 toggle(
                         this::intakeExtended,
-                       parallel( machinery.m_intake.intake(), machinery.m_shooter.shooterFullspeed()),
+                        parallel(machinery.m_intake.intake(), machinery.m_shooter.shooterFullspeed()),
                         machinery.m_intake.stop()));
     }
 
@@ -105,11 +103,10 @@ public class MiddleDefenseLBump implements AnnotatedCommand {
         return List.of(this::t1);
     }
 
-     TrajectorySE2 t1(Pose2d startingPose) {
+    TrajectorySE2 t1(Pose2d startingPose) {
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(startingPose, new DirectionSE2(1, 0, 0), 1),
                 new WaypointSE2(new Pose2d(8, 5.5, new Rotation2d(180 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1)
-
 
         //
         );

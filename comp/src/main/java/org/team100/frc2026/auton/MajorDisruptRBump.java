@@ -1,14 +1,11 @@
 package org.team100.frc2026.auton;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-import static edu.wpi.first.wpilibj2.command.Commands.repeatingSequence;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
-import org.team100.frc2026.field.FieldConstants2026;
 import org.team100.frc2026.robot.Machinery;
 import org.team100.lib.config.AnnotatedCommand;
 import org.team100.lib.controller.se2.ControllerSE2;
@@ -22,10 +19,8 @@ import org.team100.lib.trajectory.TrajectorySE2Factory;
 import org.team100.lib.trajectory.TrajectorySE2Planner;
 import org.team100.lib.trajectory.constraint.CapsizeAccelerationConstraint;
 import org.team100.lib.trajectory.constraint.ConstantConstraint;
-import org.team100.lib.trajectory.constraint.SwerveDriveDynamicsConstraint;
 import org.team100.lib.trajectory.constraint.TimingConstraint;
 import org.team100.lib.trajectory.constraint.VelocityLimitRegionConstraint;
-import org.team100.lib.trajectory.constraint.YawRateConstraint;
 import org.team100.lib.trajectory.path.PathSE2Factory;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -88,17 +83,18 @@ public class MajorDisruptRBump implements AnnotatedCommand {
 
         return parallel(
                 fn
-                // // extend when in neutral zone
-                // toggle(
-                //         this::inNeutralZone,
-                //         machinery.m_intakeExtend.goToExtendedPositionEndlessly(),
-                //         machinery.m_intakeExtend.goToRetractedPosition()),
-                // // roll when extended
-                // toggle(
-                //         this::intakeExtended,
-                //        parallel( machinery.m_intake.intake(), machinery.m_shooter.shooterFullspeed()),
-                //         machinery.m_intake.stop())
-                    );
+        // // extend when in neutral zone
+        // toggle(
+        // this::inNeutralZone,
+        // machinery.m_intakeExtend.goToExtendedPositionEndlessly(),
+        // machinery.m_intakeExtend.goToRetractedPosition()),
+        // // roll when extended
+        // toggle(
+        // this::intakeExtended,
+        // parallel( machinery.m_intake.intake(),
+        // machinery.m_shooter.shooterFullspeed()),
+        // machinery.m_intake.stop())
+        );
     }
 
     @Override
@@ -106,29 +102,16 @@ public class MajorDisruptRBump implements AnnotatedCommand {
         return List.of(this::t1);
     }
 
-     TrajectorySE2 t1(Pose2d startingPose) {
+    TrajectorySE2 t1(Pose2d startingPose) {
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(startingPose, new DirectionSE2(1, 0, 0), 1),
 
-                new WaypointSE2(new Pose2d(8, 2.5, new Rotation2d(165 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1),
-                new WaypointSE2(new Pose2d(8.1,7, new Rotation2d(165 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1)
+                new WaypointSE2(new Pose2d(8, 2.5, new Rotation2d(165 * (Math.PI / 180))), new DirectionSE2(1, 0, 0),
+                        1),
+                new WaypointSE2(new Pose2d(8.1, 7, new Rotation2d(165 * (Math.PI / 180))), new DirectionSE2(1, 0, 0), 1)
 
         //
         );
         return planner.restToRest(waypoints);
     }
-
-    /** Runs the commands according to the condition, interrupting to transition. */
-    private Command toggle(BooleanSupplier condition, Command whenTrue, Command whenFalse) {
-        return repeatingSequence(whenFalse.until(condition), whenTrue.onlyWhile(condition));
-    }
-
-    private boolean intakeExtended() {
-        return machinery.m_intakeExtend.isOut();
-    }
-
-    private boolean inNeutralZone() {
-        return FieldConstants2026.isInNeutralZone(machinery.m_drive.getState().translation());
-    }
-
 }

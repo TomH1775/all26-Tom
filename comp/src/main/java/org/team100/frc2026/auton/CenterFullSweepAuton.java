@@ -2,7 +2,6 @@ package org.team100.frc2026.auton;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
-import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +77,7 @@ public class CenterFullSweepAuton implements AnnotatedCommand {
         return "Full Sweep from Center";
     }
 
-      TrajectorySE2 t1(Pose2d startingPose) {
+    TrajectorySE2 t1(Pose2d startingPose) {
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(startingPose,
                         new DirectionSE2(0, 1, 0), 1),
@@ -109,19 +108,17 @@ public class CenterFullSweepAuton implements AnnotatedCommand {
                         IntakeSetUp.until(IntakeSetUp::isDone).withTimeout(8),
                         // Assumed that the intake shouldn't deploy over the bump
                         sequence(
-                        Commands.waitUntil(() -> FieldConstants2026
+                                Commands.waitUntil(() -> FieldConstants2026
                                         .isInNeutralZone(machinery.m_drive.getState().translation())),
-                            (machinery.m_intakeExtend.goToExtendedPosition()
-                            .andThen(machinery.m_intake.intake())).withTimeout(4),
-        
-                        Commands.waitUntil(() -> FieldConstants2026
+                                (machinery.m_intakeExtend.goToExtendedPosition()
+                                        .andThen(machinery.m_intake.intake())).withTimeout(4),
+
+                                Commands.waitUntil(() -> FieldConstants2026
                                         .isInAllianceZone(machinery.m_drive.getState().translation())),
-                            parallel(
-                                machinery.m_intake.stop(),
-                                machinery.m_intakeExtend.goToRetractedPosition(),                         
-                                machinery.m_shooter.auto())
-                                ))
-        );
+                                parallel(
+                                        machinery.m_intake.stop(),
+                                        machinery.m_intakeExtend.goToRetractedPosition(),
+                                        machinery.m_shooter.auto()))));
     }
 
     @Override

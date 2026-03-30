@@ -2,7 +2,6 @@ package org.team100.frc2026.auton;
 
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
-import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +25,7 @@ import org.team100.lib.trajectory.constraint.VelocityLimitRegionConstraint;
 import org.team100.lib.trajectory.path.PathSE2Factory;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
@@ -64,7 +61,7 @@ public class LeftLobAuton implements AnnotatedCommand {
         VelocityLimitRegionConstraint slow_bump_zone3 = new VelocityLimitRegionConstraint(
                 log.name("bumpzone3"), BumpZones.RED_BUMP_LEFT, maxBumpVelocity);
         VelocityLimitRegionConstraint slow_bump_zone4 = new VelocityLimitRegionConstraint(
-                log.name("bumpzone4"), BumpZones.RED_BUMP_RIGHT, maxBumpVelocity);  
+                log.name("bumpzone4"), BumpZones.RED_BUMP_RIGHT, maxBumpVelocity);
         new_constraints.add(slow_bump_zone);
         new_constraints.add(slow_bump_zone2);
         new_constraints.add(slow_bump_zone3);
@@ -108,9 +105,9 @@ public class LeftLobAuton implements AnnotatedCommand {
                         machinery.m_intake.intake(),
                         machinery.m_intakeExtend.goToExtendedPosition(),
                         Commands.waitUntil(() -> FieldConstants2026
-                                        .isInNeutralZone(machinery.m_drive.getState().translation()))
-                        .andThen(
-                        machinery.m_shooter.auto())));
+                                .isInNeutralZone(machinery.m_drive.getState().translation()))
+                                .andThen(
+                                        machinery.m_shooter.auto())));
     }
 
     @Override

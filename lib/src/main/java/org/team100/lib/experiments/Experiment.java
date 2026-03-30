@@ -19,10 +19,6 @@ public enum Experiment {
      */
     HeedVision,
     /**
-     * Treat the robot as "real" for the auton alert messages.
-     */
-    TestAutonAlert,
-    /**
      * Skip acceleration feedforward in drivetrain, to reduce noise.
      */
     DriveWithoutAccel,

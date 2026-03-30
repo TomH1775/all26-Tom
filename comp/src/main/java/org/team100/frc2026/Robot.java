@@ -11,13 +11,12 @@ import org.team100.lib.config.Identity;
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
 import org.team100.lib.framework.TimedRobot100;
-import org.team100.lib.indicator.Alerts;
-import org.team100.lib.indicator.AutonAlerts;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.RobotLog;
 import org.team100.lib.network.Sync;
 import org.team100.lib.util.Banner;
+import org.team100.lib.visualization.AutonVisualization;
 
 import com.revrobotics.util.StatusLogger;
 
@@ -37,8 +36,7 @@ public class Robot extends TimedRobot100 {
     private final Sync sync;
     private final RobotLog m_robotLog;
     private final Machinery m_machinery;
-    private final Alerts m_alerts;
-    private final AutonAlerts m_autonAlerts;
+    private final AutonVisualization m_autoViz;
     private final AllAutons m_allAutons;
     private final Binder m_binder;
 
@@ -72,16 +70,10 @@ public class Robot extends TimedRobot100 {
         m_binder = new Binder(m_machinery);
 
         m_allAutons = new AllAutons(m_machinery);
-        m_alerts = new Alerts();
 
         LoggerFactory fieldLogger = Logging.instance().fieldLogger;
-        m_autonAlerts = new AutonAlerts(
-                fieldLogger,
-                m_allAutons,
-                m_alerts,
-                m_machinery.m_drive::getPose,
-                m_machinery::resetPose);
-
+        m_autoViz = new AutonVisualization(fieldLogger);
+        m_allAutons.onChange(m_autoViz::show);
         Prewarmer.init(m_machinery);
     }
 
@@ -104,17 +96,12 @@ public class Robot extends TimedRobot100 {
         }
     }
 
-    /** Check the auton configuration when disabled. */
-    @Override
-    public void disabledPeriodic() {
-        m_autonAlerts.run();
-    }
-
     //////////////////////////////////////////////////////////////////////
     //
     // INITIALIZERS, DO NOT CHANGE THESE
     //
 
+    /** Forces the robot pose to the starting pose for the auton. */
     @Override
     public void autonomousInit() {
         AnnotatedCommand ac = m_allAutons.getAnnotated();
@@ -157,7 +144,7 @@ public class Robot extends TimedRobot100 {
 
     @Override
     public void disabledExit() {
-        m_autonAlerts.clear();
+        m_autoViz.clear();
     }
 
     ///////////////////////////////////////////////////////////////////////
@@ -180,6 +167,10 @@ public class Robot extends TimedRobot100 {
 
     @Override
     public void simulationPeriodic() {
+    }
+
+    @Override
+    public void disabledPeriodic() {
     }
 
     @Override

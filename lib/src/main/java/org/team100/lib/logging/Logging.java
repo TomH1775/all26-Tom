@@ -16,39 +16,40 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Logging {
     private static final Level DEFAULT_LEVEL = Level.DEBUG;
-
-    private PrimitiveLogger ntLogger;
-
-    private static final SendableChooser<Level> m_LevelChooser = new NamedChooser<>("Log Level");
-
-    static {
-        for (Level level : Level.values()) {
-            m_LevelChooser.addOption(level.name(), level);
-        }
-        m_LevelChooser.setDefaultOption(DEFAULT_LEVEL.name(), DEFAULT_LEVEL);
-        SmartDashboard.putData(m_LevelChooser);
-    }
-
     private static final Logging instance = new Logging();
 
-    /**
-     * root is "field", with a ".type"->"Field2d" entry as required by glass.
-     */
+    // Required because SmartDashboard keeps only a weak reference.
+    private final SendableChooser<Level> m_LevelChooser;
+    private final PrimitiveLogger ntLogger;
+    /** Root is "field", with .type = Field2d as required by glass. */
     public final LoggerFactory fieldLogger;
-    /** root is "log". */
+    /** Root is "log". */
     public final LoggerFactory rootLogger;
+    /** Saves getSelected() calls */
+    private Level m_selectedLevel;
 
     /**
      * Clients should use the static instance, not the constructor.
      */
     private Logging() {
+        m_LevelChooser = new NamedChooser<>("Log Level");
+        for (Level level : Level.values()) {
+            m_LevelChooser.addOption(level.name(), level);
+        }
+        m_LevelChooser.setDefaultOption(DEFAULT_LEVEL.name(), DEFAULT_LEVEL);
+        m_selectedLevel = DEFAULT_LEVEL;
         ntLogger = new NTPrimitiveLogger();
         fieldLogger = new LoggerFactory(this::getLevel, "field", ntLogger);
-        rootLogger = new LoggerFactory(this::getLevel, "log", ntLogger);
         fieldLogger.stringLogger(Level.COMP, ".type").log(() -> "Field2d");
-
+        rootLogger = new LoggerFactory(this::getLevel, "log", ntLogger);
         // turn off the CTRE log we never use
         SignalLogger.enableAutoLogging(false);
+        SmartDashboard.putData(m_LevelChooser);
+        m_LevelChooser.onChange(this::update);
+    }
+
+    public void update(Level level) {
+        m_selectedLevel = level;
     }
 
     public int keyCount() {
@@ -58,7 +59,7 @@ public class Logging {
     }
 
     public Level getLevel() {
-        return m_LevelChooser.getSelected();
+        return m_selectedLevel;
     }
 
     /** The logging singleton. */

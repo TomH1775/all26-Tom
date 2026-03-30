@@ -33,6 +33,8 @@ public class AutonVisualization {
     }
 
     public void show(AnnotatedCommand cmd) {
+        if (cmd == null)
+            return;
         List<Pose2d> ps = new ArrayList<>();
         Pose2d p = cmd.start();
         if (p == null) {
