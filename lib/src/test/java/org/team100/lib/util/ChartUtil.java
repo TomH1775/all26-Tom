@@ -21,10 +21,21 @@ import org.jfree.data.xy.Vector;
 import org.jfree.data.xy.VectorSeries;
 import org.jfree.data.xy.VectorSeriesCollection;
 import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 public class ChartUtil {
+    // LEAVE THIS OFF or the tests will pop up lots of windows
     public static final boolean SHOW = false;
     public static final int SIZE = 500;
+
+    public static XYDataset xy(String name, double[] x, double[] y) {
+        XYSeries series = new XYSeries(name);
+        for (int i = 0; i < x.length; ++i) {
+            series.add(x[i], y[i]);
+        }
+        return new XYSeriesCollection(series);
+    }
 
     public static Range xRange(VectorSeriesCollection dataset) {
         double max = Double.NEGATIVE_INFINITY;
