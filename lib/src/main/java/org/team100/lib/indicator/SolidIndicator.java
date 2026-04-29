@@ -65,16 +65,20 @@ public class SolidIndicator extends SubsystemBase {
      */
     public void state(Supplier<Color> color) {
         setDefaultCommand(
-                runOnce(() -> set(color.get()))
+                run(() -> set(color.get()))
                         .ignoringDisable(true)
-                        .withName("indicator default"));
+                        .withName("Indicator default"));
     }
 
     /**
      * Trigger on true, blink the color a few times.
      */
     public void event(BooleanSupplier condition, Color color) {
-        new Trigger(condition).onTrue(blink(color).withTimeout(EVENT_DURATION));
+        new Trigger(condition).onTrue(
+                blink(color)
+                        .ignoringDisable(true)
+                        .withTimeout(EVENT_DURATION)
+                        .withName("Indicator event"));
     }
 
     public void close() {

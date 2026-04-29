@@ -7,6 +7,7 @@ import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
 import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.hid.DriverXboxControl;
+import org.team100.lib.indicator.SolidIndicator;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.logging.RobotLog;
@@ -29,6 +30,7 @@ import org.team100.lib.util.RoboRioChannel;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -46,12 +48,12 @@ public class Robot extends TimedRobot100 {
      */
     private static final double MAXIMUM_BALL_VELOCITY_M_S = 20;
 
-    private static final ShooterType SHOOTER = ShooterType.DUTY_CYCLE;
+    private static final ShooterType SHOOTER = ShooterType.VELOCITY;
     private static final double MAXIMUM_SHOOTER_DUTY_CYCLE = 0.2;
     private static final double SHOOTER_GEAR_RATIO = 1.00;
     private static final double SHOOTER_WHEEL_DIA_M = 0.16;
 
-    private static final IndexerType INDEXER = IndexerType.DUTY_CYCLE;
+    private static final IndexerType INDEXER = IndexerType.POSITION;
     private static final double MAXIMUM_INDEXER_DUTY_CYCLE = 1.0;
     private static final double MAX_INDEXER_VELOCITY_M_S = 10;
     private static final double INDEXER_WHEEL_DIAMETER = 0.1;
@@ -63,6 +65,7 @@ public class Robot extends TimedRobot100 {
     private static final double MAX_SPEED_M_S = 3.0;
     private static final double MAX_OMEGA_RAD_S = 3.0;
 
+    private final SolidIndicator m_led;
     private final RobotLog m_robotLog;
     private final TankDrive m_drive;
     private final Command m_auton;
@@ -84,6 +87,11 @@ public class Robot extends TimedRobot100 {
         LoggerFactory logger = logging.rootLogger;
 
         DriverXboxControl xbox = new DriverXboxControl(0);
+
+        m_led = new SolidIndicator(new RoboRioChannel(0), 40);
+        m_led.state(this::ledColor);
+        // TODO: use machine state instead of buttons
+        m_led.event(xbox::leftTrigger, Color.kWhite);
 
         m_drive = TankDriveFactory.make(
                 fieldLogger,
@@ -154,6 +162,14 @@ public class Robot extends TimedRobot100 {
                         .withName("Indexer continuous"));
 
         m_auton = null;
+    }
+
+    private Color ledColor() {
+        double timeSec = Takt.get();
+        return switch ((int) (timeSec * 8) % 2) {
+            case 0 -> Color.kBlack;
+            default -> Color.kDarkOrange;
+        };
     }
 
     /**
