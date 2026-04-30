@@ -48,12 +48,12 @@ public class Robot extends TimedRobot100 {
      */
     private static final double MAXIMUM_BALL_VELOCITY_M_S = 20;
 
-    private static final ShooterType SHOOTER = ShooterType.VELOCITY;
+    private static final ShooterType SHOOTER = ShooterType.DUTY_CYCLE;
     private static final double MAXIMUM_SHOOTER_DUTY_CYCLE = 0.2;
     private static final double SHOOTER_GEAR_RATIO = 1.00;
     private static final double SHOOTER_WHEEL_DIA_M = 0.16;
 
-    private static final IndexerType INDEXER = IndexerType.POSITION;
+    private static final IndexerType INDEXER = IndexerType.DUTY_CYCLE;
     private static final double MAXIMUM_INDEXER_DUTY_CYCLE = 1.0;
     private static final double MAX_INDEXER_VELOCITY_M_S = 10;
     private static final double INDEXER_WHEEL_DIAMETER = 0.1;
@@ -88,7 +88,7 @@ public class Robot extends TimedRobot100 {
 
         DriverXboxControl xbox = new DriverXboxControl(0);
 
-        m_led = new SolidIndicator(new RoboRioChannel(0), 40);
+        m_led = new SolidIndicator(new RoboRioChannel(0), 512);
         m_led.state(this::ledColor);
         // TODO: use machine state instead of buttons
         m_led.event(xbox::leftTrigger, Color.kWhite);
@@ -166,10 +166,10 @@ public class Robot extends TimedRobot100 {
 
     private Color ledColor() {
         double timeSec = Takt.get();
-        return switch ((int) (timeSec * 8) % 2) {
-            case 0 -> Color.kBlack;
-            default -> Color.kDarkOrange;
-        };
+        double modTime = timeSec % 1;
+        if (modTime < 0.04)
+            return Color.kDarkOrange;
+        return Color.kBlack;
     }
 
     /**
