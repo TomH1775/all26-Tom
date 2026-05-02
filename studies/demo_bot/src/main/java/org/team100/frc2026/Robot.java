@@ -64,7 +64,7 @@ public class Robot extends TimedRobot100 {
     // measured 4/30/26, used to be 0.4.
     private static final double TRACK_WIDTH = 0.5;
     private static final double MAX_SPEED_M_S = 2.0;
-    private static final double MAX_OMEGA_RAD_S = 4.0;
+    private static final double MAX_OMEGA_RAD_S = 1.0;
 
     private final SolidIndicator m_led;
     private final RobotLog m_robotLog;
@@ -146,10 +146,11 @@ public class Robot extends TimedRobot100 {
                 m_currentLog,
                 new CurrentLimit(20, 20),
                 new CanId(5));
-        m_pivot.setDefaultCommand(
-                new PivotDefault(
-                        () -> xbox.leftY() * -1.0,
-                        m_pivot));
+        m_pivot.setDefaultCommand(m_pivot.stop());
+        // m_pivot.setDefaultCommand(
+        // new PivotDefault(
+        // () -> xbox.leftY() * -1.0,
+        // m_pivot));
 
         /////////////////////////////////////////////////////////////////////////////////////
         ///
