@@ -29,9 +29,9 @@ class InterpreterFactory:
 
         match identity:
             case Identity.FUNNEL:
-                # return TagDetector(identity, cam, display, network)
-                print("USING NULL DETECTOR")
-                return NullDetector(cam, display, network)
+                return TagDetector(identity, cam, display, network)
+                # print("USING NULL DETECTOR")
+                # return NullDetector(cam, display, network)
             case Identity.GAME_PIECE:
                 return TargetDetector(
                     cam,

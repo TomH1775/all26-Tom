@@ -75,6 +75,7 @@ class NullDetector(Interpreter):
             img = img[:, ::2]
             # the stride above is just a noncontiguous view, so:
             img = np.ascontiguousarray(img)
+            
             fps = req.fps()
             self._fps.send(fps)
             delay_us = req.delay_us()

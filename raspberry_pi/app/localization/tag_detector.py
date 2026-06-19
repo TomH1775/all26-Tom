@@ -119,14 +119,25 @@ class TagDetector(Interpreter):
     @override
     def analyze(self, req: Request) -> None:
         with req.yuv() as buffer:
-            # truncate, ignore chrominance. this makes a view, very fast (300 ns)
-            img: NDArray[np.uint8] = cast(
-                NDArray[np.uint8],
-                np.frombuffer(buffer, dtype=np.uint8, count=self._y_len),  # type:ignore
-            )
 
-            # this  makes a view, very fast (150 ns)
-            img = img.reshape((self._height, self._width))  # type:ignore
+            img: NDArray[np.uint8] = np.frombuffer(buffer, dtype=np.uint8)
+            img = img.reshape((self._height, self._width * 2))  # type:ignore
+            img = img[:, ::2]
+            # the stride above is just a noncontiguous view, so:
+            img = np.ascontiguousarray(img)
+
+            # TODO: make some utility methods for this.
+
+#            # truncate, ignore chrominance. this makes a view, very fast (300 ns)
+#            img: NDArray[np.uint8] = cast(
+#                NDArray[np.uint8],
+#                np.frombuffer(buffer, dtype=np.uint8, count=self._y_len),  # type:ignore
+#            )
+#
+#            # this  makes a view, very fast (150 ns)
+#            img = img.reshape((self._height, self._width))  # type:ignore
+
+
 
             if self._network.calibrate():
                 self.write_calibration_image(img)
