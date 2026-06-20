@@ -19,11 +19,14 @@ class FakeCamera(Camera):
     def __init__(
         self,
         filename: str,
+        yuv: bool,
         size: Optional[tuple[int, int]] = None,
         k1: float = 0.0,
         inv_k1: float = 0.0,
     ) -> None:
         """
+        filename: in this directory.
+        yuv: if true, transcode to YUV420.
         size: if no size is supplied, the native size is used.
         k1: quadratic distortion term for undistortion
         inv_k1: inverse distortion, used to distort the image
@@ -34,6 +37,7 @@ class FakeCamera(Camera):
         file = cv2.imread(pathstr)
         if file is None:
             raise ValueError("no file")
+        self._yuv = yuv
         self.img: MatLike = file
         if size is not None:
             self.img = cv2.resize(self.img, size)
@@ -49,7 +53,7 @@ class FakeCamera(Camera):
 
         self.img = cv2.undistort(self.img, mtx, dist)
         # uncomment to see the distorted thing
-        cv2.imwrite("blarg.jpg", self.img)
+        # cv2.imwrite("blarg.jpg", self.img)
 
     @override
     def capture_request(self) -> FakeRequest:
@@ -57,7 +61,7 @@ class FakeCamera(Camera):
         total_time_ms = (capture_start - self.frame_time) / 1000000
         self.frame_time = capture_start
         fps = 1000 / total_time_ms
-        return FakeRequest(self.img, fps)
+        return FakeRequest(self.img, fps, self._yuv)
 
     @override
     def stop(self) -> None:

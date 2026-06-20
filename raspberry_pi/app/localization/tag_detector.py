@@ -128,7 +128,7 @@ class TagDetector(Interpreter):
         #     return
 
         # FOR YUYV
-        with req.yuv() as buffer:
+        with req.buffer() as buffer:
             img: NDArray[np.uint8] = np.frombuffer(buffer, dtype=np.uint8)
             img = img.reshape((self._height, self._width * 2))  # type:ignore
             img = img[:, ::2]

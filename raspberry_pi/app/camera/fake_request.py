@@ -8,10 +8,14 @@ from app.camera.request_protocol import Request
 
 
 class FakeRequest(Request):
-    def __init__(self, img: MatLike, fps: float) -> None:
-        """img should be cv2 RGB (really BGR)"""
+    def __init__(self, img: MatLike, fps: float, yuv: bool) -> None:
+        """
+        img: should be cv2 RGB (really BGR).
+        yuv: if true, transcode the input to YUV420.
+        """
         self.img = img
         self._fps = fps
+        self._yuv = yuv
 
     @override
     def fps(self) -> float:
@@ -22,10 +26,14 @@ class FakeRequest(Request):
         return 500
 
     @override
+    def buffer(self) -> AbstractContextManager[Buffer]:
+        if self._yuv:
+            return self.yuv()
+        return self.rgb()
+
     def rgb(self) -> AbstractContextManager[Buffer]:
         return nullcontext(self.img.copy().data)
 
-    @override
     def yuv(self) -> AbstractContextManager[Buffer]:
         return nullcontext(cv2.cvtColor(self.img, cv2.COLOR_RGB2YUV_I420).data)
 

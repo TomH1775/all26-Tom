@@ -54,16 +54,7 @@ class RealRequest(Request):
         return delay_us
 
     @override
-    def rgb(self) -> AbstractContextManager[Buffer]:
-        ## TODO: add a jpeg one?  rename these "main" and 'lores?"
-        return self._buffer("main")
-
-    @override
-    def yuv(self) -> AbstractContextManager[Buffer]:
-        # return self._buffer("lores")
-        return self._buffer("main")
-
-    def _buffer(self, stream: str) -> AbstractContextManager[Buffer]:
+    def buffer(self) -> AbstractContextManager[Buffer]:
         # Returns AbstractContextManager[Buffer] because the flow is:
         #
         # During picamera2.configure(), the DmaAllocator allocates
@@ -94,7 +85,7 @@ class RealRequest(Request):
         # the easiest way to get at the mmap buffer.
         #
         # To use the buffer, you can pass it to np.frombuffer().
-        return _MappedBuffer(self._req, stream)  # type: ignore
+        return _MappedBuffer(self._req, "main")  # type: ignore
 
     @override
     def release(self) -> None:

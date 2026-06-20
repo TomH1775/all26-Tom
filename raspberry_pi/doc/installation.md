@@ -69,3 +69,13 @@ python3 -m pip install adafruit-circuitpython-lsm6ds --break-system-packages
 python3 -m pip install numpy==1.26.4 --break-system-packages
 
 ```
+
+
+# For Windows
+
+If you're writing code on windows, and you want to run the tests,
+you'll have to install:
+
+```
+py -m pip install aiohttp
+```

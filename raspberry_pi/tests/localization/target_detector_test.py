@@ -27,7 +27,7 @@ class TargetDetectorTest(unittest.TestCase):
         # camera = FakeCamera("blob.jpg")
         # GREEN PRACTICE TARGET
         # no distortion
-        camera = FakeCamera("green_blob.jpg")
+        camera = FakeCamera("green_blob.jpg", True)
         display = FakeDisplay()
 
         # GREEN TARGET VALUES
@@ -98,7 +98,7 @@ class TargetDetectorTest(unittest.TestCase):
     def test_target_undistort(self) -> None:
         # includes a lot of distortion; in this case it's
         # "barrel" to keep the blob in the frame
-        camera = FakeCamera("green_blob.jpg", None, -7, 11.875)
+        camera = FakeCamera("green_blob.jpg", True, None, -7, 11.875)
         display = FakeDisplay()
         network = FakeNetwork()
 
@@ -146,7 +146,7 @@ class TargetDetectorTest(unittest.TestCase):
         network = FakeNetwork()
 
         # nothing in this image
-        camera = FakeCamera("white_square.jpg")
+        camera = FakeCamera("white_square.jpg", True)
         display = FakeDisplay()
 
         # GREEN TARGET VALUES

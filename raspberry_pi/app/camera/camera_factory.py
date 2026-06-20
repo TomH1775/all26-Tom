@@ -21,5 +21,5 @@ class CameraFactory:
             # 1/4 scale
             # return FakeCamera("tag_and_board.jpg", (1100, 620), -5)
             # full-size (huge)
-            return FakeCamera("tag_and_board.jpg", (5504, 3096), -0.1, 0.1)
+            return FakeCamera("tag_and_board.jpg", False, (5504, 3096), -0.1, 0.1)
             # return FakeCamera("blob.jpg")

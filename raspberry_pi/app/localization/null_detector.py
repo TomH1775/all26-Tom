@@ -40,7 +40,7 @@ class NullDetector(Interpreter):
 
     def analyzeMJPEG(self, req: Request) -> None:
         buffer: Buffer
-        with req.rgb() as buffer:
+        with req.buffer() as buffer:
             # buffer here is jpeg encoded.
             img: NDArray[np.uint8] = np.frombuffer(buffer, dtype=np.uint8)
             img_bgr = cv2.imdecode(img, 0)  # grayscale
@@ -53,7 +53,7 @@ class NullDetector(Interpreter):
 
     def analyzeRGB(self, req: Request) -> None:
         buffer: Buffer
-        with req.rgb() as buffer:
+        with req.buffer() as buffer:
             img: NDArray[np.uint8] = np.frombuffer(buffer, dtype=np.uint8)
             img_bgr: NDArray[np.uint8] = img.reshape((self.height, self.width, 3))
             fps = req.fps()
@@ -67,7 +67,7 @@ class NullDetector(Interpreter):
         # YUV420 puts all the luminance first
         # followed by the two chrominance images ("planes")
         # at reduced resolution.
-        with req.yuv() as buffer:
+        with req.buffer() as buffer:
             img: NDArray[np.uint8] = np.frombuffer(
                 buffer, dtype=np.uint8, count=self.y_len
             )
@@ -83,7 +83,7 @@ class NullDetector(Interpreter):
         # YUYV puts each luminance and chrominance pixel
         # next to each other instead of in separate "planes"
         # so extract it with "stride"
-        with req.yuv() as buffer:
+        with req.buffer() as buffer:
             img: NDArray[np.uint8] = np.frombuffer(buffer, dtype=np.uint8)
             img = img.reshape((self.height, self.width * 2))  # type:ignore
             img = img[:, ::2]

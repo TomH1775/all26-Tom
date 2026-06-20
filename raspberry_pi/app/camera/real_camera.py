@@ -109,6 +109,13 @@ class RealCamera(Camera):
         identity: Identity,
         cam: Picamera2,  # type: ignore
     ) -> dict[str, Any]:
+        """Produce a camera configuration dict for a single
+        "main" stream.  Years ago, we attempted to use both "main"
+        and "lores" so we could run both color and greyscale
+        detection on the same frame without conversion, but we
+        never really needed that, and it's not supported for
+        UVC cameras, so it's gone.  There's just one "main"
+        stream."""
         return cam.create_still_configuration(  # type:ignore
             buffer_count=conf.buffer_count(),
             queue=conf.queue(),

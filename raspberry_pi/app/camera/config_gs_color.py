@@ -25,6 +25,9 @@ class ConfigGsColor(Config):
 
     @override
     def main(self, size: Size) -> dict[str, Any]:
+        """RGB encoding.
+        Remember that when OpenCV says "RGB" it really means "BGR"
+        github.com/raspberrypi/picamera2/issues/848"""
         return {"format": "RGB888", "size": (size.width, size.height)}
 
     def controls(self) -> dict[str, Any]:

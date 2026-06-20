@@ -205,7 +205,7 @@ class CombinedDetector(Interpreter):
     @override
     def analyze(self, req: Request) -> None:
         """Process both tags and objects from the BGR image."""
-        with req.rgb() as buffer_rgb:
+        with req.buffer() as buffer_rgb:
             # Get BGR image for both detectors
             img_bgr: NDArray[np.uint8] = np.frombuffer(buffer_rgb, dtype=np.uint8)
 

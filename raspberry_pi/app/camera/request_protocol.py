@@ -12,17 +12,15 @@ class Request(Protocol):
 
     def delay_us(self) -> int:
         """Duration between the capture instant of the center of the frame
-        and the current instant, microseconds"""
+        and the current instant, microseconds."""
         ...
 
-    def rgb(self) -> AbstractContextManager[Buffer]:
-        """Context-managed Buffer containing RGB888.
-        Remember that when OpenCV says "RGB" it really means "BGR"
-        github.com/raspberrypi/picamera2/issues/848"""
+    def buffer(self) -> AbstractContextManager[Buffer]:
+        """Context-managed Buffer containing a single frame.
+        The encoding of this frame depends on the configuration
+        of the camera."""
         ...
 
-    def yuv(self) -> AbstractContextManager[Buffer]:
-        """Context-managed Buffer containing YUV420."""
+    def release(self) -> None: 
+        """Release the buffer back to the pool."""
         ...
-
-    def release(self) -> None: ...

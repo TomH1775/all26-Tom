@@ -62,7 +62,7 @@ class TargetDetector(Interpreter):
 
     def analyze(self, req: Request) -> None:
         buffer: Buffer
-        with req.rgb() as buffer:
+        with req.buffer() as buffer:
             # microsecond age of frame
             delay_us = req.delay_us()
 

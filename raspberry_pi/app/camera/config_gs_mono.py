@@ -25,6 +25,7 @@ class ConfigGsMono(Config):
 
     @override
     def main(self, size: Size) -> dict[str, Any]:
+        """YUV420 encoding."""
         return {"format": "YUV420", "size": (size.width, size.height)}
 
     def controls(self) -> dict[str, Any]:

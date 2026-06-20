@@ -14,7 +14,7 @@ from app.network.network_protocol import Network
 class IntrinsicTest(unittest.TestCase):
     def test_identity(self) -> None:
         identity: Identity = Identity.DEV
-        cam: Camera = FakeCamera("tag_and_board.jpg", (5504, 3096), -0.1, 0.1)
+        cam: Camera = FakeCamera("tag_and_board.jpg", False, (5504, 3096), -0.1, 0.1)
         display: Display = FakeDisplay()
         network: Network = FakeNetwork()
         InterpreterFactory.get(identity, cam, display, network)
