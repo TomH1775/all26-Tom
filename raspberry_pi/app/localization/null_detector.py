@@ -1,10 +1,9 @@
 # pylint: disable=C0103,E1101,R0903
 
-from collections.abc import Buffer
 import cv2
 import numpy as np
 from numpy.typing import NDArray
-from typing_extensions import override
+from typing_extensions import Buffer, override
 from app.camera.camera_protocol import Camera, Request, Size
 from app.camera.interpreter_protocol import Interpreter
 from app.dashboard.display import Display

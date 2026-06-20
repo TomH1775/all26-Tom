@@ -15,7 +15,6 @@ from app.camera.distortion import Distortion
 from app.camera.intrinsic import Intrinsic
 from app.camera.model import Model
 from app.camera.real_request import RealRequest
-from app.camera.shutter import Shutter
 from app.camera.size import Size
 from app.config.identity import Identity
 from app.util.timer import Timer
@@ -57,7 +56,6 @@ class RealCamera(Camera):
         self._dist: Distortion = Distortion(identity)
 
         model: Model = Model.get(self._cam.camera_properties)  # type: ignore
-        self._rolling = Shutter(model).rolling()
         self._size: Size = Size.from_model(model)
 
         print("\n\n*** CONFIG! ***\n\n")
@@ -85,7 +83,7 @@ class RealCamera(Camera):
         total_time_ms = (capture_start - self._frame_time) / 1000000
         self._frame_time = capture_start
         fps = 1000 / total_time_ms
-        return RealRequest(req, fps, self._rolling)  # type: ignore
+        return RealRequest(req, fps)  # type: ignore
 
     @override
     def stop(self) -> None:
