@@ -2,16 +2,20 @@ package org.team100.frc2026;
 
 import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.Takt;
+import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
+import org.team100.lib.config.SimpleDynamics;
 import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.logging.LoggerFactory.Rotation2dLogger;
 import org.team100.lib.logging.Logging;
+import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
+import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.rev.NeoVortexCANSparkMotor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
 import org.team100.lib.network.NetworkUtil;
@@ -33,6 +37,10 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 
 public class Robot extends TimedRobot100 {
+    /** 
+     * Offset in turns, between the camera and the sensor.
+     */
+    private static final double STATIC_OFFSET = 0.951;
     private static final boolean DEBUG = false;
     /**
      * The sensor itself has a propagation delay of 100 us and a sampling rate of 10
@@ -89,37 +97,35 @@ public class Robot extends TimedRobot100 {
     public Robot() {
         Logging logging = Logging.instance();
         LoggerFactory log = logging.rootLogger;
+        TotalCurrentLog currentLog = new TotalCurrentLog(log);
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
         sync = new Sync(inst);
 
         m_controller = new XboxController(0);
 
         if (RobotBase.isReal()) {
-            m_motor = NeoVortexCANSparkMotor.get(
+            m_motor = new NeoVortexCANSparkMotor(
                     log,
-                    new CanId(1),
+                    currentLog,
+                    new CanId(9),
+                    NeutralMode100.COAST,
                     MotorPhase.FORWARD,
-                    20, // current limit
-                    NeoVortexCANSparkMotor.ff(log),
-                    // NeoVortexCANSparkMotor.friction(log),
-                    // motor is free spinning, low friction, set by experiment
-                    // to get the RPM correct using back EMF only
+                    new CurrentLimit(20, 20),
+                    new SimpleDynamics(log, 0, 0),
                     new Friction(log, 0.15, 0.06, 0.0, 0.5),
-                    // not much P required
-                    PIDConstants.makePositionPID(log, 0.5));
-            // PIDConstants.makePositionPID(log, 0.5));
+                    PIDConstants.makePositionPID(log, 0.5), 0, 0);
 
         } else {
             m_motor = new SimulatedBareMotor(log, 600);
         }
 
-        RoboRioChannel sensorChannel = new RoboRioChannel(1);
+        RoboRioChannel sensorChannel = new RoboRioChannel(0);
         // The offset here is from the testboard, experimenting until the "sensor minus
         // camera" is zero at rest.
         m_sensor = new AS5048RotaryPositionSensor(
                 log,
                 sensorChannel,
-                0.515, // offset in turns
+                STATIC_OFFSET, // offset in turns
                 EncoderDrive.INVERSE);
 
         m_motorBuffer = new TimeInterpolatableBuffer100<>(
@@ -147,7 +153,6 @@ public class Robot extends TimedRobot100 {
         m_logMotorCmd = log.rotation2dLogger(Level.TRACE, "motor cmd now (rad)");
         m_logMotorMeasurement = log.rotation2dLogger(Level.TRACE, "motor measurement now (rad)");
         m_logActualSpeed = log.doubleLogger(Level.TRACE, "actual speed (rad_s)");
-
 
         if (RobotBase.isSimulation()) {
             // these extra additions are to wrap the result.
