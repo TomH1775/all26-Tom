@@ -20,7 +20,7 @@ For our tag size, this error is about 5 mm in real-world terms.
 
 For comparison, here's the original:
 
-![Original](../app/camera/tag_and_board.jpg)
+![Original](../app/camera/images/tag_and_board.jpg)
 
 The distorted images are obviously very distorted -- more distorted than our the images our GS+6mm camera setup produces, so maybe this isn't an issue.  But if the detector seems to fail for close-up tags, maybe this is the reason.
 

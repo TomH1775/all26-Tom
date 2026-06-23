@@ -24,10 +24,10 @@ class TargetDetectorTest(unittest.TestCase):
         # the blob is in the lower right quadrant, so the result
         # should be pitch-down yaw-right.
         # ORANGE TARGET
-        # camera = FakeCamera("blob.jpg")
+        # camera = FakeCamera("images/blob.jpg")
         # GREEN PRACTICE TARGET
         # no distortion
-        camera = FakeCamera("green_blob.jpg")
+        camera = FakeCamera("images/green_blob.jpg")
         display = FakeDisplay()
 
         # GREEN TARGET VALUES
@@ -98,7 +98,7 @@ class TargetDetectorTest(unittest.TestCase):
     def test_target_undistort(self) -> None:
         # includes a lot of distortion; in this case it's
         # "barrel" to keep the blob in the frame
-        camera = FakeCamera("green_blob.jpg", None, -7, 11.875)
+        camera = FakeCamera("images/green_blob.jpg", None, -7, 11.875)
         display = FakeDisplay()
         network = FakeNetwork()
 
@@ -146,7 +146,7 @@ class TargetDetectorTest(unittest.TestCase):
         network = FakeNetwork()
 
         # nothing in this image
-        camera = FakeCamera("white_square.jpg")
+        camera = FakeCamera("images/white_square.jpg")
         display = FakeDisplay()
 
         # GREEN TARGET VALUES

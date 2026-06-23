@@ -1,7 +1,4 @@
-"""A combined detector for AprilTags and colored objects (notes) using BGR image only."""
-
 # pylint: disable=C0103,E0611,E1101,E1121,R0902,R0903,R0913,R0914,R0917,W0212,W0612
-
 
 import cv2
 import numpy as np
@@ -12,14 +9,17 @@ from typing_extensions import override
 from wpimath.geometry import Rotation3d
 from cv2.typing import MatLike, Moments
 from app.camera.camera_protocol import Camera, Request, Size
-from app.camera.interpreter_protocol import Interpreter
+from app.interpreter.interpreter_protocol import Interpreter
 from app.config.identity import Identity
 from app.dashboard.display import Display
+from app.decoder.decoder_protocol import Decoder
 from app.network.structs import Blip, Target
 from app.network.network_protocol import Network
 
 
 class CombinedDetector(Interpreter):
+    """A combined detector for AprilTags and colored objects."""
+
     def __init__(
         self,
         identity: Identity,
@@ -97,6 +97,7 @@ class CombinedDetector(Interpreter):
         """Detect AprilTags in a BGR image by converting to grayscale internally."""
         # Convert BGR to grayscale for tag detection
         img_gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+        img_gray = np.ascontiguousarray(img_gray)
         result: list[AprilTagDetection] = self._at_detector.detect(img_gray.data)
         blips: list[Blip] = []
 
@@ -205,11 +206,12 @@ class CombinedDetector(Interpreter):
     @override
     def analyze(self, req: Request) -> None:
         """Process both tags and objects from the BGR image."""
-        with req.rgb() as buffer_rgb:
-            # Get BGR image for both detectors
-            img_bgr: NDArray[np.uint8] = np.frombuffer(buffer_rgb, dtype=np.uint8)
+        with req.buffer() as buffer:
+            decoder: Decoder = req.decoder()
+            img_bgr: MatLike | None = decoder.color(buffer)
+            if img_bgr is None:
+                return
 
-            img_bgr = img_bgr.reshape((self._height, self._width, 3))
             img_display = img_bgr.copy()
 
             # microsecond age of frame

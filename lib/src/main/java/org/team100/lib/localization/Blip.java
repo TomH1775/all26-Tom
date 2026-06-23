@@ -33,7 +33,9 @@ public class Blip {
     }
 
     /**
-     * Microseconds
+     * Server time in microseconds. The timestamp of a blip is synchronized using
+     * Sync, so it is assumed to be exactly in sync with the real server time; there
+     * are no additional offsets.
      */
     public long getTimestamp() {
         return timestamp;

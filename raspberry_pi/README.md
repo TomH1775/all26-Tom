@@ -58,6 +58,9 @@ you should decline the offer: don't use a virtual environment, these are not sys
 You may want to reload the python environment, which is only possible using the "command palette"
 (ctrl-shift-P) and finding "python: clear cache and reload window". 
 
+Note the Raspberry Pi uses python 3.11, and it's probably not worth
+worrying about upgrading it, so your vscode version should match.
+
 # How to run locally
 
 From the command line in the raspberry_pi directory:

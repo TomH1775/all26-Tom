@@ -13,8 +13,8 @@ from threading import Event, Thread
 
 from app.camera.camera_factory import CameraFactory
 from app.camera.camera_protocol import Camera
-from app.camera.interpreter_factory import InterpreterFactory
-from app.camera.interpreter_protocol import Interpreter
+from app.interpreter.interpreter_factory import InterpreterFactory
+from app.interpreter.interpreter_protocol import Interpreter
 from app.camera.camera_loop import CameraLoop
 from app.config.identity import Identity
 from app.dashboard.display import Display

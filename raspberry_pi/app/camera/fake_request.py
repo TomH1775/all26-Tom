@@ -2,16 +2,22 @@
 
 from contextlib import AbstractContextManager, nullcontext
 from typing_extensions import Buffer, override
-import cv2
 from cv2.typing import MatLike
 from app.camera.request_protocol import Request
+from app.decoder.mat_decoder import MatDecoder
 
 
 class FakeRequest(Request):
     def __init__(self, img: MatLike, fps: float) -> None:
-        """img should be cv2 RGB (really BGR)"""
+        """
+        img: must be 3-channel cv2 BGR.
+        """
         self.img = img
         self._fps = fps
+
+    @override
+    def decoder(self) -> MatDecoder:
+        return MatDecoder()
 
     @override
     def fps(self) -> float:
@@ -22,12 +28,8 @@ class FakeRequest(Request):
         return 500
 
     @override
-    def rgb(self) -> AbstractContextManager[Buffer]:
+    def buffer(self) -> AbstractContextManager[Buffer]:
         return nullcontext(self.img.copy().data)
-
-    @override
-    def yuv(self) -> AbstractContextManager[Buffer]:
-        return nullcontext(cv2.cvtColor(self.img, cv2.COLOR_RGB2YUV_I420).data)
 
     @override
     def release(self) -> None:

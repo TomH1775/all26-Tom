@@ -16,8 +16,7 @@ import edu.wpi.first.util.struct.StructBuffer;
 public class RawTags extends CameraReader<Blip> {
     /**
      * The difference between the current instant and the instant of the blip,
-     * including our magic correction, i.e. this is the time we look up in the pose
-     * buffer.
+     * i.e. this is the time we look up in the pose buffer.
      */
     private final DoubleLogger m_log_lag;
     private final ObjDoubleConsumer<Transform3d> m_sink;
@@ -25,7 +24,7 @@ public class RawTags extends CameraReader<Blip> {
     public RawTags(LoggerFactory parent, ObjDoubleConsumer<Transform3d> sink) {
         super(parent, "vision", "blips", StructBuffer.create(Blip.struct));
         LoggerFactory log = parent.type(this);
-        m_log_lag = log.doubleLogger(Level.TRACE, "lag");
+        m_log_lag = log.doubleLogger(Level.TRACE, "lag (sec)");
         m_sink = sink;
     }
 

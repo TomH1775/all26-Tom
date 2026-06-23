@@ -1,4 +1,4 @@
-package org.team100.frc2026;
+package org.team100.lib.network;
 
 import java.util.function.DoubleFunction;
 
@@ -13,14 +13,18 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.PubSubOption;
 import edu.wpi.first.networktables.StructArrayPublisher;
 
-/** Publish a tag */
+/**
+ * Uses a function to supply ground-truth values for a time in the somewhat
+ * distant past, and publishes it on network tables with an appropriate
+ * timestamp.
+ */
 public class SimulatedCamera implements Runnable {
-    // TODO: use a real number; real delay is something like 85 ms
+    /** Measured camera delay in seconds, see studies/camera_delay. */
     private static final double DELAY_S = 0.085;
 
     private final DoubleFunction<Rotation2d> m_truth;
 
-    /** client instance, not the default */
+    /** Client instance, not the default. */
     private final NetworkTableInstance m_inst;
     private final StructArrayPublisher<Blip> m_pub;
 

@@ -24,16 +24,20 @@ class FakeCamera(Camera):
         inv_k1: float = 0.0,
     ) -> None:
         """
+        filename: in this directory.
+        yuv: if true, transcode to YUV420.
         size: if no size is supplied, the native size is used.
         k1: quadratic distortion term for undistortion
         inv_k1: inverse distortion, used to distort the image
         note: if k1 magnitude is more than about 7, undistort barfs.
         """
-        p = Path(__file__).with_name(filename)
+        p = Path(__file__).parent / filename
         pathstr: str = str(p)
-        file = cv2.imread(pathstr)
+        # force the file to be read as three-channel BGR
+        file = cv2.imread(pathstr, cv2.IMREAD_COLOR)
         if file is None:
-            raise ValueError("no file")
+            raise ValueError("no file: " + pathstr)
+        # img is 3 channel BGR
         self.img: MatLike = file
         if size is not None:
             self.img = cv2.resize(self.img, size)
@@ -49,7 +53,7 @@ class FakeCamera(Camera):
 
         self.img = cv2.undistort(self.img, mtx, dist)
         # uncomment to see the distorted thing
-        cv2.imwrite("blarg.jpg", self.img)
+        # cv2.imwrite("blarg.jpg", self.img)
 
     @override
     def capture_request(self) -> FakeRequest:

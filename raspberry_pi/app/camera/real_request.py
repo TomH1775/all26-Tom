@@ -1,20 +1,25 @@
-# pylint: disable=E0401
+# pylint: disable=E0401,R0913,R0917
 
 from contextlib import AbstractContextManager
-from typing import cast
 from typing_extensions import Buffer, override
-
 from picamera2 import CompletedRequest  # type: ignore
 from picamera2.request import _MappedBuffer  # type: ignore
-
 from app.camera.request_protocol import Request
-from app.util.timer import Timer
+from app.decoder.decoder_protocol import Decoder
+from app.camera.delay import Delay
 
 # Extra constant delay.
 EXTRA_DELAY_MS: float = 2.5
 
+
 class RealRequest(Request):
-    def __init__(self, req: CompletedRequest, fps: float, rolling: bool):  # type: ignore
+    def __init__(
+        self,
+        req: CompletedRequest,  # type: ignore
+        fps: float,
+        decoder: Decoder,
+        delay: Delay,
+    ):
         # Before we get a CompletedRequest, its constructor has used the
         # camera allocator sync property to:
         # * instantiate a DMA allocator sync for each buffer
@@ -22,7 +27,12 @@ class RealRequest(Request):
         # * __enter__() each buffer's DmaSync, which calls ioctl DMA_BUF_SYNC_START
         self._req: CompletedRequest = req
         self._fps = fps
-        self._rolling = rolling
+        self._decoder = decoder
+        self._delay = delay
+
+    @override
+    def decoder(self) -> Decoder:
+        return self._decoder
 
     @override
     def fps(self) -> float:
@@ -31,46 +41,10 @@ class RealRequest(Request):
 
     @override
     def delay_us(self) -> int:
-        metadata = self._req.get_metadata()  # type: ignore
-        # Time of first row received, this is roughly the "readout timestamp"
-        sensor_timestamp_ns = cast(int, metadata["SensorTimestamp"])
-
-        # Half the exposure time.
-        exposure_term_us = cast(int, metadata["ExposureTime"] * 0.5)
-        exposure_term_ns = exposure_term_us * 1000
-
-        frame_term_ns = cast(int, EXTRA_DELAY_MS * 1000000)
-
-        exposure_timestamp_ns = sensor_timestamp_ns - frame_term_ns - exposure_term_ns
-
-        if self._rolling:
-            # For a global shutter, the whole frame is exposed at once,
-            # so the exposure timestamp applies to all the pixels.
-            # For a rolling shutter, rows are exposed over the entire
-            # frame duration (1/fps), i.e. *after* the data from the first
-            # row is received.  Take the midpoint of this period.
-            # TODO: assign a different timestamp to each tag, depending on
-            # where it is in the frame -- note since we're moving away from
-            # rolling shutters this is maybe not worth worrying about :-)
-            frame_duration_us = cast(int, metadata["FrameDuration"])
-            frame_duration_ns = frame_duration_us * 1000
-            exposure_timestamp_ns += frame_duration_ns // 2
-
-        # The delay is the difference between the exposure time and the current instant.
-        delay_ns: int = Timer.time_ns() - exposure_timestamp_ns
-        delay_us = delay_ns // 1000
-
-        return delay_us
+        return self._delay.delay_us(self._req.get_metadata())  # type: ignore
 
     @override
-    def rgb(self) -> AbstractContextManager[Buffer]:
-        return self._buffer("main")
-
-    @override
-    def yuv(self) -> AbstractContextManager[Buffer]:
-        return self._buffer("lores")
-
-    def _buffer(self, stream: str) -> AbstractContextManager[Buffer]:
+    def buffer(self) -> AbstractContextManager[Buffer]:
         # Returns AbstractContextManager[Buffer] because the flow is:
         #
         # During picamera2.configure(), the DmaAllocator allocates
@@ -101,7 +75,7 @@ class RealRequest(Request):
         # the easiest way to get at the mmap buffer.
         #
         # To use the buffer, you can pass it to np.frombuffer().
-        return _MappedBuffer(self._req, stream)  # type: ignore
+        return _MappedBuffer(self._req, "main")  # type: ignore
 
     @override
     def release(self) -> None:

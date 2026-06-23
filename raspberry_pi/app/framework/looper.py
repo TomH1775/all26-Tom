@@ -1,10 +1,10 @@
-"""Base class for loops."""
-
 from abc import ABC, abstractmethod
 from threading import Event
 
 
 class Looper(ABC):
+    """Base class for loops."""
+
     def __init__(self, done: Event) -> None:
         self._done = done
 

@@ -44,7 +44,7 @@ class DisplayFactory:
                 return 0.25  # ok for dashboard
                 # scale = 1.0 # full size for debugging; slow.
             case Identity.FUNNEL:
-                return 0.5
+                return 0.25
             case Identity.UNKNOWN:
                 return 1.0  # full size for debugging; slow.
             case _:

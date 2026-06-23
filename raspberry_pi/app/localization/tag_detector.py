@@ -1,28 +1,33 @@
-"""A wrapper for the AprilTag detector."""
-
-# pylint: disable=E0611,E1101,R0902,R0903,R0913,R0914,R0917,W0212
+# pylint: disable=E0611,E1101,R0902,R0903,R0913,R0914,R0917,W0212,W0611
 
 import os
-from typing import cast
+from typing import cast  # pyright: ignore[reportUnusedImport]
 import cv2
+from cv2.typing import MatLike
 import ntcore
 import numpy as np
 from numpy.typing import NDArray
 from robotpy_apriltag import AprilTagDetection, AprilTagDetector, AprilTagPoseEstimator
-from typing_extensions import override
+from typing_extensions import override, Buffer
 from app.camera.camera_protocol import Camera, Request, Size
-from app.camera.interpreter_protocol import Interpreter
+from app.interpreter.interpreter_protocol import Interpreter
 from app.config.identity import Identity
 from app.dashboard.display import Display
 from app.network.network_protocol import Network
 from app.network.structs import Blip
-
+from app.decoder.decoder_protocol import Decoder
 
 class TagDetector(Interpreter):
+    """A wrapper for the AprilTag detector."""
+
     IMAGE_DIR = "images"
 
     def __init__(
-        self, identity: Identity, cam: Camera, display: Display, network: Network
+        self,
+        identity: Identity,
+        cam: Camera,
+        display: Display,
+        network: Network,
     ) -> None:
         """Debug is very slow.  It writes apriltag detector debug images
         into the same filenames over and over, and also writes
@@ -118,16 +123,12 @@ class TagDetector(Interpreter):
 
     @override
     def analyze(self, req: Request) -> None:
-        with req.yuv() as buffer:
-            # truncate, ignore chrominance. this makes a view, very fast (300 ns)
-            img: NDArray[np.uint8] = cast(
-                NDArray[np.uint8],
-                np.frombuffer(buffer, dtype=np.uint8, count=self._y_len),  # type:ignore
-            )
-
-            # this  makes a view, very fast (150 ns)
-            img = img.reshape((self._height, self._width))  # type:ignore
-
+        buffer: Buffer
+        with req.buffer() as buffer:
+            decoder: Decoder = req.decoder()
+            img: MatLike | None = decoder.mono(buffer)
+            if img is None:
+                return
             if self._network.calibrate():
                 self.write_calibration_image(img)
 
@@ -168,6 +169,7 @@ class TagDetector(Interpreter):
 
             # Do the drawing after the NT payload is written to minimize latency.
             # This is not particularly fast or important for prod.
+
             self._display.text(img, f"FPS {fps:2.0f}", (10, 80))
             self._display.text(img, f"DELAY (ms) {delay_us/1000:2.0f}", (10, 160))
             self._display.put(img)

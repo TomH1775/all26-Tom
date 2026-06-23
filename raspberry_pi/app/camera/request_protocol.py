@@ -3,26 +3,36 @@
 from typing import Protocol
 from contextlib import AbstractContextManager
 from typing_extensions import Buffer
+from app.decoder.decoder_protocol import Decoder
 
 
 class Request(Protocol):
+    """The request makes available both a context-managed zero-copy
+    frame buffer, and a decoder that produces OpenCV-compatible frames.
+    The decoder make a copy of the frame (e.g. to decode JPEG), but
+    it might not (e.g. a color frame from RGB888, or a grayscale
+    frame from YUV420), so don't use the decoder output outside
+    the scope of the buffer."""
+
+    def decoder(self) -> Decoder:
+        """Decoder for the format of this request."""
+        ...
+
     def fps(self) -> float:
         """FPS calculated from the previous capture."""
         ...
 
     def delay_us(self) -> int:
         """Duration between the capture instant of the center of the frame
-        and the current instant, microseconds"""
+        and the current instant, microseconds."""
         ...
 
-    def rgb(self) -> AbstractContextManager[Buffer]:
-        """Context-managed Buffer containing RGB888.
-        Remember that when OpenCV says "RGB" it really means "BGR"
-        github.com/raspberrypi/picamera2/issues/848"""
+    def buffer(self) -> AbstractContextManager[Buffer]:
+        """Context-managed Buffer containing a single frame.
+        The encoding of this frame depends on the configuration
+        of the camera."""
         ...
 
-    def yuv(self) -> AbstractContextManager[Buffer]:
-        """Context-managed Buffer containing YUV420."""
+    def release(self) -> None:
+        """Release the buffer back to the pool."""
         ...
-
-    def release(self) -> None: ...

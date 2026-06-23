@@ -1,4 +1,3 @@
-"""A wrapper for the note detector."""
 
 # pylint: disable=C0103,E1101,E1121,R0902,R0903,R0913,R0914,R0917,W0612
 
@@ -8,16 +7,19 @@ from numpy.typing import NDArray
 import ntcore
 from wpimath.geometry import Rotation3d
 from cv2.typing import MatLike, Moments
-from typing_extensions import Buffer
+from typing_extensions import override, Buffer
 
 from app.camera.camera_protocol import Camera, Request, Size
-from app.camera.interpreter_protocol import Interpreter
+from app.interpreter.interpreter_protocol import Interpreter
 from app.dashboard.display import Display
 from app.network.network_protocol import Network
 from app.network.structs import Target
+from app.decoder.decoder_protocol import Decoder
 
 
 class TargetDetector(Interpreter):
+    """Detects colored objects."""
+
     def __init__(
         self,
         cam: Camera,
@@ -60,19 +62,21 @@ class TargetDetector(Interpreter):
         undistorted: MatLike = cv2.undistortImagePoints(points, self._mtx, self._dist)
         return undistorted.reshape(-1, 2)
 
+    @override
     def analyze(self, req: Request) -> None:
         buffer: Buffer
-        with req.rgb() as buffer:
+        with req.buffer() as buffer:
+            decoder: Decoder = req.decoder()
+            img_bgr: MatLike | None = decoder.color(buffer)
+            if img_bgr is None:
+                return
+
             # microsecond age of frame
             delay_us = req.delay_us()
 
             # localtime in microseconds
             localtime: int = int(ntcore._now() - delay_us)  # pylint:disable=W0212
             servertime: int = self._network.server_time(localtime)
-
-            img: NDArray[np.uint8] = np.frombuffer(buffer, dtype=np.uint8)
-
-            img_bgr: NDArray[np.uint8] = img.reshape((self._height, self._width, 3))
 
             img_hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
             img_hsv = np.ascontiguousarray(img_hsv)

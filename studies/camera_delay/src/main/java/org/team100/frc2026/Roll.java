@@ -9,12 +9,16 @@ import org.team100.lib.logging.LoggerFactory.Rotation2dLogger;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 
-/** Extract the roll component. */
+/**
+ * Accepts transforms (from camera blips), extracts the roll component, and
+ * pushes it to the delegate.
+ */
 public class Roll implements ObjDoubleConsumer<Transform3d> {
     private final Rotation2dLogger m_logRoll;
     private final ObjDoubleConsumer<Rotation2d> m_delegate;
 
-    public Roll(LoggerFactory parent, ObjDoubleConsumer<Rotation2d> delegate) {
+    public Roll(LoggerFactory parent,
+            ObjDoubleConsumer<Rotation2d> delegate) {
         LoggerFactory log = parent.type(this);
         m_logRoll = log.rotation2dLogger(Level.TRACE, "roll");
         m_delegate = delegate;

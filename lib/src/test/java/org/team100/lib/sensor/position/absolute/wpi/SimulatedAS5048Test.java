@@ -7,13 +7,13 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.sensor.position.absolute.EncoderDrive;
-import org.team100.lib.testing.Timeless2025;
+import org.team100.lib.testing.Timeless;
 import org.team100.lib.util.RoboRioChannel;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-public class SimulatedAS5048Test implements Timeless2025 {
+public class SimulatedAS5048Test implements Timeless {
     private static final LoggerFactory log = new TestLoggerFactory(new TestPrimitiveLogger());
 
     @Test

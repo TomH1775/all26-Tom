@@ -1,5 +1,3 @@
-"""A display for unit tests."""
-
 from cv2.typing import MatLike
 from robotpy_apriltag import AprilTagDetection
 from typing_extensions import override
@@ -8,6 +6,8 @@ from app.dashboard.display import Display
 
 
 class FakeDisplay(Display):
+    """A display for unit tests."""
+
     def __init__(self) -> None:
         self.tags: list[AprilTagDetection] = []
         self.poses: list[Transform3d] = []

@@ -5,7 +5,7 @@ from threading import Event
 from typing_extensions import override
 
 from app.camera.camera_protocol import Camera
-from app.camera.interpreter_protocol import Interpreter
+from app.interpreter.interpreter_protocol import Interpreter
 from app.framework.looper import Looper
 
 
