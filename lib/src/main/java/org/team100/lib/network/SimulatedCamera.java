@@ -1,4 +1,4 @@
-package org.team100.frc2026;
+package org.team100.lib.network;
 
 import java.util.function.DoubleFunction;
 
@@ -19,7 +19,7 @@ import edu.wpi.first.networktables.StructArrayPublisher;
  * timestamp.
  */
 public class SimulatedCamera implements Runnable {
-    // TODO: use a real number; real delay is something like 85 ms
+    /** Measured camera delay in seconds, see studies/camera_delay. */
     private static final double DELAY_S = 0.085;
 
     private final DoubleFunction<Rotation2d> m_truth;

@@ -1,4 +1,4 @@
-package org.team100.frc2026;
+package org.team100.lib.network;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -6,13 +6,12 @@ import org.junit.jupiter.api.Test;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
-import org.team100.lib.network.RawTags;
-import org.team100.lib.testing.Timeless2025;
+import org.team100.lib.testing.Timeless;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 
-public class SimulatedCameraTest implements Timeless2025 {
+public class SimulatedCameraTest implements Timeless {
     private static final LoggerFactory log = new TestLoggerFactory(new TestPrimitiveLogger());
 
     Rotation2d testR = null;

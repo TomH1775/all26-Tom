@@ -19,6 +19,7 @@ import org.team100.lib.motor.rev.NeoVortexCANSparkMotor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
 import org.team100.lib.network.NetworkUtil;
 import org.team100.lib.network.RawTags;
+import org.team100.lib.network.SimulatedCamera;
 import org.team100.lib.network.Sync;
 import org.team100.lib.sensor.position.absolute.EncoderDrive;
 import org.team100.lib.sensor.position.absolute.wpi.AS5048RotaryPositionSensor;
