@@ -130,8 +130,8 @@ public class FiveBarMech extends SubsystemBase {
 
     /** Update position by adding. */
     public void add(double p1, double p5) {
-        double q1 = m_mechP1.getWrappedPositionRad() + p1;
-        double q5 = m_mechP5.getWrappedPositionRad() + p5;
+        double q1 = m_mechP1.getUnwrappedPositionRad() + p1;
+        double q5 = m_mechP5.getUnwrappedPositionRad() + p5;
         setPosition(q1, q5);
     }
 

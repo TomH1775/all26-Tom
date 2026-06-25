@@ -40,7 +40,7 @@ public class FiveBarBare extends SubsystemBase {
         switch (Identity.instance) {
             case COMP_BOT -> {
                 m_motorP1 = makeMotor(loggerP1, currentLog, new CanId(1));
-                m_motorP5 = makeMotor(loggerP5, currentLog, new CanId(2));
+                m_motorP5 = makeMotor(loggerP5, currentLog, new CanId(5));
             }
             default -> {
                 m_motorP1 = new SimulatedBareMotor(loggerP1, 600);

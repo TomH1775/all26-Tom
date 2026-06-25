@@ -82,14 +82,14 @@ public class FiveBarCartesian extends SubsystemBase {
                 motorP1,
                 m_sensorP1,
                 1.0,
-                0.0,
-                1.0);
+                -100.0,
+                100.0);
 
         LoggerFactory loggerP5 = logger.name("p5");
         Falcon500Motor motorP5 = new Falcon500Motor(
                 loggerP5,
                 currentLog,
-                new CanId(2),
+                new CanId(5),
                 NeutralMode100.COAST,
                 MotorPhase.FORWARD,
                 new CurrentLimit(STATOR_LIMIT, SUPPLY_LIMIT),
@@ -103,8 +103,8 @@ public class FiveBarCartesian extends SubsystemBase {
                 motorP5,
                 m_sensorP5,
                 1.0,
-                0.0,
-                1.0);
+                -100.0,
+                100.0);
     }
 
     /**

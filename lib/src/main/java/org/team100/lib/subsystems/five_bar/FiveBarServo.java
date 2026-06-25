@@ -93,8 +93,8 @@ public class FiveBarServo extends SubsystemBase {
                 motorP1,
                 m_sensorP1,
                 1.0,
-                0.0,
-                1.0);
+                -100.0,
+                100.0);
 
         ReferenceR1 refP1 = new ProfileReferenceR1(
                 loggerP1, () -> profile, POSITION_TOLERANCE, VELOCITY_TOLERANCE);
@@ -107,7 +107,7 @@ public class FiveBarServo extends SubsystemBase {
         Falcon500Motor motorP5 = new Falcon500Motor(
                 loggerP5,
                 currentLog,
-                new CanId(2),
+                new CanId(5),
                 NeutralMode100.COAST,
                 MotorPhase.FORWARD,
                 new CurrentLimit(STATOR_LIMIT, SUPPLY_LIMIT),
@@ -121,8 +121,8 @@ public class FiveBarServo extends SubsystemBase {
                 motorP5,
                 m_sensorP5,
                 1.0,
-                0.0,
-                1.0);
+                -100.0,
+                100.0);
         ReferenceR1 refP5 = new ProfileReferenceR1(
                 loggerP5, () -> profile, POSITION_TOLERANCE, VELOCITY_TOLERANCE);
         m_servoP5 = new OutboardAngularPositionServo(
