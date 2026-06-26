@@ -33,11 +33,83 @@ class TagDetectorTest(unittest.TestCase):
         self.assertEqual(2, len(display.locs))
         self.assertEqual(1, display.frame_count)
 
-        self.assertAlmostEqual(703, display.tags[0].getCenter().x, 0)
-        self.assertAlmostEqual(522, display.tags[0].getCenter().y, 0)
-        self.assertAlmostEqual(0.000, display.poses[0].x, 3)
-        self.assertAlmostEqual(-0.006, display.poses[0].y, 3)
-        self.assertAlmostEqual(0.264, display.poses[0].z, 3)
+        tag = display.tags[0]
+        self.assertAlmostEqual(703, tag.getCenter().x, 0)
+        self.assertAlmostEqual(522, tag.getCenter().y, 0)
+        pose = display.poses[0]
+        t = pose.translation()
+        self.assertAlmostEqual(0.000, t.x, delta=0.001)
+        self.assertAlmostEqual(-0.006, t.y, delta=0.001)
+        self.assertAlmostEqual(0.264, t.z, delta=0.001)
+        r = pose.rotation()
+        # rotation should be zero, but note the noise
+        self.assertAlmostEqual(0, r.x, delta=0.001)
+        self.assertAlmostEqual(0, r.y, delta=0.002)
+        self.assertAlmostEqual(0, r.z, delta=0.001)
+
+    def test_big_sharp90(self) -> None:
+        """This image is rotated."""
+        identity = Identity.UNKNOWN
+        network = FakeNetwork()
+        camera = FakeCamera("images/big_sharp90.png")
+        display = FakeDisplay()
+        tag_detector = TagDetector(identity, camera, display, network)
+        request = camera.capture_request()
+        tag_detector.analyze(request)
+
+        self.assertEqual(1, len(display.tags))
+        self.assertEqual(1, len(display.poses))
+        self.assertEqual(2, len(display.msgs))
+        self.assertEqual(2, len(display.locs))
+        self.assertEqual(1, display.frame_count)
+
+        tag = display.tags[0]
+        self.assertAlmostEqual(701, tag.getCenter().x, 0)
+        self.assertAlmostEqual(522, tag.getCenter().y, 0)
+        pose = display.poses[0]
+        t = pose.translation()
+        self.assertAlmostEqual(0.000, t.x, delta=0.001)
+        self.assertAlmostEqual(-0.006, t.y, delta=0.001)
+        self.assertAlmostEqual(0.264, t.z, delta=0.001)
+        r = pose.rotation()
+        # rotation should be zero, but note the noise
+        self.assertAlmostEqual(0, r.x, delta=0.002)
+        self.assertAlmostEqual(0, r.y, delta=0.002)
+        # tag is rotated 90 degrees clockwise.
+        # z axis is down the barrel so the rotation appears here.
+        self.assertAlmostEqual(1.571, r.z, delta=0.001)
+
+    def test_big_sharp_y(self) -> None:
+        """This image uses the "perspective" transform in gimp."""
+        identity = Identity.UNKNOWN
+        network = FakeNetwork()
+        camera = FakeCamera("images/big_sharpY.png")
+        display = FakeDisplay()
+        tag_detector = TagDetector(identity, camera, display, network)
+        request = camera.capture_request()
+        tag_detector.analyze(request)
+
+        self.assertEqual(1, len(display.tags))
+        self.assertEqual(1, len(display.poses))
+        self.assertEqual(2, len(display.msgs))
+        self.assertEqual(2, len(display.locs))
+        self.assertEqual(1, display.frame_count)
+
+        tag = display.tags[0]
+        self.assertAlmostEqual(729, tag.getCenter().x, 0)
+        self.assertAlmostEqual(524, tag.getCenter().y, 0)
+        pose = display.poses[0]
+        t = pose.translation()
+        self.assertAlmostEqual(0.011, t.x, delta=0.001)
+        self.assertAlmostEqual(-0.006, t.y, delta=0.001)
+        self.assertAlmostEqual(0.306, t.z, delta=0.001)
+        r = pose.rotation()
+        # rotation should be zero, but note the noise
+        self.assertAlmostEqual(0.021, r.x, delta=0.001)
+        # tag is rotated something like 30 degrees in negative Y
+        # y axis is dowm so the rotation appears here.
+        self.assertAlmostEqual(-0.658, r.y, delta=0.001)
+        self.assertAlmostEqual(-0.012, r.z, delta=0.001)
 
     def test_scale1(self) -> None:
         identity = Identity.UNKNOWN
@@ -54,11 +126,19 @@ class TagDetectorTest(unittest.TestCase):
         self.assertEqual(2, len(display.locs))
         self.assertEqual(1, display.frame_count)
 
-        self.assertAlmostEqual(703, display.tags[0].getCenter().x, -1)
-        self.assertAlmostEqual(532, display.tags[0].getCenter().y, 0)
-        self.assertAlmostEqual(0.000, display.poses[0].x, 3)
-        self.assertAlmostEqual(-0.007, display.poses[0].y, 3)
-        self.assertAlmostEqual(0.528, display.poses[0].z, 3)
+        tag = display.tags[0]
+        self.assertAlmostEqual(703, tag.getCenter().x, -1)
+        self.assertAlmostEqual(532, tag.getCenter().y, 0)
+        pose = display.poses[0]
+        t = pose.translation()
+        self.assertAlmostEqual(0.000, t.x, delta=0.001)
+        self.assertAlmostEqual(-0.007, t.y, delta=0.001)
+        self.assertAlmostEqual(0.528, t.z, delta=0.001)
+        r = pose.rotation()
+        # rotation should be zero, but note the noise
+        self.assertAlmostEqual(0, r.x, delta=0.001)
+        self.assertAlmostEqual(0, r.y, delta=0.001)
+        self.assertAlmostEqual(0, r.z, delta=0.001)
 
     def test_scale2(self) -> None:
         identity = Identity.UNKNOWN
@@ -75,11 +155,19 @@ class TagDetectorTest(unittest.TestCase):
         self.assertEqual(2, len(display.locs))
         self.assertEqual(1, display.frame_count)
 
-        self.assertAlmostEqual(703, display.tags[0].getCenter().x, 0)
-        self.assertAlmostEqual(537, display.tags[0].getCenter().y, 0)
-        self.assertAlmostEqual(-0.001, display.poses[0].x, 3)
-        self.assertAlmostEqual(-0.008, display.poses[0].y, 3)
-        self.assertAlmostEqual(1.055, display.poses[0].z, 3)
+        tag = display.tags[0]
+        self.assertAlmostEqual(703, tag.getCenter().x, 0)
+        self.assertAlmostEqual(537, tag.getCenter().y, 0)
+        pose = display.poses[0]
+        t = pose.translation()
+        self.assertAlmostEqual(-0.001, t.x, delta=0.001)
+        self.assertAlmostEqual(-0.008, t.y, delta=0.001)
+        self.assertAlmostEqual(1.055, t.z, delta=0.001)
+        r = pose.rotation()
+        # rotation should be zero, but note the noise
+        self.assertAlmostEqual(0, r.x, delta=0.001)
+        self.assertAlmostEqual(0, r.y, delta=0.001)
+        self.assertAlmostEqual(0, r.z, delta=0.001)
 
     def test_scale3(self) -> None:
         identity = Identity.UNKNOWN
@@ -96,12 +184,20 @@ class TagDetectorTest(unittest.TestCase):
         self.assertEqual(2, len(display.locs))
         self.assertEqual(1, display.frame_count)
 
-        self.assertAlmostEqual(703, display.tags[0].getCenter().x, 0)
-        self.assertAlmostEqual(541, display.tags[0].getCenter().y, 0)
-        self.assertAlmostEqual(-0.003, display.poses[0].x, 2)
-        self.assertAlmostEqual(-0.007, display.poses[0].y, 2)
-        # quad decimate of 4 makes a 0.1% difference here
-        self.assertAlmostEqual(2.119, display.poses[0].z, 1)
+        tag = display.tags[0]
+        self.assertAlmostEqual(703, tag.getCenter().x, 0)
+        self.assertAlmostEqual(541, tag.getCenter().y, 0)
+        pose = display.poses[0]
+        t = pose.translation()
+        self.assertAlmostEqual(-0.003, t.x, delta=0.001)
+        self.assertAlmostEqual(-0.007, t.y, delta=0.001)
+        # quad decimate of 4 makes a 1% difference here
+        self.assertAlmostEqual(2.119, t.z, delta=0.01)
+        r = pose.rotation()
+        # rotation should be zero, but note the noise
+        self.assertAlmostEqual(0, r.x, delta=0.04)
+        self.assertAlmostEqual(0, r.y, delta=0.1)
+        self.assertAlmostEqual(0, r.z, delta=0.001)
 
     def test_scale4(self) -> None:
         identity = Identity.UNKNOWN
@@ -118,12 +214,21 @@ class TagDetectorTest(unittest.TestCase):
         self.assertEqual(2, len(display.locs))
         self.assertEqual(1, display.frame_count)
 
-        self.assertAlmostEqual(703, display.tags[0].getCenter().x, 0)
-        self.assertAlmostEqual(543, display.tags[0].getCenter().y, 0)
-        self.assertAlmostEqual(-0.005, display.poses[0].x, 2)
-        self.assertAlmostEqual(-0.007, display.poses[0].y, 2)
+        tag = display.tags[0]
+        self.assertAlmostEqual(703, tag.getCenter().x, 0)
+        self.assertAlmostEqual(543, tag.getCenter().y, 0)
+        pose = display.poses[0]
+        t = pose.translation()
+        # x and y are near center
+        self.assertAlmostEqual(-0.005, t.x, 2)
+        self.assertAlmostEqual(-0.007, t.y, 2)
         # quad decimate of 4 makes a 1% difference here.
-        self.assertAlmostEqual(4.242, display.poses[0].z, 1)
+        self.assertAlmostEqual(4.242, t.z, 1)
+        r = pose.rotation()
+        # rotation should be zero, but note the noise
+        self.assertAlmostEqual(0, r.x, delta=0.02)
+        self.assertAlmostEqual(0, r.y, delta=0.001)
+        self.assertAlmostEqual(0, r.z, delta=0.001)
 
     def test_scale5(self) -> None:
         # it's kind of amazing that this one works
@@ -145,11 +250,19 @@ class TagDetectorTest(unittest.TestCase):
         self.assertEqual(2, len(display.locs))
         self.assertEqual(1, display.frame_count)
 
-        self.assertAlmostEqual(703, display.tags[0].getCenter().x, 0)
-        self.assertAlmostEqual(543, display.tags[0].getCenter().y, 0)
-        self.assertAlmostEqual(0, display.poses[0].x, 1)
-        self.assertAlmostEqual(0, display.poses[0].y, 1)
-        self.assertAlmostEqual(8.497, display.poses[0].z, 3)
+        tag = display.tags[0]
+        self.assertAlmostEqual(703, tag.getCenter().x, 0)
+        self.assertAlmostEqual(543, tag.getCenter().y, 0)
+        pose = display.poses[0]
+        t = pose.translation()
+        self.assertAlmostEqual(0, t.x, 1)
+        self.assertAlmostEqual(0, t.y, 1)
+        self.assertAlmostEqual(8.497, t.z, 3)
+        r = pose.rotation()
+        # rotation should be zero, but note the noise
+        self.assertAlmostEqual(0, r.x, delta=0.2)
+        self.assertAlmostEqual(0, r.y, delta=0.004)
+        self.assertAlmostEqual(0, r.z, delta=0.001)
 
     def test_scale6(self) -> None:
         # now finally too small
@@ -182,11 +295,21 @@ class TagDetectorTest(unittest.TestCase):
         self.assertEqual(2, len(display.locs))
         self.assertEqual(1, display.frame_count)
 
-        self.assertAlmostEqual(282, display.tags[0].getCenter().x, 0)
-        self.assertAlmostEqual(349, display.tags[0].getCenter().y, 0)
-        self.assertAlmostEqual(-0.186, display.poses[0].x, 3)
-        self.assertAlmostEqual(0.027, display.poses[0].y, 3)
-        self.assertAlmostEqual(0.642, display.poses[0].z, 3)
+        tag = display.tags[0]
+        self.assertAlmostEqual(282, tag.getCenter().x, 0)
+        self.assertAlmostEqual(349, tag.getCenter().y, 0)
+        pose = display.poses[0]
+        t = pose.translation()
+        self.assertAlmostEqual(-0.186, t.x, 3)
+        self.assertAlmostEqual(0.027, t.y, 3)
+        self.assertAlmostEqual(0.642, t.z, 3)
+        r = pose.rotation()
+        print(r.getQuaternion())
+        # expect about (0.5, -0.5, -0.2)
+        # so this is kinda like that.
+        self.assertAlmostEqual(0.786, r.x, delta=0.001)
+        self.assertAlmostEqual(-0.607, r.y, delta=0.001)
+        self.assertAlmostEqual(-0.492, r.z, delta=0.001)
 
     def test_zero_tags_found(self) -> None:
         identity = Identity.UNKNOWN
@@ -277,9 +400,7 @@ class TagDetectorTest(unittest.TestCase):
             ]
         )
         dist = np.array([-0.1, 0, 0, 0])
-        distort_map = cv2.undistortPoints(
-            flat_grid, intrinsic, dist, P=intrinsic
-        )
+        distort_map = cv2.undistortPoints(flat_grid, intrinsic, dist, P=intrinsic)
         print("distort_map 1", distort_map)
         distort_map = distort_map.reshape(height, width, 2)
         print("distort_map 2", distort_map)
@@ -287,4 +408,3 @@ class TagDetectorTest(unittest.TestCase):
         print("map_x", map_x)
         map_y = distort_map[:, :, 1]
         print("map_y", map_y)
-
