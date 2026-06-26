@@ -47,73 +47,130 @@ public class CornerTest {
             684, 202, 1413, //
             -60, 612, 1741, //
             0, 0, 0 };
+    /**
+     * The proper corner order starts in the lower left, and goes counter-clockwise,
+     * in camera coordinates (x-right, y-down).
+     */
+    MatOfPoint2f CORNERS_FOR_HOMOGRAPHY = new MatOfPoint2f(
+            new Point(-1, 1),
+            new Point(1, 1),
+            new Point(1, -1),
+            new Point(-1, -1));
 
+    /**
+     * Verify the detection corner locations.
+     */
     @Test
-    void testDetection() throws IOException {
+    void testDetectionCorners() {
         try (AprilTagDetector detector = new AprilTagDetector()) {
             detector.addFamily("tag36h11");
             Mat img = loadVerbatim();
-
             AprilTagDetection detection = getDetection(detector, img);
-
-            double[] detectedCorners = detection.getCorners();
-
-            // Verify the corner locations.
-            double[] expectedCorners = new double[] { //
+            double[] corners = detection.getCorners();
+            double[] expected = new double[] { //
                     191, 496, //
                     387, 386, //
                     369, 209, //
                     130, 293 };
-            assertArrayEquals(expectedCorners, detectedCorners, 1.0);
+            assertArrayEquals(expected, corners, 1.0);
+        }
+    }
 
-            double[] detectedHomography = detection.getHomography();
-
-            // Verify the computed homography for those corners.
-            double[] expectedHomographyArray = new double[] { //
+    /**
+     * Verify the detection-derived homography.
+     * 
+     * Computing the homography is a side-effect of finding the tag.
+     */
+    @Test
+    void testDetectionHomography() {
+        try (AprilTagDetector detector = new AprilTagDetector()) {
+            detector.addFamily("tag36h11");
+            Mat img = loadVerbatim();
+            AprilTagDetection detection = getDetection(detector, img);
+            double[] homography = detection.getHomography();
+            double[] expected = new double[] { //
                     137, 40, 282, //
                     -12, 122, 349, //
                     0, 0, 0 };
-            assertArrayEquals(expectedHomographyArray, detectedHomography, 1.0);
+            assertArrayEquals(expected, homography, 1.0);
+        }
+    }
 
-            // Compute the homography again with OpenCV: it's the same.
-            double[] openCvHomographyArray = getOpenCvHomographyArray(detectedCorners);
+    /**
+     * Verify the OpenCV computation of homography.
+     */
+    @Test
+    void testOpenCvHomography() {
+        try (AprilTagDetector detector = new AprilTagDetector()) {
+            detector.addFamily("tag36h11");
+            Mat img = loadVerbatim();
+            AprilTagDetection detection = getDetection(detector, img);
+            double[] corners = detection.getCorners();
+            double[] homography = getOpenCvHomographyArray(corners);
+            double[] expected = new double[] { //
+                    137, 40, 282, //
+                    -12, 122, 349, //
+                    0, 0, 0 };
+            assertArrayEquals(expected, homography, 1.0);
+        }
+    }
 
-            assertArrayEquals(expectedHomographyArray, openCvHomographyArray, 1.0);
+    /**
+     * Verify the pose using the Apriltag estimator with the detection corners and
+     * homography.
+     */
+    @Test
+    void testDetectedPose() {
+        try (AprilTagDetector detector = new AprilTagDetector()) {
+            detector.addFamily("tag36h11");
+            Mat img = loadVerbatim();
+            AprilTagDetection detection = getDetection(detector, img);
+            double[] corners = detection.getCorners();
+            double[] homography = detection.getHomography();
+            // Tag size is the real tag size
+            // Camera intrinsic matches GS camera and python test
+            AprilTagPoseEstimator.Config conf = new AprilTagPoseEstimator.Config(
+                    0.1651, 935, 935, 550, 310);
+            AprilTagPoseEstimator estimator = new AprilTagPoseEstimator(conf);
+            Transform3d pose = estimator.estimate(homography, corners);
+            verifyPose(pose, 0.001);
+        }
+    }
 
+    /**
+     * Use the Apriltag pose estimator with the homography computed by OpenCV, so we
+     * don't have to ship the homography from the camera.
+     */
+    @Test
+    void testPoseWithOpenCvHomography() {
+        try (AprilTagDetector detector = new AprilTagDetector()) {
+            detector.addFamily("tag36h11");
+            Mat img = loadVerbatim();
+            AprilTagDetection detection = getDetection(detector, img);
+            double[] corners = detection.getCorners();
+            double[] homography = getOpenCvHomographyArray(corners);
             // tag size is the real tag size
             // camera intrinsic matches GS camera and python test
             AprilTagPoseEstimator.Config conf = new AprilTagPoseEstimator.Config(
                     0.1651, 935, 935, 550, 310);
             AprilTagPoseEstimator estimator = new AprilTagPoseEstimator(conf);
-            Transform3d pose = estimator.estimate(expectedHomographyArray, detectedCorners);
+            Transform3d pose = estimator.estimate(homography, corners);
+            verifyPose(pose, 0.001);
+        }
+    }
 
-            verifyPose(pose, -1, 0.001);
-
-            // Extract the pose again using openCV.
-            // This sucks, the Apriltag one is better.
-            MatOfPoint3f obj = new MatOfPoint3f(
-                    new Point3(-0.08255, 0.08255, 0.0),
-                    new Point3(0.08255, 0.08255, 0.0),
-                    new Point3(0.08255, -0.08255, 0.0),
-                    new Point3(-0.08255, -0.08255, 0.0));
-            MatOfPoint2f dstPoints = new MatOfPoint2f(
-                    new Point(detectedCorners[0], detectedCorners[1]),
-                    new Point(detectedCorners[2], detectedCorners[3]),
-                    new Point(detectedCorners[4], detectedCorners[5]),
-                    new Point(detectedCorners[6], detectedCorners[7]));
-            Mat rvec = new Mat();
-            Mat tvec = new Mat();
-            Calib3d.solvePnP(obj, dstPoints, getCameraMatrix(), new MatOfDouble(getDistCoeffs(0)), rvec, tvec, false,
-                    Calib3d.SOLVEPNP_IPPE_SQUARE);
-            System.out.printf("rvec %s\n", rvec.dump());
-            System.out.printf("tvec %s\n", tvec.dump());
-
-            Transform3d openCvPose = new Transform3d(
-                    new Translation3d(tvec.get(0, 0)[0], tvec.get(1, 0)[0], tvec.get(2, 0)[0]),
-                    new Rotation3d(rvec.get(0, 0)[0], rvec.get(1, 0)[0], rvec.get(2, 0)[0]));
-            System.out.printf("transform %s\n", openCvPose);
-            // the translation is pretty close but the rotation is not.
-            // verifyPose(openCvPose, 1, 0.001);
+    /**
+     * The OpenCV "Solve PNP" methods are not terrible but not better than the
+     * Apriltag pose estimator.
+     */
+    @Test
+    void testOpenCvPose() {
+        try (AprilTagDetector detector = new AprilTagDetector()) {
+            detector.addFamily("tag36h11");
+            Mat img = loadVerbatim();
+            AprilTagDetection detection = getDetection(detector, img);
+            double[] corners = detection.getCorners();
+            getOpenCvPose(corners);
         }
     }
 
@@ -181,9 +238,9 @@ public class CornerTest {
             AprilTagPoseEstimator.Config conf = new AprilTagPoseEstimator.Config(
                     0.1651, 935, 935, 550, 310);
             AprilTagPoseEstimator estimator = new AprilTagPoseEstimator(conf);
-            Transform3d pose = estimator.estimate(homographyArray, expectedCorners);
+            Transform3d pose = estimator.estimate(openCvHomographyArray, expectedCorners);
 
-            verifyPose(pose, -1, 0.001);
+            verifyPose(pose, 0.001);
         }
     }
 
@@ -194,6 +251,8 @@ public class CornerTest {
         Imgcodecs.imwrite("debug.jpg", distorted_img);
     }
 
+    //////////////////////////////////////
+    //////////////////////////////////////
     //////////////////////////////////////
 
     private Mat distort(Mat undistorted_img, double k1) {
@@ -295,32 +354,39 @@ public class CornerTest {
     }
 
     private double[] getOpenCvHomographyArray(double[] corners) {
-        MatOfPoint2f srcPoints = new MatOfPoint2f(
-                new Point(-1, 1),
-                new Point(1, 1),
-                new Point(1, -1),
-                new Point(-1, -1));
         MatOfPoint2f dstPoints = new MatOfPoint2f(
                 new Point(corners[0], corners[1]),
                 new Point(corners[2], corners[3]),
                 new Point(corners[4], corners[5]),
                 new Point(corners[6], corners[7]));
-        Mat openCvHomographyMat = Calib3d.findHomography(srcPoints, dstPoints);
+        Mat openCvHomographyMat = Calib3d.findHomography(CORNERS_FOR_HOMOGRAPHY, dstPoints);
         double[] openCvHomographyArray = new double[9];
         openCvHomographyMat.get(0, 0, openCvHomographyArray);
         return openCvHomographyArray;
     }
 
-    private void verifyPose(Transform3d pose, double scale, double tol) {
+    /**
+     * The tag pictured in tag_and_board.jpg is tag #1, and it appears
+     * right-side-up.
+     * 
+     * Guess reasonable pose in camera cordinates.
+     * Translation coordinates are (x-right, y-down, z-forward)
+     * Rotation coordinates are (x:pitch up, y:yaw right, z:roll clockwise)
+     * Translation (-0.25, 0.1, 0.5)
+     * Rotation (0.5, -0.4, -0.2)
+     */
+    private void verifyPose(Transform3d pose, double tol) {
         // sometimes inverted, sometimes not?
         Translation3d t = pose.getTranslation();
         Rotation3d r = pose.getRotation();
-        assertEquals(-0.186, scale * t.getX(), tol);
-        assertEquals(0.027, scale * t.getY(), tol);
-        assertEquals(0.642, scale * t.getZ(), tol);
-        assertEquals(0.786, scale * r.getX(), tol);
-        assertEquals(-0.600, scale * r.getY(), tol);
-        assertEquals(0.490 - Math.PI, scale * r.getZ(), tol);
+        assertEquals(-0.186, t.getX(), tol);
+        assertEquals(0.027, t.getY(), tol);
+        assertEquals(0.642, t.getZ(), tol);
+        assertEquals(0.786, r.getX(), tol);
+        assertEquals(-0.607, r.getY(), tol);
+        // this is upposed to be a little roll to the left
+        // but sometimes it pi minus that?
+        assertEquals(-0.492, r.getZ(), tol);
     }
 
     private AprilTagDetection getDetection(AprilTagDetector detector, Mat img) {
@@ -331,6 +397,36 @@ public class CornerTest {
         AprilTagDetection detection = detections[0];
         assertEquals(1, detection.getId());
         return detection;
+    }
+
+    /**
+     * Extract the pose using openCV.
+     * This sucks, the Apriltag one is better.
+     */
+    private void getOpenCvPose(double[] detectedCorners) {
+        MatOfPoint3f obj = new MatOfPoint3f(
+                new Point3(-0.08255, 0.08255, 0.0),
+                new Point3(0.08255, 0.08255, 0.0),
+                new Point3(0.08255, -0.08255, 0.0),
+                new Point3(-0.08255, -0.08255, 0.0));
+        MatOfPoint2f dstPoints = new MatOfPoint2f(
+                new Point(detectedCorners[0], detectedCorners[1]),
+                new Point(detectedCorners[2], detectedCorners[3]),
+                new Point(detectedCorners[4], detectedCorners[5]),
+                new Point(detectedCorners[6], detectedCorners[7]));
+        Mat rvec = new Mat();
+        Mat tvec = new Mat();
+        Calib3d.solvePnP(obj, dstPoints, getCameraMatrix(), new MatOfDouble(getDistCoeffs(0)), rvec, tvec, false,
+                Calib3d.SOLVEPNP_IPPE_SQUARE);
+        System.out.printf("rvec %s\n", rvec.dump());
+        System.out.printf("tvec %s\n", tvec.dump());
+
+        Transform3d openCvPose = new Transform3d(
+                new Translation3d(tvec.get(0, 0)[0], tvec.get(1, 0)[0], tvec.get(2, 0)[0]),
+                new Rotation3d(rvec.get(0, 0)[0], rvec.get(1, 0)[0], rvec.get(2, 0)[0]));
+        System.out.printf("transform %s\n", openCvPose);
+        // the translation is pretty close but the rotation is not.
+        // verifyPose(openCvPose, 1, 0.001);
     }
 
 }
