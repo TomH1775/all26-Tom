@@ -4,6 +4,11 @@ plugins {
 }
 
 sourceSets{
+    main {
+        java {
+            srcDir "../../lib/src/main/java"
+        }
+    }
     test {
         resources {
             srcDir 'test/resources'
