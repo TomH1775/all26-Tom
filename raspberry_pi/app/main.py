@@ -9,6 +9,7 @@ use the script called "runapp.py" in the raspberry_pi directory
 
 # pylint: disable=R0914
 
+import time
 from threading import Event, Thread
 
 from app.camera.camera_factory import CameraFactory
@@ -21,21 +22,29 @@ from app.dashboard.display import Display
 from app.dashboard.display_factory import DisplayFactory
 from app.network.network_protocol import Network
 from app.network.real_network import RealNetwork
+from app.util.timestamps import Timestamps
 
 
 def main() -> None:
     identity: Identity = Identity.get()
-    done: Event = Event() # to shut down all threads
+    done: Event = Event()  # to shut down all threads
+    thread: Thread | None = None
     try:
         camera: Camera = CameraFactory.get(identity)
         display: Display = DisplayFactory.get(identity, camera)
         network: Network = RealNetwork(identity, done)
+        timestamps = Timestamps(network)
         interpreter: Interpreter = InterpreterFactory.get(
-            identity, camera, display, network
+            identity, camera, display, network, timestamps
         )
         camera_loop: CameraLoop = CameraLoop(camera, interpreter, done)
-        Thread(target=camera_loop.run).start()
-        done.wait()
+        thread = Thread(target=camera_loop.run)
+        thread.start()
+        # looper.run will return when done, so wait for that.
+        thread.join()
 
     finally:
         done.set()  # exit all threads cleanly
+        # if the loop is hung, we don't want to wait for it,
+        # so just wait a little bit of time instead.
+        time.sleep(1)

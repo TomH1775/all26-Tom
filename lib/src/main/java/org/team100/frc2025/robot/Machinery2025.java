@@ -39,6 +39,7 @@ import org.team100.lib.visualization.TrajectoryVisualization;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 
 /**
  * This should contain all the hardware of the robot: all the subsystems etc
@@ -142,7 +143,8 @@ public class Machinery2025 {
                 fieldLogger,
                 layout,
                 history,
-                visionUpdater);
+                visionUpdater,
+                DriverStation::getAlliance);
         m_targets = new Targets(driveLog, fieldLogger, 0.2, history);
 
         ////////////////////////////////////////////////////////////

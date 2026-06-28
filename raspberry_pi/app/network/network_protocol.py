@@ -1,7 +1,7 @@
-# pylint: disable=R0903
+# pylint: disable=R0903,W2301
 
 from typing import Protocol
-from app.network.structs import Blip, Target
+from app.network.structs import Blip, BlipWithCorners, Target
 
 
 class DoubleSender(Protocol):
@@ -10,6 +10,10 @@ class DoubleSender(Protocol):
 
 class BlipSender(Protocol):
     def send(self, val: list[Blip]) -> None: ...
+
+
+class BlipWithCornersSender(Protocol):
+    def send(self, val: list[BlipWithCorners]) -> None: ...
 
 
 class TargetSender(Protocol):
@@ -23,5 +27,9 @@ class Network(Protocol):
     def flush(self) -> None: ...
     def get_double_sender(self, leaf: str) -> DoubleSender: ...
     def get_blip_sender(self) -> BlipSender: ...
+    def get_blip_with_corners_sender(self) -> BlipWithCornersSender: ...
     def get_target_sender(self) -> TargetSender: ...
-    def server_time(self, localtime: int) -> int: ...
+    def server_time(self, localtime: int) -> int:
+        """Apply the drift to the supplied localtime to obtain
+        the equivalent servertime, in microseconds."""
+        ...

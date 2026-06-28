@@ -1,4 +1,4 @@
-# pylint: disable=R0902,R0903,W0212
+# pylint: disable=C0114,C0115,C0116,E0401,R0902,R0903,W0212
 
 
 from threading import Event, Thread
@@ -10,8 +10,14 @@ from app.network.calibrate import Calibrate
 from app.network.sync_loop import SyncLoop
 from app.network.drift import Drift
 from app.config.identity import Identity
-from app.network.structs import Blip, Target
-from app.network.network_protocol import DoubleSender, BlipSender, TargetSender, Network
+from app.network.structs import Blip, BlipWithCorners, Target
+from app.network.network_protocol import (
+    DoubleSender,
+    BlipSender,
+    BlipWithCornersSender,
+    TargetSender,
+    Network,
+)
 
 
 class RealDoubleSender(DoubleSender):
@@ -29,6 +35,15 @@ class RealBlipSender(BlipSender):
 
     @override
     def send(self, val: list[Blip]) -> None:
+        self.pub.set(val)
+
+
+class RealBlipWithCornersSender(BlipWithCornersSender):
+    def __init__(self, pub: ntcore.StructArrayPublisher) -> None:
+        self.pub = pub
+
+    @override
+    def send(self, val: list[BlipWithCorners]) -> None:
         self.pub.set(val)
 
 
@@ -56,13 +71,14 @@ class RealNetwork(Network):
 
         # roboRio address. windows machines can impersonate this for simulation.
         # also localhost for testing
-        if identity == Identity.UNKNOWN:
-            # vasili says this doesn't work, but i need it for testing.
-            self._inst.setServer("localhost")
-        else:
-            # this works
-            self._inst.setServer("10.1.0.2")
-
+        match identity:
+            case Identity.UNKNOWN | Identity.SIM0:
+                # For testing.
+                self._inst.setServer("localhost")
+            case _:
+                # The static RoboRIO IP address.
+                self._inst.setServer("10.1.0.2")
+            
         self._queue: Queue[int] = Queue()
 
         # Add the calibration switch
@@ -94,6 +110,14 @@ class RealNetwork(Network):
         return RealBlipSender(self._inst.getStructArrayTopic(name, Blip).publish())
 
     @override
+    def get_blip_with_corners_sender(self) -> RealBlipWithCornersSender:
+        """Send blips to the Rio."""
+        name: str = "vision/" + self._identity.value + "/blips_with_corners"
+        return RealBlipWithCornersSender(
+            self._inst.getStructArrayTopic(name, BlipWithCorners).publish()
+        )
+
+    @override
     def get_target_sender(self) -> RealTargetSender:
         """Send targets to the rio."""
         name: str = "objectVision/" + self._identity.value + "/targets"
@@ -101,4 +125,4 @@ class RealNetwork(Network):
 
     @override
     def server_time(self, localtime: int) -> int:
-        return localtime + self._drift.get()
+        return self._drift.server_time(localtime)

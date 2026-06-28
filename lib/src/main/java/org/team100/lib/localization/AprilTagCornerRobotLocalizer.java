@@ -12,6 +12,7 @@ import org.team100.lib.camera.Camera;
 import org.team100.lib.camera.Offset;
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
+import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.geometry.Metrics;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
@@ -36,13 +37,13 @@ import edu.wpi.first.util.struct.StructBuffer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
- * Extracts robot pose estimates from camera observations of AprilTags.
+ * Uses the corners of observed AprilTags to derive the robot pose.
  * 
  * Note this class depends only on the state *history*, not on the coherent sate
  * *estimate*. The camera input doesn't require fresh odometry, it modifies the
  * past (and replays up to the present).
  */
-public class AprilTagRobotLocalizer extends CameraReader<Blip> {
+public class AprilTagCornerRobotLocalizer extends CameraReader<BlipWithCorners> {
     private static final boolean DEBUG = false;
 
     /** Maximum age of the sights we publish for diagnosis. */
@@ -51,6 +52,7 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip> {
     /** Discard results further than this from the previous one. */
     private static final double VISION_CHANGE_TOLERANCE_M = 0.25;
 
+    private final PoseFromCorners m_estimator;
     private final DoubleFunction<ModelSE2> m_history;
     private final VisionUpdater m_visionUpdater;
     private final Supplier<Optional<Alliance>> m_alliance;
@@ -123,18 +125,19 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip> {
      * @param history       f(timestamp) = swerve state, use SwerveModelHistory.
      * @param visionUpdater mutates history
      */
-    public AprilTagRobotLocalizer(
+    public AprilTagCornerRobotLocalizer(
             LoggerFactory parent,
             LoggerFactory fieldLogger,
             AprilTagFieldLayoutWithCorrectOrientation layout,
             DoubleFunction<ModelSE2> history,
             VisionUpdater visionUpdater,
             Supplier<Optional<Alliance>> alliance) {
-        super(parent, "vision", "blips", StructBuffer.create(Blip.struct));
+        super(parent, "vision", "blips_with_corners", StructBuffer.create(BlipWithCorners.struct));
         LoggerFactory log = parent.type(this);
         LoggerFactory calLog = log.name("calibration");
         m_log_cameraToTag_factory = calLog.name("camera to tag");
         m_log_robotToTag_factory = calLog.name("robot to tag");
+        m_estimator = new PoseFromCorners();
         m_layout = layout;
         m_history = history;
         m_visionUpdater = visionUpdater;
@@ -180,7 +183,7 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip> {
     @Override
     protected void perValue(
             Camera camera,
-            Blip[] blips) {
+            BlipWithCorners[] blips) {
 
         Transform3d cameraOffset = Offset.get(camera).offset();
 
@@ -202,10 +205,10 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip> {
         }
 
         for (int i = 0; i < blips.length; ++i) {
-            Blip blip = blips[i];
+            BlipWithCorners blip = blips[i];
 
             // Camera-to-tag.
-            final Transform3d cameraToTag = tagInCamera(blip);
+            final Transform3d cameraToTag = tagInCamera(camera, blip);
 
             if (i == 0) {
                 // Only log the first tag seen; for calibration we really only see one.
@@ -394,8 +397,15 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip> {
      * The raw pose in the blip is "z-forward" like the camera.
      * This returns "x-forward" like the robot.
      */
-    private static Transform3d tagInCamera(Blip blip) {
-        return blip.blipToTransform();
+    private Transform3d tagInCamera(Camera camera, BlipWithCorners blip) {
+        float[] corners = blip.getCorners();
+        double[] dCorners = new double[corners.length];
+        for (int i = 0; i < corners.length; ++i) {
+            dCorners[i] = corners[i];
+        }
+        Transform3d zFwd = m_estimator.pose(camera, dCorners);
+        return GeometryUtil.zForwardToXForward(zFwd);
+        // return blip.blipToTransform();
     }
 
 }

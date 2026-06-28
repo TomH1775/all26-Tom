@@ -47,6 +47,7 @@ import org.team100.lib.visualization.TrajectoryVisualization;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 
 public class DriveWithTrajectoryTest implements Timeless {
 
@@ -193,8 +194,9 @@ public class DriveWithTrajectoryTest implements Timeless {
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
 
         AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, fieldLogger, layout, history, visionUpdater);
-        FreshSwerveEstimate estimate = new FreshSwerveEstimate(localizer, odometryUpdater, history);
+                logger, fieldLogger, layout, history, visionUpdater,DriverStation::getAlliance);
+        FreshSwerveEstimate estimate = new FreshSwerveEstimate(
+            localizer::update, odometryUpdater::update, history);
         SwerveLocal swerveLocal = new SwerveLocal(logger, swerveKinodynamics, collection);
 
         SwerveDriveSubsystem drive = new SwerveDriveSubsystem(

@@ -62,14 +62,7 @@
         "markdown.preview.scrollEditorWithPreview": false,
         "markdown.preview.scrollPreviewWithEditor": false,
         "terminal.integrated.scrollback": 100000,
-        "vsintellicode.java.completionsEnabled": true,
-        "workbench.colorCustomizations": {
-            "debugConsole.infoForeground": "#ffffff",
-            "tab.activeBackground":"#5f5f00",
-            "editor.background":"#000000",
-            "editorCursor.foreground":"#ffffff"
-        },
-        "workbench.colorTheme": "Default Dark+",
+        "workbench.colorTheme": "Solarized Light",
         "workbench.editor.revealIfOpen": true,
         "workbench.tree.enableStickyScroll": false,
         "editor.cursorWidth":2,
