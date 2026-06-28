@@ -1,72 +1,91 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
+import java.util.Optional;
+import java.util.function.DoubleFunction;
+
+import org.team100.lib.coherence.Cache;
+import org.team100.lib.coherence.Takt;
+import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
+import org.team100.lib.localization.AprilTagRobotLocalizer;
+import org.team100.lib.localization.FreshSwerveEstimate;
+import org.team100.lib.localization.VisionUpdater;
+import org.team100.lib.logging.LoggerFactory;
+import org.team100.lib.logging.Logging;
+import org.team100.lib.network.Sync;
+import org.team100.lib.state.ModelSE2;
+import org.team100.lib.uncertainty.NoisyPose2d;
+import org.team100.lib.visualization.RobotPoseVisualization;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends TimedRobot {
-  private Command m_autonomousCommand;
+    private static final LoggerFactory logger = Logging.instance().rootLogger;
+    private static final LoggerFactory fieldLogger = Logging.instance().fieldLogger;
 
-  private final RobotContainer m_robotContainer;
+    private final Runnable m_robotViz;
+    private final Sync sync;
+    private final AprilTagRobotLocalizer m_localizer;
+    private final FreshSwerveEstimate estimate;
 
-  public Robot() {
-    m_robotContainer = new RobotContainer();
-  }
+    private Pose2d pose = new Pose2d();
 
-  @Override
-  public void robotPeriodic() {
-    CommandScheduler.getInstance().run();
-  }
+    public Robot() {
+        NetworkTableInstance inst = NetworkTableInstance.getDefault();
+        sync = new Sync(inst);
+        //
+        LoggerFactory driveLog = logger.name("Drive");
+        AprilTagFieldLayoutWithCorrectOrientation layout = AprilTagFieldLayoutWithCorrectOrientation.getLayout();
+        DoubleFunction<ModelSE2> history = (x) -> new ModelSE2();
+        m_localizer = new AprilTagRobotLocalizer(
+                driveLog,
+                fieldLogger,
+                layout,
+                history,
+                new VisionUpdater() {
+                    @Override
+                    public void put(
+                            double timestampS,
+                            NoisyPose2d noisyMeasurement) {
+                        pose = noisyMeasurement.pose();
+                    }
+                },
+                () -> Optional.of(Alliance.Blue));
+        estimate = new FreshSwerveEstimate(
+                m_localizer::update,
+                () -> {
+                }, history);
+        m_robotViz = new RobotPoseVisualization(
+                fieldLogger, () -> pose, "robot");
 
-  @Override
-  public void disabledInit() {}
-
-  @Override
-  public void disabledPeriodic() {}
-
-  @Override
-  public void disabledExit() {}
-
-  @Override
-  public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
-    if (m_autonomousCommand != null) {
-      CommandScheduler.getInstance().schedule(m_autonomousCommand);
     }
-  }
 
-  @Override
-  public void autonomousPeriodic() {}
-
-  @Override
-  public void autonomousExit() {}
-
-  @Override
-  public void teleopInit() {
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
+    @Override
+    public void robotPeriodic() {
+        Takt.update();
+        sync.run();
+        Cache.refresh();
+        CommandScheduler.getInstance().run();
+        m_robotViz.run();
     }
-  }
 
-  @Override
-  public void teleopPeriodic() {}
+    @Override
+    public void teleopInit() {
 
-  @Override
-  public void teleopExit() {}
+    }
 
-  @Override
-  public void testInit() {
-    CommandScheduler.getInstance().cancelAll();
-  }
+    @Override
+    public void teleopPeriodic() {
+    }
 
-  @Override
-  public void testPeriodic() {}
+    @Override
+    public void teleopExit() {
+    }
 
-  @Override
-  public void testExit() {}
+    @Override
+    public void testExit() {
+    }
 }

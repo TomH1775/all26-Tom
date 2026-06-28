@@ -1,4 +1,4 @@
-# pylint: disable=R0902,R0903,W0212
+# pylint: disable=C0114,C0115,C0116,E0401,R0902,R0903,W0212
 
 
 from threading import Event, Thread
@@ -71,13 +71,14 @@ class RealNetwork(Network):
 
         # roboRio address. windows machines can impersonate this for simulation.
         # also localhost for testing
-        if identity == Identity.UNKNOWN:
-            # vasili says this doesn't work, but i need it for testing.
-            self._inst.setServer("localhost")
-        else:
-            # this works
-            self._inst.setServer("10.1.0.2")
-
+        match identity:
+            case Identity.UNKNOWN | Identity.SIM0:
+                # For testing.
+                self._inst.setServer("localhost")
+            case _:
+                # The static RoboRIO IP address.
+                self._inst.setServer("10.1.0.2")
+            
         self._queue: Queue[int] = Queue()
 
         # Add the calibration switch

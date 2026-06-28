@@ -29,6 +29,7 @@ import org.team100.lib.uncertainty.VariableR1;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 
 /**
  * A real swerve subsystem populated with simulated motors and encoders,
@@ -79,8 +80,9 @@ public class RealisticFixture {
         final AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
 
         AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, fieldLogger, layout, history, visionUpdater);
-        estimate = new FreshSwerveEstimate(localizer, odometryUpdater, history);
+                logger, fieldLogger, layout, history, visionUpdater,DriverStation::getAlliance);
+        estimate = new FreshSwerveEstimate(
+                localizer::update, odometryUpdater::update, history);
 
         limiter = new SwerveLimiter(logger, swerveKinodynamics, () -> 12);
 

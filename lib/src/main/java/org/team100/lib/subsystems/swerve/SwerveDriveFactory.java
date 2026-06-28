@@ -23,8 +23,8 @@ public class SwerveDriveFactory {
             SwerveModuleCollection modules) {
 
         FreshSwerveEstimate estimate = new FreshSwerveEstimate(
-                localizer,
-                odometryUpdater,
+                localizer::update,
+                odometryUpdater::update,
                 history);
         SwerveLocal swerveLocal = new SwerveLocal(
                 driveLog,

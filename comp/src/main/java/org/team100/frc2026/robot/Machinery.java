@@ -44,6 +44,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -139,13 +140,14 @@ public class Machinery {
         //
         // CAMERA READERS
         //
-        AprilTagFieldLayoutWithCorrectOrientation layout = getLayout();
+        AprilTagFieldLayoutWithCorrectOrientation layout = AprilTagFieldLayoutWithCorrectOrientation.getLayout();
         m_localizer = new AprilTagRobotLocalizer(
                 driveLog,
                 fieldLogger,
                 layout,
                 history,
-                m_visionUpdater);
+                m_visionUpdater,
+                DriverStation::getAlliance);
 
         ////////////////////////////////////////////////////////////
         //
@@ -260,12 +262,4 @@ public class Machinery {
         m_solver.close();
     }
 
-    /** Trap the IO exception. */
-    private static AprilTagFieldLayoutWithCorrectOrientation getLayout() {
-        try {
-            return new AprilTagFieldLayoutWithCorrectOrientation();
-        } catch (IOException e) {
-            throw new IllegalStateException("Could not read Apriltag layout file", e);
-        }
-    }
 }

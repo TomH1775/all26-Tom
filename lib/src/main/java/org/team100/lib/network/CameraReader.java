@@ -86,11 +86,14 @@ public abstract class CameraReader<T> {
                 continue;
             }
             if (DEBUG) {
-                System.out.print("found value\n");
+                System.out.println("found value");
             }
             // decode the way StructArrayEntryImpl does
             byte[] valueBytes = ntValue.getRaw();
             if (valueBytes.length == 0) {
+                if (DEBUG) {
+                    System.out.println("empty message!");
+                }
                 // this should never happen, but it does, very occasionally.
                 continue;
             }

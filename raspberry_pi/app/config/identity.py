@@ -63,6 +63,8 @@ class Identity(Enum):
     DEV = "test"
     FLIPPED = "flipme"  # example for per-identity config
     JOELS_TEST = "9b297e919a0634e6"
+    SIM0 = "sim0"
+    """For testing."""
     UNKNOWN = "unknown"
 
     @classmethod

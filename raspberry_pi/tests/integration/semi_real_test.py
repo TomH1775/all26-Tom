@@ -17,15 +17,21 @@ from app.util.timestamps import Timestamps
 
 class SemiRealTest(unittest.TestCase):
     # don't run this all the time, it takes too long.
-    # @unittest.skip
+    @unittest.skip
     def test_end_to_end(self) -> None:
         """Use a fake image with a real network, and run
         for awhile, to test the listener part (in Java).
-        This works just like main()."""
+        This works just like main().
+        The file it uses shows tag 1 in a position mostly yawed
+        to the left.  In 2026 this tag was around 3/4 of the
+        way down the field, near the left side, facing back
+        towards the baseline, so the correct robot position is
+        about a half meter away, facing about 45 degrees to the
+        right."""
         done: Event = Event()  # to shut down all threads
 
         # unknown uses localhost for the server
-        identity: Identity = Identity.UNKNOWN
+        identity: Identity = Identity.SIM0
         camera: Camera = FakeCamera("images/tag_and_board.jpg", (1100, 620), -0.1)
         display: Display = FakeDisplay()
         network: Network = RealNetwork(identity, done)

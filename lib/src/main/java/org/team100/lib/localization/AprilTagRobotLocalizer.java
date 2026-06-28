@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.DoubleFunction;
+import java.util.function.Supplier;
 import java.util.stream.DoubleStream;
 
 import org.team100.lib.coherence.Takt;
@@ -31,7 +32,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.util.struct.StructBuffer;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
@@ -52,6 +52,7 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip> {
 
     private final DoubleFunction<ModelSE2> m_history;
     private final VisionUpdater m_visionUpdater;
+    private final Supplier<Optional<Alliance>> m_alliance;
     private final AprilTagFieldLayoutWithCorrectOrientation m_layout;
 
     /**
@@ -126,7 +127,8 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip> {
             LoggerFactory fieldLogger,
             AprilTagFieldLayoutWithCorrectOrientation layout,
             DoubleFunction<ModelSE2> history,
-            VisionUpdater visionUpdater) {
+            VisionUpdater visionUpdater,
+            Supplier<Optional<Alliance>> alliance) {
         super(parent, "vision", "blips", StructBuffer.create(Blip.struct));
         LoggerFactory log = parent.type(this);
         LoggerFactory calLog = log.name("calibration");
@@ -135,6 +137,7 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip> {
         m_layout = layout;
         m_history = history;
         m_visionUpdater = visionUpdater;
+        m_alliance = alliance;
         m_allTags = new TrailingHistory<>();
         m_usedTags = new TrailingHistory<>();
         m_log_cameraToTag = new HashMap<>();
@@ -165,7 +168,7 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip> {
         estimateRobotPose(
                 camera,
                 blips,
-                DriverStation.getAlliance());
+                m_alliance.get());
     }
 
     @Override
@@ -221,12 +224,19 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip> {
 
         // Fetch the alliance (not available immediately after startup).
         if (!optAlliance.isPresent()) {
+            if (DEBUG)
+                System.out.println("no alliance!");
             return;
         }
         Alliance alliance = optAlliance.get();
         m_log_alliance.log(() -> alliance);
 
         // Sample the history.
+
+        if (blips.length == 0) {
+            if (DEBUG)
+                System.out.println("no blips!");
+        }
 
         for (int i = 0; i < blips.length; ++i) {
             Blip blip = blips[i];
@@ -275,24 +285,30 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip> {
             /// Should we use this update?
             ///
             if (!Experiments.instance.enabled(Experiment.HeedVision)) {
-                // No, we've turned vision off.
+                if (DEBUG)
+                    System.out.println("Drop update, vision is off.");
                 continue;
             }
             ///
             if (cameraToTag.getTranslation().getNorm() > m_heedRadiusM) {
-                // No, the tag is too far away.
+                if (DEBUG)
+                    System.out.println("Tag is too far away.");
                 continue;
             }
             ///
             if (m_prevPose == null) {
                 // No, we need another nearby fix to believe either one.
                 m_prevPose = robotPose2d;
+                if (DEBUG)
+                    System.out.println("Need confirmation.");
                 continue;
             }
             ///
             if (Metrics.translationalDistance(m_prevPose, robotPose2d) > VISION_CHANGE_TOLERANCE_M) {
                 // No, the new estimate is too far from the previous one.
                 m_prevPose = robotPose2d;
+                if (DEBUG)
+                    System.out.println("New estimate is too far away.");
                 continue;
             }
             ///

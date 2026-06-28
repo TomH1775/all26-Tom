@@ -57,6 +57,15 @@ public class AprilTagFieldLayoutWithCorrectOrientation {
         this(FILENAME);
     }
 
+    /** Trap the IO exception. */
+    public static AprilTagFieldLayoutWithCorrectOrientation getLayout() {
+        try {
+            return new AprilTagFieldLayoutWithCorrectOrientation();
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not read Apriltag layout file", e);
+        }
+    }
+
     /** For testing only */
     AprilTagFieldLayoutWithCorrectOrientation(String filename) throws IOException {
         Path path = Filesystem.getDeployDirectory().toPath().resolve(filename);
