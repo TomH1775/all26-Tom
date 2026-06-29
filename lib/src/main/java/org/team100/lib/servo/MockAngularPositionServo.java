@@ -42,6 +42,11 @@ public class MockAngularPositionServo implements AngularPositionServo {
     }
 
     @Override
+    public boolean validSetpoint() {
+        return true;
+    }
+
+    @Override
     public boolean atSetpoint() {
         return false;
     }

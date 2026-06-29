@@ -52,7 +52,12 @@ public class Robot extends TimedRobot {
         };
         // use the 2026 targeting table
         Targeter targeter = new Targeter(() -> m_pose.getState().translation());
-        m_turret = new Turret(rootLogger, fieldLogger, targeter::forRange, m_pose::getState, target);
+        m_turret = new Turret(
+                rootLogger,
+                fieldLogger,
+                targeter::forRange,
+                m_pose::getState,
+                target);
         m_indicator = new SolidIndicator(new RoboRioChannel(0), 40);
         m_indicator.state(this::indicatorState);
         if (BALL_2D) {
@@ -62,6 +67,7 @@ public class Robot extends TimedRobot {
             // Always throws knuckleballs
             // TODO: adjustable spin.
             m_ball = BallFactory.get3d(
+                    rootLogger,
                     fieldLogger,
                     m_pose::getState,
                     m_turret::getAzimuth,
@@ -80,9 +86,28 @@ public class Robot extends TimedRobot {
     }
 
     private Color indicatorState() {
-        if (m_turret.onTarget())
-            return Color.kGreen;
-        return Color.kRed;
+        if (m_turret.aiming()) {
+            if (m_turret.solved()) {
+                if (m_turret.onTarget()) {
+                    // ready to fire
+                    return Color.kGreen;
+                } else {
+                    if (m_turret.validSetpoint()) {
+                        // solved, valid, but not on target yet
+                        return Color.kYellow;
+                    } else {
+                        // setpoint is inaccessible
+                        return Color.kOrange;
+                    }
+                }
+            } else {
+                // no solution
+                return Color.kRed;
+            }
+        } else {
+            // idle
+            return Color.kLavender;
+        }
     }
 
     @Override

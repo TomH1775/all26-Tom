@@ -21,6 +21,7 @@ public class BallFactory {
     }
 
     public static Ball get3d(
+            LoggerFactory log,
             LoggerFactory field,
             Supplier<ModelSE2> robot,
             Supplier<Rotation2d> azimuth,
@@ -28,7 +29,7 @@ public class BallFactory {
             DoubleSupplier speed,
             double omega) {
         Drag d = new Drag(0.5, 0.025, 0.1, 0.1, 0.1);
-        return new BallR3(field, d, robot, azimuth, elevation, speed, omega);
+        return new BallR3(log, field, d, robot, azimuth, elevation, speed, omega);
     }
 
 }

@@ -26,8 +26,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
  */
 public class ManualPose {
     private static final double DT = TimedRobot100.LOOP_PERIOD_S;
-    private static final double MAX_V = 1.0;
-    private static final double MAX_OMEGA = 1.0;
+    private static final double MAX_V = 2.0;
+    private static final double MAX_OMEGA = 2.0;
     private final DoubleArrayLogger m_log_field_robot;
     private final Supplier<Velocity> m_v;
     private final ObjectCache<ModelSE2> m_stateCache;
