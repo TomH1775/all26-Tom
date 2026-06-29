@@ -8,6 +8,7 @@ import org.team100.lib.geometry.GlobalVelocityR3;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
+import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.targeting.Drag;
 
@@ -24,6 +25,7 @@ import edu.wpi.first.math.system.NumericalIntegration;
  */
 public class BallR3 implements Ball {
     private static final double DT = TimedRobot100.LOOP_PERIOD_S;
+    private final DoubleLogger m_log_ball_altitude;
     private final DoubleArrayLogger m_log_field_ball;
     private final Drag m_drag;
     private final Supplier<ModelSE2> m_robot;
@@ -50,6 +52,7 @@ public class BallR3 implements Ball {
      * @param omega     spin
      */
     public BallR3(
+            LoggerFactory parent,
             LoggerFactory field,
             Drag drag,
             Supplier<ModelSE2> robot,
@@ -57,6 +60,8 @@ public class BallR3 implements Ball {
             Supplier<Rotation2d> elevation,
             DoubleSupplier speed,
             double omega) {
+        LoggerFactory log = parent.type(this);
+        m_log_ball_altitude = log.doubleLogger(Level.COMP, "altitude");
         m_log_field_ball = field.doubleArrayLogger(Level.COMP, "ball");
         m_drag = drag;
         m_robot = robot;
@@ -100,12 +105,18 @@ public class BallR3 implements Ball {
 
     @Override
     public void periodic() {
+        m_log_ball_altitude.log(this::altitude);
         m_log_field_ball.log(this::poseArray);
     }
 
     private double[] poseArray() {
         Translation3d t = location();
         return new double[] { t.getX(), t.getY(), 0 };
+    }
+
+    private double altitude() {
+        Translation3d t = location();
+        return t.getZ();
     }
 
     Translation3d location() {

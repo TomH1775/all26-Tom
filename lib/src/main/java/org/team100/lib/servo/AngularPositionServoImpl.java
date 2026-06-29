@@ -2,6 +2,7 @@ package org.team100.lib.servo;
 
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
+import org.team100.lib.logging.LoggerFactory.BooleanLogger;
 import org.team100.lib.logging.LoggerFactory.ControlR1Logger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.mechanism.RotaryMechanism;
@@ -25,6 +26,7 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
     private static final double VELOCITY_TOLERANCE = 0.02;
     protected final RotaryMechanism m_mechanism;
     private final ReferenceR1 m_ref;
+    private final BooleanLogger m_log_atGoal;
     private final DoubleLogger m_log_goal;
     private final DoubleLogger m_log_velocity;
     private final ControlR1Logger m_log_setpoint;
@@ -58,6 +60,7 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
         m_mechanism = mechanism;
         m_ref = ref;
         LoggerFactory log = parent.type(this);
+        m_log_atGoal = log.booleanLogger(Level.TRACE, "at goal");
         m_log_goal = log.doubleLogger(Level.TRACE, "goal (rad)");
         m_log_velocity = log.doubleLogger(Level.TRACE, "velocity (rad_s)");
         m_log_setpoint = log.ControlR1Logger(Level.TRACE, "setpoint");
@@ -102,7 +105,7 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
                 if (unwrappedGoalX >= m_mechanism.getMinPositionRad()) {
                     if (DEBUG)
                         System.out.println("use a profile to go around");
-                    actuateWithProfile(unwrappedGoalX, torqueNm);
+                    actuateProfiledImpl(unwrappedGoalX, torqueNm);
                     return;
                 } else {
                     if (DEBUG)
@@ -123,7 +126,7 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
                 if (unwrappedGoalX <= m_mechanism.getMaxPositionRad()) {
                     if (DEBUG)
                         System.out.println("use a profile to go around");
-                    actuateWithProfile(unwrappedGoalX, torqueNm);
+                    actuateProfiledImpl(unwrappedGoalX, torqueNm);
                     return;
                 } else {
                     if (DEBUG)
@@ -180,8 +183,7 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
                 }
             }
         }
-
-        actuateWithProfile(unwrappedGoalX, torqueNm);
+        actuateProfiledImpl(unwrappedGoalX, torqueNm);
     }
 
     /** For setting friction only */
@@ -198,44 +200,16 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
     @Override
     public void actuateWithProfile(double unwrappedGoalX, double torqueNm) {
         m_validSetpoint = true;
-        initReference(new ModelR1(unwrappedGoalX, 0));
-        SetpointsR1 unwrappedSetpoint = m_ref.get();
-        m_nextUnwrappedSetpoint = unwrappedSetpoint.next();
-        actuate(unwrappedSetpoint, torqueNm);
+        actuateProfiledImpl(unwrappedGoalX, torqueNm);
     }
 
     @Override
     public void actuateDirect(double unwrappedSetpoint, double torqueNm) {
+        m_validSetpoint = true;
         m_unwrappedGoal = null;
         m_nextUnwrappedSetpoint = null;
         ControlR1 c = new ControlR1(unwrappedSetpoint);
         actuate(new SetpointsR1(c, c), torqueNm);
-    }
-
-    /** The reference only understands unwrapped angles. */
-    private void initReference(ModelR1 unwrappedGoal) {
-        if (DEBUG) {
-            System.out.printf("initReference old %s new %s\n", m_unwrappedGoal, unwrappedGoal);
-        }
-        if (unwrappedGoal.near(m_unwrappedGoal, POSITION_TOLERANCE, VELOCITY_TOLERANCE) && m_ref.valid()) {
-            // If the new goal is the same as the old goal, no change is needed.
-            if (DEBUG)
-                System.out.println("keep old goal");
-            return;
-        }
-        // The new goal is not the same as the old goal, so tell the reference about it.
-        m_unwrappedGoal = unwrappedGoal;
-        if (DEBUG)
-            System.out.println("replace goal");
-        m_ref.setGoal(unwrappedGoal);
-        // make sure the setpoint is near the measurement
-        if (m_nextUnwrappedSetpoint == null) {
-            // erased by dutycycle control, use measurement
-            m_nextUnwrappedSetpoint = new ControlR1(m_mechanism.getUnwrappedPositionRad(), 0);
-        }
-
-        // initialize with the setpoint, not the measurement, to avoid noise.
-        m_ref.init(m_nextUnwrappedSetpoint.model());
     }
 
     @Override
@@ -259,6 +233,11 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
     @Override
     public ModelR1 getUnwrappedGoal() {
         return m_unwrappedGoal;
+    }
+
+    @Override
+    public boolean validSetpoint() {
+        return m_validSetpoint;
     }
 
     /**
@@ -290,14 +269,22 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
     public boolean profileDone() {
         if (m_unwrappedGoal == null) {
             // if there's no profile, it's always done.
+            if (DEBUG)
+                System.out.println("no profile, always done");
             return true;
         }
-        return m_ref.profileDone();
+        boolean profileDone = m_ref.profileDone();
+        if (DEBUG)
+            System.out.printf("profile done %b\n", profileDone);
+        return profileDone;
     }
 
     @Override
     public boolean atGoal() {
-        return atSetpoint() && profileDone();
+        boolean b = atSetpoint() && profileDone();
+        if (DEBUG)
+            System.out.printf("at goal %b\n", b);
+        return b;
     }
 
     @Override
@@ -316,6 +303,44 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
     public void periodic() {
         m_mechanism.periodic();
         m_log_setpoint.log(() -> m_nextUnwrappedSetpoint);
+        m_log_atGoal.log(() -> atGoal());
+    }
+
+    ///////////////////////////////////////////
+    ///////////////////////////////////////////
+    ///////////////////////////////////////////
+
+    private void actuateProfiledImpl(double unwrappedGoalX, double torqueNm) {
+        initReference(new ModelR1(unwrappedGoalX, 0));
+        SetpointsR1 unwrappedSetpoint = m_ref.get();
+        m_nextUnwrappedSetpoint = unwrappedSetpoint.next();
+        actuate(unwrappedSetpoint, torqueNm);
+    }
+
+    /** The reference only understands unwrapped angles. */
+    private void initReference(ModelR1 unwrappedGoal) {
+        if (DEBUG) {
+            System.out.printf("initReference old %s new %s\n", m_unwrappedGoal, unwrappedGoal);
+        }
+        if (unwrappedGoal.near(m_unwrappedGoal, POSITION_TOLERANCE, VELOCITY_TOLERANCE) && m_ref.valid()) {
+            // If the new goal is the same as the old goal, no change is needed.
+            if (DEBUG)
+                System.out.println("keep old goal");
+            return;
+        }
+        // The new goal is not the same as the old goal, so tell the reference about it.
+        m_unwrappedGoal = unwrappedGoal;
+        if (DEBUG)
+            System.out.println("replace goal");
+        m_ref.setGoal(unwrappedGoal);
+        // make sure the setpoint is near the measurement
+        if (m_nextUnwrappedSetpoint == null) {
+            // erased by dutycycle control, use measurement
+            m_nextUnwrappedSetpoint = new ControlR1(m_mechanism.getUnwrappedPositionRad(), 0);
+        }
+
+        // initialize with the setpoint, not the measurement, to avoid noise.
+        m_ref.init(m_nextUnwrappedSetpoint.model());
     }
 
 }

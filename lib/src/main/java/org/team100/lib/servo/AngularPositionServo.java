@@ -105,6 +105,9 @@ public interface AngularPositionServo extends Player {
     /** For testing. */
     ModelR1 getUnwrappedGoal();
 
+    /** A valid setpoint exists.  Not true when the goal is inaccessible. */
+    boolean validSetpoint();
+
     /** Mechanism is following the desired setpoint. */
     boolean atSetpoint();
 

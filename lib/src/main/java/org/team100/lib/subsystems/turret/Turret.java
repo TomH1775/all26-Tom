@@ -9,6 +9,7 @@ import org.team100.lib.geometry.GlobalVelocityR2;
 import org.team100.lib.geometry.StateR2;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
+import org.team100.lib.logging.LoggerFactory.BooleanLogger;
 import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
 import org.team100.lib.mechanism.LinearMechanism;
 import org.team100.lib.mechanism.RotaryMechanism;
@@ -57,14 +58,20 @@ public class Turret extends SubsystemBase {
     private static final double DRUM_RATIO = 1.0;
     private static final double DRUM_DIAMETER = 0.1;
 
+    private final BooleanLogger m_log_aiming;
+    private final BooleanLogger m_log_solved;
     private final DoubleArrayLogger m_log_field_turret;
+    private final DoubleArrayLogger m_log_field_target;
     private final Supplier<ModelSE2> m_state;
     private final Supplier<Optional<Translation2d>> m_target;
     private final AngularPositionServo m_pivot;
     private final AngularPositionServo m_elevation;
     private final LinearVelocityServo m_drum;
     private final Solver m_solver;
+    /** Indicates we're trying to find a solution and move there */
     private boolean m_aiming;
+    /** Indicates we have a solution */
+    private boolean m_solved;
 
     /**
      * @param parent Log
@@ -79,17 +86,21 @@ public class Turret extends SubsystemBase {
             Supplier<ModelSE2> state,
             Supplier<Optional<Translation2d>> target) {
         LoggerFactory log = parent.type(this);
+        m_log_aiming = log.booleanLogger(Level.TRACE, "aiming");
+        m_log_solved = log.booleanLogger(Level.TRACE, "solved");
         m_log_field_turret = field.doubleArrayLogger(Level.COMP, "turret");
+        m_log_field_target = field.doubleArrayLogger(Level.COMP, "target");
         m_state = state;
         m_target = target;
-        m_pivot = pivot(log);
-        m_elevation = elevation(log);
-        m_drum = drum(log);
+        m_pivot = pivot(log.name("azimuth"));
+        m_elevation = elevation(log.name("elevation"));
+        m_drum = drum(log.name("drum"));
         // Laser solver always works
         // m_solver = new LaserSolver(rangeToParams);
         // TODO: make TOFR work
         m_solver = new TimeOfFlightRecursion(rangeToParams, 0.01);
         m_aiming = false;
+        m_solved = false;
     }
 
     private static AngularPositionServo pivot(LoggerFactory log) {
@@ -127,14 +138,12 @@ public class Turret extends SubsystemBase {
     }
 
     private static LinearVelocityServo drum(LoggerFactory log) {
-
         VelocityProfileR1 profile = new AccelLimitedVelocityProfileR1(10);
         VelocityReferenceR1 ref = new VelocityProfileReferenceR1(
                 log, () -> profile, 1);
         // TODO: real motor
         SimulatedBareMotor motor = new SimulatedBareMotor(log, 600);
         IncrementalBareEncoder encoder = motor.encoder();
-
         LinearMechanism mech = new LinearMechanism(
                 log, motor, encoder, DRUM_RATIO, DRUM_DIAMETER,
                 Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
@@ -142,8 +151,21 @@ public class Turret extends SubsystemBase {
         return drum;
     }
 
+    public boolean aiming() {
+        return m_aiming;
+    }
+
+    public boolean solved() {
+        return m_solved;
+    }
+
+    /** If false, the pivot has an inaccessible goal. */
+    public boolean validSetpoint() {
+        return m_pivot.validSetpoint();
+    }
+
     public boolean onTarget() {
-        return m_aiming && m_pivot.atGoal();
+        return m_aiming && m_solved && m_pivot.atGoal() && m_elevation.atGoal() && m_drum.atGoal();
     }
 
     /** Absolute turret rotation */
@@ -165,14 +187,21 @@ public class Turret extends SubsystemBase {
         Optional<Solution> soln = getSolution();
         if (soln.isEmpty()) {
             // no solution is possible, don't do anything
+            // TODO: keep drum spinning for awhile
             m_pivot.stop();
             m_elevation.stop();
+            m_drum.stop();
+            m_solved = false;
             return;
         }
-        Rotation2d absoluteBearing = soln.get().azimuth();
+        m_solved = true;
+        m_log_solved.log(() -> true);
+        Solution solution = soln.get();
+        Rotation2d absoluteBearing = solution.azimuth();
         Rotation2d relativeBearing = absoluteBearing.minus(m_state.get().rotation());
         m_pivot.setPositionProfiled(relativeBearing.getRadians(), 0);
-        m_elevation.setPositionProfiled(soln.get().parameters().elevation(), 0);
+        m_elevation.setPositionProfiled(solution.parameters().elevation(), 0);
+        m_drum.setVelocityProfiled(solution.parameters().speed());
     }
 
     private Optional<Solution> getSolution() {
@@ -180,13 +209,18 @@ public class Turret extends SubsystemBase {
         if (targetOpt.isEmpty())
             return Optional.empty();
         Translation2d targetTranslation = targetOpt.get();
+        m_log_field_target.log(() -> new double[] {
+                targetTranslation.getX(), targetTranslation.getY(), 0 });
         StateR2 target = new StateR2(targetTranslation, GlobalVelocityR2.ZERO);
         return m_solver.solve(m_state.get(), target);
     }
 
     private void stopAiming() {
         m_aiming = false;
+        m_solved = false;
         m_pivot.stop();
+        m_elevation.stop();
+        m_drum.stop();
     }
 
     ////////////////////////////////////////////////////////
@@ -194,7 +228,6 @@ public class Turret extends SubsystemBase {
     /// COMMANDS
 
     public Command aim() {
-        // TODO: add drum speed here
         return run(this::moveToAim);
     }
 
@@ -205,7 +238,11 @@ public class Turret extends SubsystemBase {
     @Override
     public void periodic() {
         m_pivot.periodic();
+        m_elevation.periodic();
+        m_drum.periodic();
         m_log_field_turret.log(this::poseArray);
+        m_log_aiming.log(() -> m_aiming);
+        m_log_solved.log(() -> m_solved);
     }
 
     private double[] poseArray() {
