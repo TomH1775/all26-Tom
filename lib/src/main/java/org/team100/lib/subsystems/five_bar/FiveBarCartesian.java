@@ -2,18 +2,20 @@ package org.team100.lib.subsystems.five_bar;
 
 import java.util.function.Supplier;
 
-import org.team100.lib.config.SimpleDynamics;
 import org.team100.lib.config.CurrentLimit;
 import org.team100.lib.config.Friction;
+import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
+import org.team100.lib.config.SimpleDynamics;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TotalCurrentLog;
 import org.team100.lib.mechanism.RotaryMechanism;
+import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon500Motor;
+import org.team100.lib.motor.sim.SimulatedBareMotor;
 import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
-import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
 import org.team100.lib.subsystems.five_bar.commands.Move;
 import org.team100.lib.subsystems.five_bar.kinematics.ActuatorAngles;
 import org.team100.lib.subsystems.five_bar.kinematics.FiveBarKinematics;
@@ -59,24 +61,47 @@ public class FiveBarCartesian extends SubsystemBase {
     private final RotaryMechanism m_mechP5;
 
     public FiveBarCartesian(LoggerFactory logger, TotalCurrentLog currentLog) {
+        LoggerFactory loggerP1 = logger.name("p1");
+        LoggerFactory loggerP5 = logger.name("p5");
+
         // zeros
         PIDConstants pid = PIDConstants.zero(logger);
         SimpleDynamics ff = new SimpleDynamics(logger, 0, 0);
         Friction friction = new Friction(logger, 0, 0, 0, 0);
 
-        LoggerFactory loggerP1 = logger.name("p1");
-        Falcon500Motor motorP1 = new Falcon500Motor(
-                loggerP1,
-                currentLog,
-                new CanId(1),
-                NeutralMode100.COAST,
-                MotorPhase.FORWARD,
-                new CurrentLimit(STATOR_LIMIT, SUPPLY_LIMIT),
-                ff,
-                friction,
-                pid);
-        IncrementalBareEncoder encoderP1 = motorP1.encoder();
-        m_sensorP1 = new ProxyRotaryPositionSensor(encoderP1, 1.0);
+        BareMotor motorP1;
+        BareMotor motorP5;
+        switch (Identity.instance) {
+            case SWERVE_TWO -> {
+                motorP1 = new Falcon500Motor(
+                        loggerP1,
+                        currentLog,
+                        new CanId(1),
+                        NeutralMode100.COAST,
+                        MotorPhase.FORWARD,
+                        new CurrentLimit(STATOR_LIMIT, SUPPLY_LIMIT),
+                        ff,
+                        friction,
+                        pid);
+                motorP5 = new Falcon500Motor(
+                        loggerP5,
+                        currentLog,
+                        new CanId(5),
+                        NeutralMode100.COAST,
+                        MotorPhase.FORWARD,
+                        new CurrentLimit(STATOR_LIMIT, SUPPLY_LIMIT),
+                        ff,
+                        friction,
+                        pid);
+            }
+            default -> {
+                motorP1 = new SimulatedBareMotor(loggerP1, 600);
+                motorP5 = new SimulatedBareMotor(loggerP5, 600);
+            }
+        }
+
+        m_sensorP1 = new ProxyRotaryPositionSensor(motorP1.encoder(), 1.0);
+        m_sensorP5 = new ProxyRotaryPositionSensor(motorP5.encoder(), 1.0);
         m_mechP1 = new RotaryMechanism(
                 loggerP1,
                 motorP1,
@@ -84,20 +109,6 @@ public class FiveBarCartesian extends SubsystemBase {
                 1.0,
                 -100.0,
                 100.0);
-
-        LoggerFactory loggerP5 = logger.name("p5");
-        Falcon500Motor motorP5 = new Falcon500Motor(
-                loggerP5,
-                currentLog,
-                new CanId(5),
-                NeutralMode100.COAST,
-                MotorPhase.FORWARD,
-                new CurrentLimit(STATOR_LIMIT, SUPPLY_LIMIT),
-                ff,
-                friction,
-                pid);
-        IncrementalBareEncoder encoderP5 = motorP5.encoder();
-        m_sensorP5 = new ProxyRotaryPositionSensor(encoderP5, 1.0);
         m_mechP5 = new RotaryMechanism(
                 loggerP5,
                 motorP5,
@@ -105,6 +116,10 @@ public class FiveBarCartesian extends SubsystemBase {
                 1.0,
                 -100.0,
                 100.0);
+
+        // TODO: what to do for initial position?
+        m_mechP1.setUnwrappedPosition(0, 0, 0, 0);
+        m_mechP5.setUnwrappedPosition(0, 0, 0, 0);
     }
 
     /**
@@ -117,6 +132,10 @@ public class FiveBarCartesian extends SubsystemBase {
         double y3 = t.getY();
         ActuatorAngles p = FiveBarKinematics.inverse(
                 SCENARIO, x3 + SCENARIO.xcenter, y3 + SCENARIO.ycenter);
+        if (Double.isNaN(p.q1()) || Double.isNaN(p.q5())) {
+            // skip infeasible
+            return;
+        }
         m_mechP1.setUnwrappedPosition(p.q1(), 0, 0, 0);
         m_mechP5.setUnwrappedPosition(p.q5(), 0, 0, 0);
     }

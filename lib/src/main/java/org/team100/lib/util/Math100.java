@@ -91,6 +91,7 @@ public class Math100 {
         return new Rotation2d(MathUtil.angleModulus(x.getRadians() - measurement) + measurement);
     }
 
+    /** Throw if NaN */
     public static double notNaN(double x) {
         if (Double.isNaN(x))
             throw new IllegalArgumentException("arg is NaN");

@@ -33,6 +33,7 @@ public class FiveBarVisualization {
     private static final boolean DEBUG = false;
     /** links are like 0.1 m long, pic is like 100 wide. */
     private static final double SCALE = 300;
+    private static final double WIDTH = 10;
     private static final Color8Bit ORANGE = new Color8Bit(Color.kOrangeRed);
     private final Supplier<JointPositions> m_q;
     private final Mechanism2d m_view;
@@ -50,13 +51,13 @@ public class FiveBarVisualization {
         // the midpoint of a5
         Point a5Mid = p1.plus(p5.minus(p1).times(0.5));
         m_p1 = m_view.getRoot("root", 50 + SCALE * a5Mid.x(), 75 + SCALE * a5Mid.y());
-        m_a1 = new MechanismLigament2d("a1", 0, 0, 0, ORANGE);
+        m_a1 = new MechanismLigament2d("a1", 0, 0, WIDTH, ORANGE);
         m_p1.append(m_a1);
-        m_a2 = new MechanismLigament2d("a2", 0, 0, 0, ORANGE);
+        m_a2 = new MechanismLigament2d("a2", 0, 0, WIDTH, ORANGE);
         m_a1.append(m_a2);
-        m_a3 = new MechanismLigament2d("a3", 0, 0, 0, ORANGE);
+        m_a3 = new MechanismLigament2d("a3", 0, 0, WIDTH, ORANGE);
         m_a2.append(m_a3);
-        m_a4 = new MechanismLigament2d("a4", 0, 0, 0, ORANGE);
+        m_a4 = new MechanismLigament2d("a4", 0, 0, WIDTH, ORANGE);
         m_a3.append(m_a4);
         SmartDashboard.putData("View", m_view);
     }

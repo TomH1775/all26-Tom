@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class SetupServo implements Runnable {
+    private static final double OFFSET = Math.PI / 2;
+    private static final double SCALE = 1;
     private final FiveBarServo m_fiveBar;
     private final FiveBarVisualization m_viz;
 
@@ -22,7 +24,8 @@ public class SetupServo implements Runnable {
         m_fiveBar = new FiveBarServo(logger, currentLog);
         m_viz = new FiveBarVisualization(m_fiveBar::getJointPositions);
         m_fiveBar.setDefaultCommand(m_fiveBar.position(
-                controller::getLeftX, controller::getRightX));
+                () -> OFFSET + SCALE * controller.getLeftX(),
+                () -> OFFSET + SCALE * controller.getRightX()));
 
         // These bindings are remembered by the trigger event loop, so we don't need to
         // retain them.
